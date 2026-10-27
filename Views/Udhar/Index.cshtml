@@ -1,0 +1,84 @@
+@model List<Udhar>
+@{
+    ViewData["Title"] = "Udhar";
+    Layout = "_Layout";
+}
+
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
+        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Udhar Management
+    </h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Udhar
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>All Udhar Records</h3>
+    </div>
+    <div class="table-responsive">
+        @if (Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Person Name</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Paid</th>
+                        <th>Remaining</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var udhar in Model)
+                    {
+                        <tr>
+                            <td>@udhar.Date.ToString("d MMM yyyy")</td>
+                            <td>@udhar.PersonName</td>
+                            <td>
+                                @if (udhar.Type == "Lene Hai")
+                                {
+                                    <span class="type-lene">Lene Hai</span>
+                                }
+                                else
+                                {
+                                    <span class="type-dene">Dene Hai</span>
+                                }
+                            </td>
+                            <td style="font-weight: 600;">₹@udhar.Amount.ToString("N2")</td>
+                            <td>₹@udhar.PaidAmount.ToString("N2")</td>
+                            <td style="font-weight: 600; color: @(udhar.RemainingAmount > 0 ? "#eb3349" : "#11998e");">₹@udhar.RemainingAmount.ToString("N2")</td>
+                            <td>
+                                @if (udhar.Status == "Pending")
+                                {
+                                    <span class="badge badge-pending">Pending</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-completed">Completed</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@udhar.Id" class="btn btn-sm btn-success">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@udhar.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+                <p>No udhar records found. Add your first record!</p>
+            </div>
+        }
+    </div>
+</div>

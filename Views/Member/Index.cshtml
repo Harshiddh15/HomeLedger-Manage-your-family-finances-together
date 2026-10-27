@@ -1,0 +1,58 @@
+@model List<Member>
+@{
+    ViewData["Title"] = "Members";
+    Layout = "_Layout";
+}
+
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
+        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Family Members
+    </h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Member
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>All Family Members</h3>
+    </div>
+    <div class="table-responsive">
+        @if (Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Relation</th>
+                        <th>Mobile</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var member in Model)
+                    {
+                        <tr>
+                            <td style="font-weight: 600;">@member.MemberName</td>
+                            <td>@member.Relation</td>
+                            <td>@member.Mobile</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@member.Id" class="btn btn-sm btn-success">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@member.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-users"></i>
+                <p>No family members found. Add your first member!</p>
+            </div>
+        }
+    </div>
+</div>

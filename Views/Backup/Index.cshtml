@@ -1,0 +1,84 @@
+@{
+    ViewData["Title"] = "Backup & Restore";
+    Layout = "_Layout";
+}
+
+<div class="page-header" style="margin-bottom: 30px;">
+    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
+        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Backup & Restore
+    </h1>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--hud-teal); color: var(--hud-teal); padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;">
+        <i class="fa-solid fa-check-circle"></i> @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid var(--hud-rose); color: var(--hud-rose); padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;">
+        <i class="fa-solid fa-exclamation-circle"></i> @TempData["Error"]
+    </div>
+}
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-download"></i> Export Backup</h3>
+        </div>
+        <div class="card-body">
+            <p style="margin-bottom: 20px; color: var(--hud-text-muted);">
+                Download a complete backup of all your family finance data including income, expenses, members, savings goals, and more.
+            </p>
+            <a asp-action="ExportBackup" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                <i class="fa-solid fa-download"></i> Download Backup
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-upload"></i> Import Backup</h3>
+        </div>
+        <div class="card-body">
+            <p style="margin-bottom: 20px; color: var(--hud-text-muted);">
+                Restore your data from a previously exported backup file. This will add new records without overwriting existing ones.
+            </p>
+            <form asp-action="ImportBackup" method="post" enctype="multipart/form-data">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--hud-text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px;">
+                        Select Backup File
+                    </label>
+                    <input type="file" name="backupFile" accept=".json" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    <i class="fa-solid fa-upload"></i> Import Backup
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 20px;">
+    <div class="card-header">
+        <h3><i class="fa-solid fa-info-circle"></i> Backup Information</h3>
+    </div>
+    <div class="card-body">
+        <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--hud-border);">
+                <strong style="color: var(--hud-cyan);">Export Format:</strong> JSON file containing all your data
+            </li>
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--hud-border);">
+                <strong style="color: var(--hud-cyan);">Data Included:</strong> Family info, Members, Income, Expenses, Udhar, Reminders, Budgets, Savings Goals, Recurring Expenses, Recurring Income, Categories
+            </li>
+            <li style="padding: 10px 0; border-bottom: 1px solid var(--hud-border);">
+                <strong style="color: var(--hud-cyan);">Import Behavior:</strong> Adds new records without overwriting existing ones
+            </li>
+            <li style="padding: 10px 0;">
+                <strong style="color: var(--hud-cyan);">Recommendation:</strong> Export backup regularly and keep multiple copies
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,82 @@
+@model List<Income>
+@{
+    ViewData["Title"] = "Income";
+    Layout = "_Layout";
+}
+
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
+        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Income Management
+    </h1>
+    <div style="display: flex; gap: 10px;">
+        <a asp-action="ExportToCsv" class="btn btn-secondary">
+            <i class="fa-solid fa-file-csv"></i> Export CSV
+        </a>
+        <a asp-action="ExportToPdf" class="btn btn-secondary">
+            <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </a>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Add Income
+        </a>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <div class="card-body">
+        <form asp-action="Index" method="get" style="display: flex; gap: 10px;">
+            <input type="text" name="search" class="form-control" placeholder="Search by source, member, or description..." value="@Context.Request.Query["search"]" style="flex: 1;">
+            <button type="submit" class="btn btn-secondary">
+                <i class="fa-solid fa-search"></i> Search
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Clear</a>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>All Income Records</h3>
+    </div>
+    <div class="table-responsive">
+        @if (Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Member Name</th>
+                        <th>Source</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var income in Model)
+                    {
+                        <tr>
+                            <td>@income.Date.ToString("d MMM yyyy")</td>
+                            <td>@income.MemberName</td>
+                            <td>@income.Source</td>
+                            <td style="font-weight: 600; color: #11998e;">₹@income.Amount.ToString("N2")</td>
+                            <td>@income.Description</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@income.Id" class="btn btn-sm btn-success">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@income.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                <p>No income records found. Add your first income!</p>
+            </div>
+        }
+    </div>
+</div>

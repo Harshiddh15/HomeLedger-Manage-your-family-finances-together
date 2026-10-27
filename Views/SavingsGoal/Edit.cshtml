@@ -1,0 +1,156 @@
+@model SavingsGoal
+@{
+    ViewData["Title"] = "Edit Savings Goal";
+    Layout = "_Layout";
+}
+
+<style>
+    .page-header {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 25px;
+    }
+
+    .card-header h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .card-body {
+        padding: 30px 25px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .validation-summary {
+        background: #fee;
+        border: 1px solid #fcc;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        color: #c33;
+        font-size: 14px;
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">Edit Savings Goal</h1>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Edit Savings Goal</h3>
+    </div>
+    <div class="card-body">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="validation-summary">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+
+        <form asp-action="Edit" method="post">
+            <input type="hidden" name="Id" value="@Model.Id">
+            <div class="form-group">
+                <label for="GoalName">Goal Name</label>
+                <input type="text" id="GoalName" name="GoalName" class="form-control" required value="@Model.GoalName">
+            </div>
+            <div class="form-group">
+                <label for="TargetAmount">Target Amount (₹)</label>
+                <input type="number" id="TargetAmount" name="TargetAmount" class="form-control" required step="0.01" min="0" value="@Model.TargetAmount">
+            </div>
+            <div class="form-group">
+                <label for="CurrentAmount">Current Amount (₹)</label>
+                <input type="number" id="CurrentAmount" name="CurrentAmount" class="form-control" required step="0.01" min="0" value="@Model.CurrentAmount">
+            </div>
+            <div class="form-group">
+                <label for="TargetDate">Target Date</label>
+                <input type="date" id="TargetDate" name="TargetDate" class="form-control" required value="@Model.TargetDate.ToString("yyyy-MM-dd")">
+            </div>
+            <div class="form-group">
+                <label for="Description">Description (Optional)</label>
+                <textarea id="Description" name="Description" class="form-control" rows="3">@Model.Description</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-save"></i> Update Goal
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+@model List<Category>
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "_Layout";
+}
+
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
+        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Categories
+    </h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Category
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>All Categories</h3>
+    </div>
+    <div class="table-responsive">
+        @if (Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Icon</th>
+                        <th>Color</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model)
+                    {
+                        <tr>
+                            <td style="font-weight: 600;">@category.Name</td>
+                            <td>
+                                @if (category.Type == "Expense")
+                                {
+                                    <span style="background: rgba(244, 63, 94, 0.15); color: var(--hud-rose); padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Expense</span>
+                                }
+                                else
+                                {
+                                    <span style="background: rgba(16, 185, 129, 0.15); color: var(--hud-teal); padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Income</span>
+                                }
+                            </td>
+                            <td>@category.Icon</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(category.Color))
+                                {
+                                    <span style="display: inline-block; width: 20px; height: 20px; background: @category.Color; border-radius: 4px; border: 1px solid var(--hud-border);"></span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-warning">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-tags"></i>
+                <p>No categories found. Add your first category!</p>
+            </div>
+        }
+    </div>
+</div>

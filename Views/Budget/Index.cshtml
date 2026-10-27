@@ -1,0 +1,58 @@
+@model List<Budget>
+@{
+    ViewData["Title"] = "Budgets";
+    Layout = "_Layout";
+}
+
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
+        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Budget Management
+    </h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Budget
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>All Budget Records</h3>
+    </div>
+    <div class="table-responsive">
+        @if (Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Category</th>
+                        <th>Budget Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var budget in Model)
+                    {
+                        <tr>
+                            <td>@budget.Month</td>
+                            <td>@budget.Category</td>
+                            <td style="font-weight: 600; color: #11998e;">₹@budget.Amount.ToString("N2")</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@budget.Id" class="btn btn-sm btn-success">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@budget.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-wallet"></i>
+                <p>No budget records found. Add your first budget!</p>
+            </div>
+        }
+    </div>
+</div>

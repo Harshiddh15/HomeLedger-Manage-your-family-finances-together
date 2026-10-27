@@ -1,0 +1,18 @@
+## .NET Core / Visual Studio .gitignore
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+
+## Secrets & Local config
+appsettings.Development.json
+*.local.json
+.devin/
+
+## Logs & Temp files
+*.log
+*.tmp

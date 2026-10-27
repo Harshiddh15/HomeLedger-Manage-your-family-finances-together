@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Reports";
+    Layout = "_Layout";
+    
+    var currentYear = DateTime.Now.Year;
+    var currentMonth = DateTime.Now.Month;
+}
+
+<div class="page-header" style="margin-bottom: 30px;">
+    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
+        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Reports & Analytics
+    </h1>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Generate Reports</h3>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 15px; color: white;">
+                <h3 style="margin: 0 0 15px 0; font-size: 18px;">Monthly Report</h3>
+                <p style="margin: 0 0 20px 0; opacity: 0.9;">View detailed monthly income and expenses</p>
+                <form asp-action="MonthlyReport" method="get" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <select name="year" class="form-control" style="flex: 1; min-width: 100px; color: #333;">
+                        @for (int y = currentYear; y >= currentYear - 5; y--)
+                        {
+                            <option value="@y">@y</option>
+                        }
+                    </select>
+                    <select name="month" class="form-control" style="flex: 1; min-width: 100px; color: #333;">
+                        @for (int m = 1; m <= 12; m++)
+                        {
+                            <option value="@m">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-secondary" style="background: white; color: #667eea;">View</button>
+                </form>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 25px; border-radius: 15px; color: white;">
+                <h3 style="margin: 0 0 15px 0; font-size: 18px;">Yearly Report</h3>
+                <p style="margin: 0 0 20px 0; opacity: 0.9;">View annual financial summary with charts</p>
+                <form asp-action="YearlyReport" method="get" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <select name="year" class="form-control" style="flex: 1; min-width: 100px; color: #333;">
+                        @for (int y = currentYear; y >= currentYear - 5; y--)
+                        {
+                            <option value="@y">@y</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-secondary" style="background: white; color: #11998e;">View</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

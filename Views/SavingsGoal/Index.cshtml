@@ -1,0 +1,76 @@
+@model List<SavingsGoal>
+@{
+    ViewData["Title"] = "Savings Goals";
+    Layout = "_Layout";
+}
+
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
+        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Savings Goals
+    </h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Goal
+    </a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+    @if (Model.Any())
+    {
+        @foreach (var goal in Model)
+        {
+            var progress = goal.TargetAmount > 0 ? (goal.CurrentAmount / goal.TargetAmount * 100) : 0;
+            var remaining = goal.TargetAmount - goal.CurrentAmount;
+            var isCompleted = progress >= 100;
+            
+            <div class="card" style="@(isCompleted ? "border: 2px solid #11998e;" : "")">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h3>@goal.GoalName</h3>
+                </div>
+                <div class="card-body">
+                    @if (isCompleted)
+                    {
+                        <div style="background: #11998e; color: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: 600;">
+                            <i class="fa-solid fa-check-circle"></i> Goal Completed!
+                        </div>
+                    }
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Progress</span>
+                            <span>@progress.ToString("F1")%</span>
+                        </div>
+                        <div style="background: #e0e0e0; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; width: @(progress)%"></div>
+                        </div>
+                    </div>
+                    
+                    <p style="margin: 5px 0;"><strong>Target:</strong> ₹@goal.TargetAmount.ToString("N2")</p>
+                    <p style="margin: 5px 0;"><strong>Saved:</strong> ₹@goal.CurrentAmount.ToString("N2")</p>
+                    <p style="margin: 5px 0;"><strong>Remaining:</strong> ₹@remaining.ToString("N2")</p>
+                    <p style="margin: 5px 0;"><strong>Target Date:</strong> @goal.TargetDate.ToString("d MMM yyyy")</p>
+                    
+                    @if (!isCompleted)
+                    {
+                        <a asp-action="AddAmount" asp-route-id="@goal.Id" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                            <i class="fa-solid fa-plus"></i> Add Amount
+                        </a>
+                    }
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <a asp-action="Edit" asp-route-id="@goal.Id" class="btn btn-secondary" style="flex: 1;">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@goal.Id" class="btn btn-danger" style="flex: 1;">Delete</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-body" style="text-align: center; padding: 50px;">
+                <i class="fa-solid fa-piggy-bank" style="font-size: 48px; color: #667eea; margin-bottom: 20px;"></i>
+                <p style="color: #666;">No savings goals found. Start saving for your dreams!</p>
+            </div>
+        </div>
+    }
+</div>

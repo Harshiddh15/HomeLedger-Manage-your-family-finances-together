@@ -1,0 +1,76 @@
+@model List<RecurringExpense>
+@{
+    ViewData["Title"] = "Recurring Expenses";
+    Layout = "_Layout";
+}
+
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
+        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Recurring Expenses
+    </h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Recurring Expense
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>All Recurring Expenses</h3>
+    </div>
+    <div class="table-responsive">
+        @if (Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Frequency</th>
+                        <th>Day</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var expense in Model)
+                    {
+                        <tr style="@(expense.IsActive ? "" : "opacity: 0.6;")">
+                            <td>@expense.MemberName</td>
+                            <td>@expense.Category</td>
+                            <td style="font-weight: 600; color: #eb3349;">₹@expense.Amount.ToString("N2")</td>
+                            <td>@expense.Frequency</td>
+                            <td>@expense.DayOfMonth</td>
+                            <td>
+                                @if (expense.IsActive)
+                                {
+                                    <span style="background: #11998e; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">Active</span>
+                                }
+                                else
+                                {
+                                    <span style="background: #6c757d; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="ToggleActive" asp-route-id="@expense.Id" class="btn btn-sm btn-success">
+                                        @(expense.IsActive ? "Pause" : "Resume")
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@expense.Id" class="btn btn-sm btn-warning">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@expense.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-calendar-check"></i>
+                <p>No recurring expenses found. Add your first recurring expense!</p>
+            </div>
+        }
+    </div>
+</div>
