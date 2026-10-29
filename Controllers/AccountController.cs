@@ -40,7 +40,14 @@ namespace FinanceManagementNet.Controllers
 
             try
             {
-                var family = _context.Families.FirstOrDefault(f => f.FamilyId == familyId);
+                var trimmedId = familyId.Trim();
+                var family = _context.Families.ToList().FirstOrDefault(f => 
+                    string.Equals(f.FamilyId, trimmedId, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyName, trimmedId, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyId.Replace("'", ""), trimmedId.Replace("'", ""), StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyName.Replace("'", ""), trimmedId.Replace("'", ""), StringComparison.OrdinalIgnoreCase) ||
+                    f.FamilyName.IndexOf(trimmedId, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    f.FamilyId.IndexOf(trimmedId, StringComparison.OrdinalIgnoreCase) >= 0);
 
                 if (family != null)
                 {
@@ -158,7 +165,14 @@ namespace FinanceManagementNet.Controllers
 
             try
             {
-                var family = _context.Families.FirstOrDefault(f => f.FamilyId == familyId);
+                var trimmedId = familyId.Trim();
+                var family = _context.Families.ToList().FirstOrDefault(f => 
+                    string.Equals(f.FamilyId, trimmedId, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyName, trimmedId, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyId.Replace("'", ""), trimmedId.Replace("'", ""), StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyName.Replace("'", ""), trimmedId.Replace("'", ""), StringComparison.OrdinalIgnoreCase) ||
+                    f.FamilyName.IndexOf(trimmedId, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    f.FamilyId.IndexOf(trimmedId, StringComparison.OrdinalIgnoreCase) >= 0);
                 if (family == null)
                 {
                     TempData["Error"] = "Family ID not found.";
@@ -219,7 +233,14 @@ namespace FinanceManagementNet.Controllers
 
             try
             {
-                var family = _context.Families.FirstOrDefault(f => f.FamilyId == familyId);
+                var trimmedId = familyId.Trim();
+                var family = _context.Families.ToList().FirstOrDefault(f => 
+                    string.Equals(f.FamilyId, trimmedId, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyName, trimmedId, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyId.Replace("'", ""), trimmedId.Replace("'", ""), StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyName.Replace("'", ""), trimmedId.Replace("'", ""), StringComparison.OrdinalIgnoreCase) ||
+                    f.FamilyName.IndexOf(trimmedId, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    f.FamilyId.IndexOf(trimmedId, StringComparison.OrdinalIgnoreCase) >= 0);
                 if (family == null)
                 {
                     TempData["Error"] = "Family not found.";
@@ -275,7 +296,14 @@ namespace FinanceManagementNet.Controllers
             try
             {
                 // Find family first
-                var memberFamily = _context.Families.FirstOrDefault(f => f.FamilyId == familyId);
+                var trimmedFamily = familyId.Trim();
+                var memberFamily = _context.Families.ToList().FirstOrDefault(f => 
+                    string.Equals(f.FamilyId, trimmedFamily, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyName, trimmedFamily, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyId.Replace("'", ""), trimmedFamily.Replace("'", ""), StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(f.FamilyName.Replace("'", ""), trimmedFamily.Replace("'", ""), StringComparison.OrdinalIgnoreCase) ||
+                    f.FamilyName.IndexOf(trimmedFamily, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    f.FamilyId.IndexOf(trimmedFamily, StringComparison.OrdinalIgnoreCase) >= 0);
                 if (memberFamily == null)
                 {
                     TempData["Error"] = "Family ID not found.";
@@ -283,7 +311,11 @@ namespace FinanceManagementNet.Controllers
                 }
 
                 // Find member in that family
-                var member = _context.Members.FirstOrDefault(m => m.MemberName == memberName && m.FamilyId == memberFamily.Id);
+                var trimmedMember = memberName.Trim();
+                var member = _context.Members.ToList().FirstOrDefault(m => 
+                    m.FamilyId == memberFamily.Id && 
+                    (string.Equals(m.MemberName, trimmedMember, StringComparison.OrdinalIgnoreCase) ||
+                     m.MemberName.IndexOf(trimmedMember, StringComparison.OrdinalIgnoreCase) >= 0));
 
                 if (member != null)
                 {
