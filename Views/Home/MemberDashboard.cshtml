@@ -1,0 +1,295 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Member Portal";
+    Layout = "_Layout";
+    var memberName = ViewBag.MemberName as string ?? Context.Session.GetString("MemberName") ?? "Member";
+    var familyName = ViewBag.FamilyName as string ?? Context.Session.GetString("FamilyName") ?? "Family";
+}
+
+<style>
+    .member-portal-wrapper {
+        padding: 10px 0;
+    }
+
+    .portal-title {
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        color: var(--hud-text-white);
+        letter-spacing: 1px;
+        font-family: 'JetBrains Mono', monospace;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .lock-banner {
+        background: rgba(245, 158, 11, 0.08);
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.08);
+    }
+
+    .lock-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        background: rgba(245, 158, 11, 0.18);
+        border: 1px solid #f59e0b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f59e0b;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .member-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .member-stat-card {
+        background: var(--hud-bg-card);
+        border: 1px solid var(--hud-border);
+        border-radius: 6px;
+        padding: 20px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .member-stat-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--hud-cyan);
+    }
+
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 30px;
+    }
+
+    .action-card {
+        background: var(--hud-bg-card);
+        border: 1px solid var(--hud-border);
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        text-decoration: none;
+        color: var(--hud-text-white);
+        transition: all 0.3s ease;
+    }
+
+    .action-card:hover {
+        border-color: var(--hud-cyan);
+        background: rgba(0, 229, 255, 0.05);
+        transform: translateY(-3px);
+        color: var(--hud-cyan);
+    }
+</style>
+
+<div class="member-portal-wrapper">
+    <!-- Header with Member Info and Lock Status -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <h1 class="portal-title">
+                <span style="color: var(--hud-cyan);">//</span> MEMBER FINANCIAL PORTAL
+            </h1>
+            <p style="color: var(--hud-text-muted); margin: 0; font-size: 14px;">
+                Logged in as: <strong style="color: var(--hud-text-white);">@memberName</strong> | Family: <strong style="color: var(--hud-cyan);">@familyName</strong>
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div style="padding: 8px 16px; background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; border-radius: 4px; color: #f59e0b; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                <i class="fa-solid fa-lock"></i> Admin Dashboard Locked
+            </div>
+            <div style="padding: 8px 16px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 4px; color: #10b981; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                <i class="fa-solid fa-user-check"></i> Member Access
+            </div>
+        </div>
+    </div>
+
+    <!-- Security & Status Alert Banner -->
+    <div class="lock-banner">
+        <div class="lock-icon-box">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+            <h3 style="margin: 0 0 4px 0; color: #f59e0b; font-size: 15px; font-weight: 700;">
+                Admin Financial Terminal Is Locked For Member Accounts
+            </h3>
+            <p style="margin: 0; color: #cbd5e1; font-size: 13px; line-height: 1.5;">
+                Aap Member Login ke tahat <strong>@memberName</strong> ke roop mein active hain. Family administration, Budget controls, Category management, aur Database backups sirf <strong>Family Admin (Father)</strong> ke liye reserved hain. Aap apne transactions add/view kar sakte hain aur reports dekh sakte hain.
+            </p>
+        </div>
+    </div>
+
+    <!-- Member's Own Financial Stats Grid -->
+    <div style="margin-bottom: 25px;">
+        <h3 style="font-size: 15px; color: var(--hud-text-white); font-weight: 700; margin-bottom: 15px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
+            <span style="color: var(--hud-cyan); margin-right: 6px;">▶</span> My Financial Activity (@memberName)
+        </h3>
+
+        <div class="member-stats-grid">
+            <div class="member-stat-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 12px; color: var(--hud-text-muted); text-transform: uppercase; letter-spacing: 1px;">My Income</span>
+                    <i class="fa-solid fa-arrow-trend-up" style="color: #10b981;"></i>
+                </div>
+                <div style="font-size: 26px; font-weight: 800; color: #10b981; font-family: 'JetBrains Mono', monospace;">
+                    ₹@Model.TotalIncome.ToString("N2")
+                </div>
+                <small style="color: var(--hud-text-dim); font-size: 11px;">Contributed by @memberName</small>
+            </div>
+
+            <div class="member-stat-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 12px; color: var(--hud-text-muted); text-transform: uppercase; letter-spacing: 1px;">My Expenses</span>
+                    <i class="fa-solid fa-arrow-trend-down" style="color: #ef4444;"></i>
+                </div>
+                <div style="font-size: 26px; font-weight: 800; color: #ef4444; font-family: 'JetBrains Mono', monospace;">
+                    ₹@Model.TotalExpense.ToString("N2")
+                </div>
+                <small style="color: var(--hud-text-dim); font-size: 11px;">Incurred by @memberName</small>
+            </div>
+
+            <div class="member-stat-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 12px; color: var(--hud-text-muted); text-transform: uppercase; letter-spacing: 1px;">My Udhar (Dene)</span>
+                    <i class="fa-solid fa-hand-holding-dollar" style="color: #f59e0b;"></i>
+                </div>
+                <div style="font-size: 26px; font-weight: 800; color: #f59e0b; font-family: 'JetBrains Mono', monospace;">
+                    ₹@Model.TotalDene.ToString("N2")
+                </div>
+                <small style="color: var(--hud-text-dim); font-size: 11px;">Payable balance</small>
+            </div>
+
+            <div class="member-stat-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 12px; color: var(--hud-text-muted); text-transform: uppercase; letter-spacing: 1px;">My Udhar (Lene)</span>
+                    <i class="fa-solid fa-receipt" style="color: #00e5ff;"></i>
+                </div>
+                <div style="font-size: 26px; font-weight: 800; color: #00e5ff; font-family: 'JetBrains Mono', monospace;">
+                    ₹@Model.TotalLene.ToString("N2")
+                </div>
+                <small style="color: var(--hud-text-dim); font-size: 11px;">Receivable balance</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member Allowed Functions (Quick Actions) -->
+    <div style="margin-bottom: 30px;">
+        <h3 style="font-size: 15px; color: var(--hud-text-white); font-weight: 700; margin-bottom: 15px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
+            <span style="color: var(--hud-cyan); margin-right: 6px;">▶</span> Member Available Functions
+        </h3>
+
+        <div class="quick-actions-grid">
+            <a asp-controller="Expense" asp-action="Create" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(239, 68, 68, 0.15); display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 20px;">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">Add Expense</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Record new expenditure</p>
+                </div>
+            </a>
+
+            <a asp-controller="Income" asp-action="Create" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 20px;">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">Add Income</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Record new income entry</p>
+                </div>
+            </a>
+
+            <a asp-controller="Udhar" asp-action="Index" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center; color: #f59e0b; font-size: 20px;">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">Udhar Ledger</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Manage loans & credits</p>
+                </div>
+            </a>
+
+            <a asp-controller="Report" asp-action="Index" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(0, 229, 255, 0.15); display: flex; align-items: center; justify-content: center; color: var(--hud-cyan); font-size: 20px;">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">View Reports</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Monthly & yearly charts</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Member Recent Transactions Table -->
+    <div class="card" style="margin-bottom: 25px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: 700;">
+                <i class="fa-solid fa-clock-rotate-left" style="color: var(--hud-cyan); margin-right: 8px;"></i>
+                My Recent Transactions (@memberName)
+            </h3>
+            <span style="font-size: 12px; color: var(--hud-text-muted);">Last entries</span>
+        </div>
+        <div class="card-body">
+            @if (Model.RecentActivities != null && Model.RecentActivities.Any())
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var act in Model.RecentActivities)
+                        {
+                            <tr>
+                                <td>@act.Date.ToString("d MMM yyyy")</td>
+                                <td>@act.Title</td>
+                                <td>
+                                    @if (act.Type == "Income")
+                                    {
+                                        <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4);">Income</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4);">Expense</span>
+                                    }
+                                </td>
+                                <td style="font-weight: 700; font-family: 'JetBrains Mono', monospace; color: @(act.Type == "Income" ? "#10b981" : "#ef4444");">
+                                    @(act.Type == "Income" ? "+" : "-")₹@act.Amount.ToString("N2")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div style="text-align: center; padding: 30px; color: var(--hud-text-muted);">
+                    <i class="fa-solid fa-receipt" style="font-size: 32px; margin-bottom: 10px; opacity: 0.5;"></i>
+                    <p style="margin: 0;">No personal transactions found yet for @memberName.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

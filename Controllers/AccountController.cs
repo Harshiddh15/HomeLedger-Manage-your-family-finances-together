@@ -176,7 +176,7 @@ namespace FinanceManagementNet.Controllers
                 if (family == null)
                 {
                     TempData["Error"] = "Family ID not found.";
-                    return View();
+                    return View("Login");
                 }
 
                 // Store family ID in session for reset password page
@@ -307,7 +307,7 @@ namespace FinanceManagementNet.Controllers
                 if (memberFamily == null)
                 {
                     TempData["Error"] = "Family ID not found.";
-                    return View();
+                    return View("Login");
                 }
 
                 // Find member in that family
@@ -317,42 +317,51 @@ namespace FinanceManagementNet.Controllers
                     (string.Equals(m.MemberName, trimmedMember, StringComparison.OrdinalIgnoreCase) ||
                      m.MemberName.IndexOf(trimmedMember, StringComparison.OrdinalIgnoreCase) >= 0));
 
-                if (member != null)
+                if (member == null)
                 {
-                    if (string.IsNullOrEmpty(member.Password))
-                    {
-                        TempData["Error"] = "This member account doesn't have a password set. Please contact family admin.";
-                        return View();
-                    }
+                    TempData["Error"] = "Member not found in this family.";
+                    return View("Login");
+                }
 
-                    if (VerifyPassword(password, member.Password))
+                // Father / Family Head is Admin and strictly blocked from using Member Login
+                if (string.Equals(member.Relation, "Head", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(member.MemberName, "Father", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(member.MemberName, "Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    TempData["Error"] = "Father / Family Head Admin account hai. Aap Member Login use nahi kar sakte, kripya 'Admin Login' tab se login karein.";
+                    return View("Login");
+                }
+
+                if (string.IsNullOrEmpty(member.Password))
+                {
+                    TempData["Error"] = "This member account doesn't have a password set. Please contact family admin.";
+                    return View("Login");
+                }
+
+                if (VerifyPassword(password, member.Password))
+                {
+                    // Set session for member login
+                    HttpContext.Session.SetInt32("MemberId", member.Id);
+                    HttpContext.Session.SetString("MemberName", member.MemberName);
+                    HttpContext.Session.SetInt32("FamilyDbId", member.FamilyId);
+                    
+                    // Get family info
+                    var familyInfo = _context.Families.FirstOrDefault(f => f.Id == member.FamilyId);
+                    if (familyInfo != null)
                     {
-                        // Set session for member login
-                        HttpContext.Session.SetInt32("MemberId", member.Id);
-                        HttpContext.Session.SetString("MemberName", member.MemberName);
-                        HttpContext.Session.SetInt32("FamilyDbId", member.FamilyId);
-                        
-                        // Get family info
-                        var familyInfo = _context.Families.FirstOrDefault(f => f.Id == member.FamilyId);
-                        if (familyInfo != null)
-                        {
-                            HttpContext.Session.SetString("FamilyId", familyInfo.FamilyId);
-                            HttpContext.Session.SetString("FamilyName", familyInfo.FamilyName);
-                        }
-                        
-                        // Set login type as Member
-                        HttpContext.Session.SetString("LoginType", "Member");
-                        
-                        return RedirectToAction("Dashboard", "Home");
+                        HttpContext.Session.SetString("FamilyId", familyInfo.FamilyId);
+                        HttpContext.Session.SetString("FamilyName", familyInfo.FamilyName);
                     }
-                    else
-                    {
-                        TempData["Error"] = "Invalid password.";
-                    }
+                    
+                    // Set login type as Member
+                    HttpContext.Session.SetString("LoginType", "Member");
+                    
+                    return RedirectToAction("MemberDashboard", "Home");
                 }
                 else
                 {
-                    TempData["Error"] = "Member not found.";
+                    TempData["Error"] = "Invalid password.";
+                    return View("Login");
                 }
             }
             catch (Exception ex)
@@ -373,3 +382,4 @@ namespace FinanceManagementNet.Controllers
         }
     }
 }
+

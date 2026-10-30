@@ -1,3 +1,4 @@
+using FinanceManagementNet.Filters;
 using FinanceManagementNet.Data;
 using FinanceManagementNet.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -5,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceManagementNet.Controllers
 {
+    [AdminOnly]
     public class MemberController : Controller
     {
         private readonly AppDbContext _context;
@@ -143,3 +145,4 @@ namespace FinanceManagementNet.Controllers
         }
     }
 }
+

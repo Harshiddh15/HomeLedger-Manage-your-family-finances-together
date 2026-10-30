@@ -18,6 +18,9 @@
 @{
     var loginType = Context.Session.GetString("LoginType");
     var isAdmin = loginType == "Admin";
+    var isMember = loginType == "Member";
+    var memberName = Context.Session.GetString("MemberName");
+    var familyName = Context.Session.GetString("FamilyName");
 }
 <body>
     <nav class="navbar navbar-expand-lg">
@@ -26,9 +29,21 @@
                 <button class="sidebar-toggle" id="sidebarToggle">
                     <i class="fa-solid fa-bars"></i>
                 </button>
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Dashboard" style="white-space: nowrap;">
-                    <i class="fa-solid fa-cube"></i> HUD ADMIN
-                </a>
+                @if (isAdmin)
+                {
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Dashboard" style="white-space: nowrap;">
+                        <i class="fa-solid fa-cube"></i> HUD ADMIN
+                    </a>
+                }
+                else
+                {
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="MemberDashboard" style="white-space: nowrap; display: flex; align-items: center;">
+                        <i class="fa-solid fa-user-shield" style="margin-right: 8px; color: #10b981;"></i> MEMBER PORTAL
+                        <span style="font-size: 10px; padding: 2px 8px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; border-radius: 4px; margin-left: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                            <i class="fa-solid fa-lock"></i> ADMIN LOCKED
+                        </span>
+                    </a>
+                }
             </div>
         </div>
     </nav>
@@ -40,9 +55,18 @@
                     <h3 class="sidebar-title">Navigation</h3>
                     <ul class="sidebar-nav">
                         <li class="sidebar-nav-item">
-                            <a class="sidebar-nav-link" asp-area="" asp-controller="Home" asp-action="Dashboard">
-                                <i class="fa-solid fa-gauge"></i> Dashboard
-                            </a>
+                            @if (isAdmin)
+                            {
+                                <a class="sidebar-nav-link" asp-area="" asp-controller="Home" asp-action="Dashboard">
+                                    <i class="fa-solid fa-gauge"></i> Admin Dashboard
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="sidebar-nav-link" asp-area="" asp-controller="Home" asp-action="MemberDashboard">
+                                    <i class="fa-solid fa-id-badge"></i> Member Dashboard
+                                </a>
+                            }
                         </li>
                         <li class="sidebar-nav-item">
                             <a class="sidebar-nav-link" asp-area="" asp-controller="Income" asp-action="Index">
@@ -110,6 +134,15 @@
                                 </a>
                             </li>
                         }
+                        else
+                        {
+                            <li class="sidebar-nav-item" style="margin-top: 15px;">
+                                <div style="padding: 10px 14px; background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35); border-radius: 6px; font-size: 11px; color: #f59e0b; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <span>Admin Controls (Locked)</span>
+                                </div>
+                            </li>
+                        }
                     </ul>
                 </div>
 
@@ -125,13 +158,22 @@
 
                 <div class="sidebar-section sidebar-user">
                     <div class="user-info">
-                        <div class="user-avatar">
-                            <i class="fa-solid fa-user"></i>
+                        <div class="user-avatar" style="@(isMember ? "border-color: #10b981;" : "border-color: #00e5ff;")">
+                            <i class="fa-solid @(isMember ? "fa-user-check" : "fa-user-shield")"></i>
                         </div>
                         <div class="user-details">
-                            <span class="user-name">@Context.Session.GetString("FamilyName")</span>
+                            @if (isMember)
+                            {
+                                <span class="user-name" style="font-size: 13px; font-weight: 700; color: #fff;">@memberName</span>
+                                <small style="display: block; font-size: 10px; color: #10b981; font-weight: 600; text-transform: uppercase;">Member Access</small>
+                            }
+                            else
+                            {
+                                <span class="user-name" style="font-size: 13px; font-weight: 700; color: #fff;">@familyName</span>
+                                <small style="display: block; font-size: 10px; color: #00e5ff; font-weight: 600; text-transform: uppercase;">Admin Head</small>
+                            }
                         </div>
-                        <a class="btn btn-sm btn-danger logout-btn" asp-area="" asp-controller="Account" asp-action="Logout">
+                        <a class="btn btn-sm btn-danger logout-btn" asp-area="" asp-controller="Account" asp-action="Logout" title="Logout">
                             <i class="fa-solid fa-right-from-bracket"></i>
                         </a>
                     </div>
@@ -141,6 +183,20 @@
 
         <div class="main-content">
             <div class="container">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 14px 18px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; font-weight: 600;">
+                        <i class="fa-solid fa-circle-exclamation" style="font-size: 18px; color: #ef4444;"></i>
+                        <span>@TempData["Error"]</span>
+                    </div>
+                }
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; padding: 14px 18px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; font-weight: 600;">
+                        <i class="fa-solid fa-circle-check" style="font-size: 18px; color: #10b981;"></i>
+                        <span>@TempData["Success"]</span>
+                    </div>
+                }
                 <main role="main">
                     @RenderBody()
                 </main>
@@ -148,7 +204,7 @@
 
             <footer class="footer">
                 <div class="container">
-                    <p>&copy; 2026 - <strong>HUD ADMIN</strong> | Family Finance Control Terminal</p>
+                    <p>&copy; 2026 - <strong>@(isMember ? "HomeLedger Member Portal" : "HUD ADMIN")</strong> | Family Finance Control Terminal</p>
                 </div>
             </footer>
         </div>
@@ -200,34 +256,22 @@
         searchBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Search button clicked - Search functionality will be implemented');
-            // Visual feedback
             searchBtn.style.color = 'var(--hud-cyan)';
-            setTimeout(() => {
-                searchBtn.style.color = '';
-            }, 500);
+            setTimeout(() => { searchBtn.style.color = ''; }, 500);
         });
 
         widgetsBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Widgets button clicked - Widgets panel will be implemented');
-            // Visual feedback
             widgetsBtn.style.color = 'var(--hud-cyan)';
-            setTimeout(() => {
-                widgetsBtn.style.color = '';
-            }, 500);
+            setTimeout(() => { widgetsBtn.style.color = ''; }, 500);
         });
 
         notificationsBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Notifications button clicked - Notifications panel will be implemented');
-            // Visual feedback
             notificationsBtn.style.color = 'var(--hud-cyan)';
-            setTimeout(() => {
-                notificationsBtn.style.color = '';
-            }, 500);
+            setTimeout(() => { notificationsBtn.style.color = ''; }, 500);
         });
     </script>
 </body>

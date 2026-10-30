@@ -1,3 +1,4 @@
+using FinanceManagementNet.Filters;
 using FinanceManagementNet.Data;
 using FinanceManagementNet.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace FinanceManagementNet.Controllers
 {
+    [AdminOnly]
     public class BackupController : Controller
     {
         private readonly AppDbContext _context;
@@ -332,3 +334,4 @@ namespace FinanceManagementNet.Controllers
         }
     }
 }
+
