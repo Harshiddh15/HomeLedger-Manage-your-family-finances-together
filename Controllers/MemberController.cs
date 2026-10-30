@@ -26,6 +26,7 @@ namespace FinanceManagementNet.Controllers
 
             var members = _context.Members
                 .Where(m => m.FamilyId == familyDbId.Value)
+                .OrderBy(m => m.Id)
                 .ToList();
 
             return View(members);
@@ -39,7 +40,7 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            return View();
+            return View(new Member());
         }
 
         [HttpPost]
@@ -51,15 +52,40 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(member.MemberName) || string.IsNullOrWhiteSpace(member.Relation))
             {
-                member.FamilyId = familyDbId.Value;
-                _context.Members.Add(member);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                ModelState.AddModelError("", "Member Name aur Relation required hain.");
+                return View(member);
             }
 
-            return View(member);
+            member.FamilyId = familyDbId.Value;
+            member.MemberName = member.MemberName.Trim();
+            member.Relation = member.Relation.Trim();
+            member.Mobile = member.Mobile?.Trim();
+            member.ProfileImage = member.ProfileImage?.Trim();
+
+            var rel = member.Relation.ToLower();
+            var name = member.MemberName.ToLower();
+
+            if (rel == "father" || rel == "head" || name == "father")
+            {
+                member.Password = null; // Father/Head uses Admin Login
+            }
+            else if (!string.IsNullOrWhiteSpace(member.Password))
+            {
+                member.Password = BCrypt.Net.BCrypt.HashPassword(member.Password.Trim());
+            }
+            else
+            {
+                // Default password is 123 if left blank
+                member.Password = BCrypt.Net.BCrypt.HashPassword("123");
+            }
+
+            _context.Members.Add(member);
+            _context.SaveChanges();
+
+            TempData["Success"] = $"Member '{member.MemberName}' successfully add ho gaya!";
+            return RedirectToAction("Index");
         }
 
         public IActionResult Edit(int id)
@@ -88,24 +114,40 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(member.MemberName) || string.IsNullOrWhiteSpace(member.Relation))
             {
-                var existingMember = _context.Members.FirstOrDefault(m => m.Id == member.Id && m.FamilyId == familyDbId.Value);
-                if (existingMember == null)
-                {
-                    return NotFound();
-                }
-
-                existingMember.MemberName = member.MemberName;
-                existingMember.Relation = member.Relation;
-                existingMember.Mobile = member.Mobile;
-                existingMember.ProfileImage = member.ProfileImage;
-
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                ModelState.AddModelError("", "Member Name aur Relation required hain.");
+                return View(member);
             }
 
-            return View(member);
+            var existingMember = _context.Members.FirstOrDefault(m => m.Id == member.Id && m.FamilyId == familyDbId.Value);
+            if (existingMember == null)
+            {
+                return NotFound();
+            }
+
+            existingMember.MemberName = member.MemberName.Trim();
+            existingMember.Relation = member.Relation.Trim();
+            existingMember.Mobile = member.Mobile?.Trim();
+            existingMember.ProfileImage = member.ProfileImage?.Trim();
+
+            var rel = member.Relation.ToLower();
+            var name = member.MemberName.ToLower();
+
+            if (rel == "father" || rel == "head" || name == "father")
+            {
+                existingMember.Password = null; // Father must use Admin Login
+            }
+            else if (!string.IsNullOrWhiteSpace(member.Password))
+            {
+                // Admin entered a new password to update
+                existingMember.Password = BCrypt.Net.BCrypt.HashPassword(member.Password.Trim());
+            }
+            // else keep existingMember.Password unchanged!
+
+            _context.SaveChanges();
+            TempData["Success"] = $"Member '{existingMember.MemberName}' details successfully update ho gayi!";
+            return RedirectToAction("Index");
         }
 
         public IActionResult Delete(int id)
@@ -139,10 +181,10 @@ namespace FinanceManagementNet.Controllers
             {
                 _context.Members.Remove(member);
                 _context.SaveChanges();
+                TempData["Success"] = $"Member '{member.MemberName}' delete ho gaya.";
             }
 
             return RedirectToAction("Index");
         }
     }
 }
-

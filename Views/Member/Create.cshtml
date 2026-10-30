@@ -11,15 +11,25 @@
     }
 
     .page-title {
-        font-size: 28px;
-        font-weight: 700;
-        color: #333;
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--hud-text-white);
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 1px;
+    }
+
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
     }
 
     .card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        background: var(--hud-bg-card);
+        border: 1px solid var(--hud-border);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         overflow: hidden;
         max-width: 600px;
         width: 100%;
@@ -27,15 +37,19 @@
     }
 
     .card-header {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        color: white;
+        background: rgba(16, 185, 129, 0.12);
+        border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+        color: #10b981;
         padding: 20px 25px;
     }
 
     .card-header h3 {
         font-size: 18px;
-        font-weight: 600;
+        font-weight: 700;
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .card-body {
@@ -49,70 +63,84 @@
     .form-group label {
         display: block;
         margin-bottom: 8px;
-        color: #333;
-        font-weight: 500;
-        font-size: 14px;
+        color: var(--hud-text-white);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .form-control {
         width: 100%;
         padding: 12px 14px;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
+        background: var(--hud-bg-input);
+        border: 1px solid var(--hud-border);
+        border-radius: 8px;
+        color: var(--hud-text-white);
         font-size: 14px;
-        transition: border-color 0.3s;
+        transition: border-color 0.3s, box-shadow 0.3s;
     }
 
     .form-control:focus {
         outline: none;
-        border-color: #4facfe;
+        border-color: var(--hud-cyan);
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.25);
     }
 
     .btn {
         padding: 12px 24px;
-        border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
         text-decoration: none;
-        display: inline-block;
-        transition: transform 0.2s, box-shadow 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white;
+        border: none;
     }
 
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
     }
 
     .btn-secondary {
-        background: #6c757d;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--hud-border);
+        color: var(--hud-text-muted);
+        margin-left: 10px;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
         color: white;
     }
 
     .validation-summary {
-        background: #fee;
-        border: 1px solid #fcc;
+        background: rgba(244, 63, 94, 0.12);
+        border: 1px solid #f43f5e;
         border-radius: 8px;
         padding: 12px 16px;
         margin-bottom: 20px;
-        color: #c33;
-        font-size: 14px;
+        color: #f43f5e;
+        font-size: 13px;
     }
 </style>
 
 <div class="page-header">
-    <h1 class="page-title">Add Family Member</h1>
+    <h1 class="page-title"><span style="color: var(--hud-cyan);">//</span> Add Family Member</h1>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <h3>New Family Member</h3>
+        <h3><i class="fa-solid fa-user-plus"></i> New Family Member Account</h3>
     </div>
     <div class="card-body">
         @if (!ViewData.ModelState.IsValid)
@@ -120,32 +148,71 @@
             <div class="validation-summary">
                 @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                 {
-                    <p>@error.ErrorMessage</p>
+                    <p style="margin: 0 0 5px 0;"><i class="fa-solid fa-circle-exclamation"></i> @error.ErrorMessage</p>
                 }
             </div>
         }
 
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" autocomplete="off">
             <div class="form-group">
-                <label for="MemberName">Member Name</label>
-                <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@Model?.MemberName">
+                <label for="MemberName">Member Name *</label>
+                <input type="text" id="MemberName" name="MemberName" class="form-control" required placeholder="e.g. Mother, Son, Rahul" value="@Model?.MemberName">
             </div>
+
             <div class="form-group">
-                <label for="Relation">Relation</label>
-                <input type="text" id="Relation" name="Relation" class="form-control" required placeholder="e.g., Father, Mother, Brother" value="@Model?.Relation">
+                <label for="Relation">Relation *</label>
+                <input type="text" id="Relation" name="Relation" class="form-control" required placeholder="e.g. Mother, Son, Daughter, Brother" value="@Model?.Relation">
             </div>
+
+            <div class="form-group">
+                <label for="Password">Member Login Password *</label>
+                <div style="position: relative;">
+                    <input type="password" id="Password" name="Password" class="form-control" placeholder="Set member login password (e.g. 123)" autocomplete="new-password">
+                    <button type="button" onclick="togglePasswordVisibility('Password', 'toggleIconCreate')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px;">
+                        <i class="fa-solid fa-eye" id="toggleIconCreate"></i>
+                    </button>
+                </div>
+                <small style="color: var(--hud-text-muted); font-size: 12px; margin-top: 6px; display: block; line-height: 1.4;">
+                    <i class="fa-solid fa-circle-info" style="color: var(--hud-cyan);"></i> Yeh member is password aur Family ID + Name ke sath <strong>Member Login</strong> portal use karega. (Khali chhodne par default password <strong>123</strong> set hoga).
+                </small>
+            </div>
+
             <div class="form-group">
                 <label for="Mobile">Mobile Number (Optional)</label>
-                <input type="text" id="Mobile" name="Mobile" class="form-control" placeholder="e.g., 9876543210" value="@Model?.Mobile">
+                <input type="text" id="Mobile" name="Mobile" class="form-control" placeholder="e.g. 9876543210" value="@Model?.Mobile">
             </div>
+
             <div class="form-group">
                 <label for="ProfileImage">Profile Image URL (Optional)</label>
-                <input type="text" id="ProfileImage" name="ProfileImage" class="form-control" placeholder="https://example.com/image.jpg" value="@Model?.ProfileImage">
+                <input type="text" id="ProfileImage" name="ProfileImage" class="form-control" placeholder="https://example.com/photo.jpg" value="@Model?.ProfileImage">
             </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fa-solid fa-save"></i> Save Member
-            </button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+            <div style="margin-top: 30px; display: flex; align-items: center;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-save"></i> Save Member
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fa-solid fa-xmark"></i> Cancel
+                </a>
+            </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+}

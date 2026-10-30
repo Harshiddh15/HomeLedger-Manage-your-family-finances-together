@@ -4,18 +4,24 @@
     Layout = "_Layout";
 }
 
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
-        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Family Members
-    </h1>
-    <a asp-action="Create" class="btn btn-primary">
-        <i class="fa-solid fa-plus"></i> Add Member
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+    <div>
+        <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0;">
+            <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Family Member Accounts
+        </h1>
+        <p style="color: var(--hud-text-muted); margin: 0; font-size: 13px;">
+            Yahan se aap family members add kar sakte hain aur unke login passwords manage kar sakte hain.
+        </p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-weight: 700; border-radius: 8px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; text-decoration: none;">
+        <i class="fa-solid fa-user-plus"></i> Add New Member
     </a>
 </div>
 
 <div class="card">
-    <div class="card-header">
-        <h3>All Family Members</h3>
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;"><i class="fa-solid fa-users" style="color: var(--hud-cyan); margin-right: 8px;"></i> All Registered Members</h3>
+        <span style="font-size: 12px; color: var(--hud-text-muted); font-family: 'JetBrains Mono', monospace;">Total: @Model.Count</span>
     </div>
     <div class="table-responsive">
         @if (Model.Any())
@@ -26,20 +32,59 @@
                         <th>Name</th>
                         <th>Relation</th>
                         <th>Mobile</th>
-                        <th>Actions</th>
+                        <th>Member Portal Login Status</th>
+                        <th style="text-align: right;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var member in Model)
                     {
+                        var isHead = (member.Relation ?? "").Equals("Father", StringComparison.OrdinalIgnoreCase) ||
+                                     (member.Relation ?? "").Equals("Head", StringComparison.OrdinalIgnoreCase) ||
+                                     (member.MemberName ?? "").Equals("Father", StringComparison.OrdinalIgnoreCase);
+                        var hasPassword = !string.IsNullOrEmpty(member.Password);
                         <tr>
-                            <td style="font-weight: 600;">@member.MemberName</td>
-                            <td>@member.Relation</td>
-                            <td>@member.Mobile</td>
+                            <td style="font-weight: 700; color: var(--hud-text-white);">
+                                <i class="fa-solid @(isHead ? "fa-user-shield" : "fa-user")" style="color: @(isHead ? "var(--hud-cyan)" : "#a855f7"); margin-right: 8px;"></i>
+                                @member.MemberName
+                            </td>
                             <td>
-                                <div class="action-buttons">
-                                    <a asp-action="Edit" asp-route-id="@member.Id" class="btn btn-sm btn-success">Edit</a>
-                                    <a asp-action="Delete" asp-route-id="@member.Id" class="btn btn-sm btn-danger">Delete</a>
+                                <span style="padding: 2px 8px; background: rgba(255, 255, 255, 0.05); border-radius: 4px; font-size: 12px;">@member.Relation</span>
+                            </td>
+                            <td style="color: var(--hud-text-muted);">
+                                @(string.IsNullOrEmpty(member.Mobile) ? "—" : member.Mobile)
+                            </td>
+                            <td>
+                                @if (isHead)
+                                {
+                                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(0, 229, 255, 0.12); color: var(--hud-cyan); border: 1px solid var(--hud-cyan); border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                        <i class="fa-solid fa-user-shield"></i> Admin Head Account
+                                    </span>
+                                }
+                                else if (hasPassword)
+                                {
+                                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid #10b981; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                        <i class="fa-solid fa-key"></i> Password Set (Can Login)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid #f59e0b; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> No Password Set
+                                    </span>
+                                }
+                            </td>
+                            <td style="text-align: right;">
+                                <div class="action-buttons" style="justify-content: flex-end; display: inline-flex; gap: 8px;">
+                                    <a asp-action="Edit" asp-route-id="@member.Id" class="btn btn-sm btn-primary" title="Edit member details or change password" style="padding: 4px 12px; font-size: 12px; background: rgba(0, 229, 255, 0.15); color: var(--hud-cyan); border: 1px solid var(--hud-cyan); text-decoration: none; border-radius: 4px;">
+                                        <i class="fa-solid fa-key"></i> Edit / Set Password
+                                    </a>
+                                    @if (!isHead)
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@member.Id" class="btn btn-sm btn-danger" title="Delete member" style="padding: 4px 12px; font-size: 12px; text-decoration: none; border-radius: 4px;">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </a>
+                                    }
                                 </div>
                             </td>
                         </tr>
@@ -49,8 +94,8 @@
         }
         else
         {
-            <div class="empty-state">
-                <i class="fa-solid fa-users"></i>
+            <div class="empty-state" style="padding: 40px; text-align: center; color: var(--hud-text-muted);">
+                <i class="fa-solid fa-users" style="font-size: 40px; margin-bottom: 15px; color: var(--hud-border);"></i>
                 <p>No family members found. Add your first member!</p>
             </div>
         }
