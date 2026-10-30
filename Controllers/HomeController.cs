@@ -40,10 +40,14 @@ namespace FinanceManagementNet.Controllers
             }
 
             var loginType = HttpContext.Session.GetString("LoginType");
-            if (loginType == "Member")
+            if (loginType != "Admin")
             {
-                TempData["Error"] = "Admin Dashboard is locked for Member accounts. You have been redirected to Member Portal.";
-                return RedirectToAction("MemberDashboard");
+                if (loginType == "Member")
+                {
+                    TempData["Error"] = "Admin Dashboard is locked for Member accounts. You have been redirected to Member Portal.";
+                    return RedirectToAction("MemberDashboard");
+                }
+                return RedirectToAction("Login", "Account");
             }
 
             // Get Total Income (Family Total)

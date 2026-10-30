@@ -1,5 +1,7 @@
 @model Udhar
 @{
+    var isMember = Context.Session.GetString("LoginType") == "Member";
+    var memberName = Context.Session.GetString("MemberName") ?? Model?.MemberName;
     ViewData["Title"] = "Add Udhar";
     Layout = "_Layout";
 }
@@ -13,13 +15,15 @@
     .page-title {
         font-size: 28px;
         font-weight: 700;
-        color: #333;
+        color: var(--hud-text-white);
+        font-family: 'JetBrains Mono', monospace;
     }
 
     .card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        background: var(--hud-bg-card);
+        border: 1px solid var(--hud-border);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         overflow: hidden;
         max-width: 600px;
         width: 100%;
@@ -27,15 +31,17 @@
     }
 
     .card-header {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(244, 63, 94, 0.25) 100%);
+        border-bottom: 1px solid rgba(245, 158, 11, 0.4);
         color: white;
         padding: 20px 25px;
     }
 
     .card-header h3 {
         font-size: 18px;
-        font-weight: 600;
+        font-weight: 700;
         margin: 0;
+        color: var(--hud-text-white);
     }
 
     .card-body {
@@ -49,23 +55,28 @@
     .form-group label {
         display: block;
         margin-bottom: 8px;
-        color: #333;
-        font-weight: 500;
-        font-size: 14px;
+        color: var(--hud-text-white);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .form-control {
         width: 100%;
         padding: 12px 14px;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
+        background: var(--hud-bg-input);
+        border: 1px solid var(--hud-border);
+        border-radius: 8px;
+        color: var(--hud-text-white);
         font-size: 14px;
-        transition: border-color 0.3s;
+        transition: border-color 0.3s, box-shadow 0.3s;
     }
 
     .form-control:focus {
         outline: none;
-        border-color: #f093fb;
+        border-color: #f59e0b;
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
     }
 
     textarea.form-control {
@@ -75,49 +86,58 @@
 
     .btn {
         padding: 12px 24px;
-        border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
         text-decoration: none;
-        display: inline-block;
-        transition: transform 0.2s, box-shadow 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        background: linear-gradient(135deg, #f59e0b 0%, #f43f5e 100%);
         color: white;
+        border: none;
     }
 
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
     }
 
     .btn-secondary {
-        background: #6c757d;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--hud-border);
+        color: var(--hud-text-muted);
+        margin-left: 10px;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
         color: white;
     }
 
     .validation-summary {
-        background: #fee;
-        border: 1px solid #fcc;
+        background: rgba(244, 63, 94, 0.12);
+        border: 1px solid #f43f5e;
         border-radius: 8px;
         padding: 12px 16px;
         margin-bottom: 20px;
-        color: #c33;
-        font-size: 14px;
+        color: #f43f5e;
+        font-size: 13px;
     }
 </style>
 
 <div class="page-header">
-    <h1 class="page-title">Add Udhar</h1>
+    <h1 class="page-title"><span style="color: var(--hud-cyan);">//</span> Add Udhar Record</h1>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <h3>New Udhar Record</h3>
+        <h3><i class="fa-solid fa-hand-holding-dollar" style="color: #f59e0b; margin-right: 8px;"></i> New Udhar Entry</h3>
     </div>
     <div class="card-body">
         @if (!ViewData.ModelState.IsValid)
@@ -125,48 +145,78 @@
             <div class="validation-summary">
                 @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                 {
-                    <p>@error.ErrorMessage</p>
+                    <p style="margin: 0 0 5px 0;"><i class="fa-solid fa-circle-exclamation"></i> @error.ErrorMessage</p>
                 }
             </div>
         }
 
         <form asp-action="Create" method="post">
             <div class="form-group">
-                <label for="PersonName">Person Name</label>
-                <input type="text" id="PersonName" name="PersonName" class="form-control" required value="@Model?.PersonName">
+                <label for="PersonName">Person Name *</label>
+                <input type="text" id="PersonName" name="PersonName" class="form-control" required placeholder="e.g. Ramesh, Sharmaji, Neighbour" value="@Model?.PersonName">
             </div>
+
             <div class="form-group">
-                <label for="MemberName">Family Member (Optional)</label>
-                <input type="text" id="MemberName" name="MemberName" class="form-control" value="@Model?.MemberName">
+                <label for="MemberName">Family Member</label>
+                @if (isMember)
+                {
+                    <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@memberName" readonly style="opacity: 0.9; font-weight: 700; color: #f59e0b;">
+                    <small style="color: #f59e0b; font-size: 11px; display: block; margin-top: 4px;">
+                        <i class="fa-solid fa-lock"></i> Auto-locked to your logged-in Member account: <strong>@memberName</strong>
+                    </small>
+                }
+                else
+                {
+                    <input type="text" id="MemberName" name="MemberName" class="form-control" value="@Model?.MemberName" placeholder="e.g. Father, Mother, Rohan">
+                }
             </div>
+
             <div class="form-group">
-                <label for="Type">Type</label>
-                <select id="Type" name="Type" class="form-control" required>
+                <label for="Type">Type *</label>
+                <select id="Type" name="Type" class="form-control" required style="background: var(--hud-bg-input); color: var(--hud-text-white);">
                     <option value="">Select Type</option>
-                    <option value="Lene Hai" selected="@(Model?.Type == "Lene Hai" ? "selected" : null)">Lene Hai (To Receive)</option>
-                    <option value="Dene Hai" selected="@(Model?.Type == "Dene Hai" ? "selected" : null)">Dene Hai (To Pay)</option>
+                    <option value="Lene Hai" selected="@(Model?.Type == "Lene Hai" ? "selected" : null)">Lene Hai (To Receive / Receivable)</option>
+                    <option value="Dene Hai" selected="@(Model?.Type == "Dene Hai" ? "selected" : null)">Dene Hai (To Pay / Payable)</option>
                 </select>
             </div>
+
             <div class="form-group">
-                <label for="Amount">Total Amount (₹)</label>
+                <label for="Amount">Total Amount (₹) *</label>
                 <input type="number" id="Amount" name="Amount" class="form-control" required step="0.01" min="0" value="@Model?.Amount">
             </div>
+
             <div class="form-group">
                 <label for="PaidAmount">Paid Amount (₹)</label>
                 <input type="number" id="PaidAmount" name="PaidAmount" class="form-control" step="0.01" min="0" value="0">
             </div>
+
             <div class="form-group">
-                <label for="Date">Date</label>
-                <input type="date" id="Date" name="Date" class="form-control" required value="@Model?.Date.ToString("yyyy-MM-dd")">
+                <label for="Date">Date *</label>
+                <input type="date" id="Date" name="Date" class="form-control" required value="@(Model?.Date != null ? Model.Date.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd"))">
             </div>
+
             <div class="form-group">
                 <label for="Reason">Reason (Optional)</label>
-                <textarea id="Reason" name="Reason" class="form-control" rows="3">@Model?.Reason</textarea>
+                <textarea id="Reason" name="Reason" class="form-control" rows="3" placeholder="e.g. Emergency, Grocery credit, Personal loan">@Model?.Reason</textarea>
             </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fa-solid fa-save"></i> Save Udhar
-            </button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+            <div style="margin-top: 25px; display: flex; align-items: center;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-save"></i> Save Udhar
+                </button>
+                @if (isMember)
+                {
+                    <a asp-controller="Home" asp-action="MemberDashboard" class="btn btn-secondary">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </a>
+                }
+                else
+                {
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </a>
+                }
+            </div>
         </form>
     </div>
 </div>

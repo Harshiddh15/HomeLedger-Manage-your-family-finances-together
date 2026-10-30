@@ -376,9 +376,8 @@ namespace FinanceManagementNet.Controllers
         [HttpGet]
         public IActionResult MemberLogout()
         {
-            HttpContext.Session.Remove("MemberId");
-            HttpContext.Session.Remove("MemberName");
-            return RedirectToAction("Dashboard", "Home");
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Account");
         }
     }
 }

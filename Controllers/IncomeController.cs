@@ -25,15 +25,28 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var incomes = _context.Incomes
-                .Where(i => i.FamilyId == familyDbId.Value)
-                .Where(i => string.IsNullOrEmpty(search) || 
-                           i.Source.Contains(search) || 
-                           i.MemberName.Contains(search) ||
-                           (i.Description != null && i.Description.Contains(search)))
-                .OrderByDescending(i => i.Date)
-                .ToList();
+            var loginType = HttpContext.Session.GetString("LoginType");
+            var memberName = HttpContext.Session.GetString("MemberName");
 
+            var query = _context.Incomes.Where(i => i.FamilyId == familyDbId.Value);
+
+            // Members only see their own incomes
+            if (loginType == "Member")
+            {
+                query = query.Where(i => i.MemberName == memberName);
+            }
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(i => i.Source.Contains(search) || 
+                                       (i.MemberName != null && i.MemberName.Contains(search)) ||
+                                       (i.Description != null && i.Description.Contains(search)));
+            }
+
+            var incomes = query.OrderByDescending(i => i.Date).ToList();
+
+            ViewBag.IsMember = (loginType == "Member");
+            ViewBag.MemberName = memberName;
             return View(incomes);
         }
 
@@ -45,7 +58,18 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            return View();
+            var loginType = HttpContext.Session.GetString("LoginType");
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            var income = new Income
+            {
+                Date = DateTime.Today,
+                MemberName = (loginType == "Member" ? memberName : "")
+            };
+
+            ViewBag.IsMember = (loginType == "Member");
+            ViewBag.MemberName = memberName;
+            return View(income);
         }
 
         [HttpPost]
@@ -57,14 +81,34 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            var loginType = HttpContext.Session.GetString("LoginType");
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            // Enforce logged in member's name for member accounts
+            if (loginType == "Member")
+            {
+                income.MemberName = memberName ?? "Member";
+            }
+
             if (ModelState.IsValid)
             {
                 income.FamilyId = familyDbId.Value;
                 _context.Incomes.Add(income);
                 _context.SaveChanges();
+
+                TempData["Success"] = "Income successfully recorded!";
+
+                // Members stay strictly inside Member Dashboard
+                if (loginType == "Member")
+                {
+                    return RedirectToAction("MemberDashboard", "Home");
+                }
+
                 return RedirectToAction("Index");
             }
 
+            ViewBag.IsMember = (loginType == "Member");
+            ViewBag.MemberName = memberName;
             return View(income);
         }
 
@@ -74,6 +118,13 @@ namespace FinanceManagementNet.Controllers
             if (familyDbId == null)
             {
                 return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Members cannot edit income records.";
+                return RedirectToAction("MemberDashboard", "Home");
             }
 
             var income = _context.Incomes.FirstOrDefault(i => i.Id == id && i.FamilyId == familyDbId.Value);
@@ -94,6 +145,13 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Members cannot edit income records.";
+                return RedirectToAction("MemberDashboard", "Home");
+            }
+
             if (ModelState.IsValid)
             {
                 var existingIncome = _context.Incomes.FirstOrDefault(i => i.Id == income.Id && i.FamilyId == familyDbId.Value);
@@ -109,6 +167,7 @@ namespace FinanceManagementNet.Controllers
                 existingIncome.Description = income.Description;
 
                 _context.SaveChanges();
+                TempData["Success"] = "Income record updated successfully.";
                 return RedirectToAction("Index");
             }
 
@@ -121,6 +180,13 @@ namespace FinanceManagementNet.Controllers
             if (familyDbId == null)
             {
                 return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Members cannot delete income records.";
+                return RedirectToAction("MemberDashboard", "Home");
             }
 
             var income = _context.Incomes.FirstOrDefault(i => i.Id == id && i.FamilyId == familyDbId.Value);
@@ -141,11 +207,19 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Members cannot delete income records.";
+                return RedirectToAction("MemberDashboard", "Home");
+            }
+
             var income = _context.Incomes.FirstOrDefault(i => i.Id == id && i.FamilyId == familyDbId.Value);
             if (income != null)
             {
                 _context.Incomes.Remove(income);
                 _context.SaveChanges();
+                TempData["Success"] = "Income record deleted successfully.";
             }
 
             return RedirectToAction("Index");
@@ -157,6 +231,13 @@ namespace FinanceManagementNet.Controllers
             if (familyDbId == null)
             {
                 return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Only Admin can export family income reports.";
+                return RedirectToAction("MemberDashboard", "Home");
             }
 
             var incomes = _context.Incomes
@@ -180,6 +261,13 @@ namespace FinanceManagementNet.Controllers
             if (familyDbId == null)
             {
                 return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Only Admin can export family income reports.";
+                return RedirectToAction("MemberDashboard", "Home");
             }
 
             var incomes = _context.Incomes

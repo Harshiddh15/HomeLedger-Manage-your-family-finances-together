@@ -25,15 +25,28 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var expenses = _context.Expenses
-                .Where(e => e.FamilyId == familyDbId.Value)
-                .Where(e => string.IsNullOrEmpty(search) || 
-                           e.Category.Contains(search) || 
-                           e.MemberName.Contains(search) ||
-                           (e.Description != null && e.Description.Contains(search)))
-                .OrderByDescending(e => e.Date)
-                .ToList();
+            var loginType = HttpContext.Session.GetString("LoginType");
+            var memberName = HttpContext.Session.GetString("MemberName");
 
+            var query = _context.Expenses.Where(e => e.FamilyId == familyDbId.Value);
+
+            // Members only see their own expenses
+            if (loginType == "Member")
+            {
+                query = query.Where(e => e.MemberName == memberName);
+            }
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(e => e.Category.Contains(search) || 
+                                       (e.MemberName != null && e.MemberName.Contains(search)) ||
+                                       (e.Description != null && e.Description.Contains(search)));
+            }
+
+            var expenses = query.OrderByDescending(e => e.Date).ToList();
+
+            ViewBag.IsMember = (loginType == "Member");
+            ViewBag.MemberName = memberName;
             return View(expenses);
         }
 
@@ -45,7 +58,18 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            return View();
+            var loginType = HttpContext.Session.GetString("LoginType");
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            var expense = new Expense
+            {
+                Date = DateTime.Today,
+                MemberName = (loginType == "Member" ? memberName : "")
+            };
+
+            ViewBag.IsMember = (loginType == "Member");
+            ViewBag.MemberName = memberName;
+            return View(expense);
         }
 
         [HttpPost]
@@ -57,14 +81,34 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            var loginType = HttpContext.Session.GetString("LoginType");
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            // Enforce logged in member's name for member accounts
+            if (loginType == "Member")
+            {
+                expense.MemberName = memberName ?? "Member";
+            }
+
             if (ModelState.IsValid)
             {
                 expense.FamilyId = familyDbId.Value;
                 _context.Expenses.Add(expense);
                 _context.SaveChanges();
+
+                TempData["Success"] = "Expense successfully recorded!";
+
+                // Members stay strictly inside Member Dashboard
+                if (loginType == "Member")
+                {
+                    return RedirectToAction("MemberDashboard", "Home");
+                }
+
                 return RedirectToAction("Index");
             }
 
+            ViewBag.IsMember = (loginType == "Member");
+            ViewBag.MemberName = memberName;
             return View(expense);
         }
 
@@ -74,6 +118,13 @@ namespace FinanceManagementNet.Controllers
             if (familyDbId == null)
             {
                 return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Members cannot edit expense records.";
+                return RedirectToAction("MemberDashboard", "Home");
             }
 
             var expense = _context.Expenses.FirstOrDefault(e => e.Id == id && e.FamilyId == familyDbId.Value);
@@ -94,6 +145,13 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Members cannot edit expense records.";
+                return RedirectToAction("MemberDashboard", "Home");
+            }
+
             if (ModelState.IsValid)
             {
                 var existingExpense = _context.Expenses.FirstOrDefault(e => e.Id == expense.Id && e.FamilyId == familyDbId.Value);
@@ -109,6 +167,7 @@ namespace FinanceManagementNet.Controllers
                 existingExpense.Description = expense.Description;
 
                 _context.SaveChanges();
+                TempData["Success"] = "Expense record updated successfully.";
                 return RedirectToAction("Index");
             }
 
@@ -121,6 +180,13 @@ namespace FinanceManagementNet.Controllers
             if (familyDbId == null)
             {
                 return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Members cannot delete expense records.";
+                return RedirectToAction("MemberDashboard", "Home");
             }
 
             var expense = _context.Expenses.FirstOrDefault(e => e.Id == id && e.FamilyId == familyDbId.Value);
@@ -141,11 +207,19 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Members cannot delete expense records.";
+                return RedirectToAction("MemberDashboard", "Home");
+            }
+
             var expense = _context.Expenses.FirstOrDefault(e => e.Id == id && e.FamilyId == familyDbId.Value);
             if (expense != null)
             {
                 _context.Expenses.Remove(expense);
                 _context.SaveChanges();
+                TempData["Success"] = "Expense record deleted successfully.";
             }
 
             return RedirectToAction("Index");
@@ -157,6 +231,13 @@ namespace FinanceManagementNet.Controllers
             if (familyDbId == null)
             {
                 return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Only Admin can export family expense reports.";
+                return RedirectToAction("MemberDashboard", "Home");
             }
 
             var expenses = _context.Expenses
@@ -180,6 +261,13 @@ namespace FinanceManagementNet.Controllers
             if (familyDbId == null)
             {
                 return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Only Admin can export family expense reports.";
+                return RedirectToAction("MemberDashboard", "Home");
             }
 
             var expenses = _context.Expenses
