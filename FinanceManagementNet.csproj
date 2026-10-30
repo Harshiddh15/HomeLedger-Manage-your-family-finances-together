@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>FamilyFinanceApp</AssemblyName>
+    <AssemblyName>FinanceHubApp</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

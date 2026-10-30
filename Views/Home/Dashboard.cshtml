@@ -215,25 +215,48 @@
         color: var(--hud-rose);
         border: 1px solid var(--hud-rose);
     }
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 30px;
+    }
+
+    .action-card {
+        background: var(--hud-bg-card);
+        border: 1px solid var(--hud-border);
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        text-decoration: none;
+        color: var(--hud-text-white);
+        transition: all 0.3s ease;
+    }
+
+    .action-card:hover {
+        border-color: var(--hud-cyan);
+        background: rgba(0, 229, 255, 0.05);
+        transform: translateY(-3px);
+        color: var(--hud-cyan);
+    }
 </style>
 
 <div class="dashboard-wrapper">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1 class="page-title" style="margin-bottom: 0;">Overview Dashboard</h1>
-        @if (isAdmin)
-        {
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <h1 class="page-title" style="margin-bottom: 4px;">Overview Dashboard</h1>
+            <p style="color: var(--hud-text-muted); margin: 0; font-size: 14px;">
+                Logged in as: <strong style="color: var(--hud-cyan);">Family Head (Father / Admin)</strong> | Family: <strong style="color: #fff;">@Context.Session.GetString("FamilyName")</strong>
+            </p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
             <div style="padding: 8px 16px; background: rgba(0, 229, 255, 0.15); border: 1px solid var(--hud-cyan); border-radius: 4px; color: var(--hud-cyan); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                <i class="fa-solid fa-user-shield"></i> Admin Access
+                <i class="fa-solid fa-user-shield"></i> Full Admin Control
             </div>
-        }
-        else
-        {
-            <div style="padding: 8px 16px; background: rgba(168, 85, 247, 0.15); border: 1px solid var(--hud-purple); border-radius: 4px; color: var(--hud-purple); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                <i class="fa-solid fa-user"></i> Member Access
-            </div>
-        }
+        </div>
     </div>
-    
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon balance">
@@ -279,6 +302,73 @@
                 <h4>To Pay</h4>
                 <h2>₹@Model.TotalDene.ToString("N2")</h2>
             </div>
+        </div>
+    </div>
+    <div style="margin-bottom: 30px;">
+        <h3 style="font-size: 15px; color: var(--hud-text-white); font-weight: 700; margin-bottom: 15px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
+            <span style="color: var(--hud-cyan); margin-right: 6px;"><i class="fa-solid fa-play" style="font-size: 11px;"></i></span> Admin Available Functions
+        </h3>
+
+        <div class="quick-actions-grid">
+            <a asp-controller="Income" asp-action="Create" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 20px;">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">Add Income</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Record new family income</p>
+                </div>
+            </a>
+
+            <a asp-controller="Expense" asp-action="Create" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 20px;">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">Add Expense</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Record new family expense</p>
+                </div>
+            </a>
+
+            <a asp-controller="Udhar" asp-action="Index" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; display: flex; align-items: center; justify-content: center; color: #f59e0b; font-size: 20px;">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">Udhar Ledger</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Manage loans & credit</p>
+                </div>
+            </a>
+
+            <a asp-controller="Report" asp-action="Index" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(0, 229, 255, 0.15); border: 1px solid var(--hud-cyan); display: flex; align-items: center; justify-content: center; color: var(--hud-cyan); font-size: 20px;">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">View Reports</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Monthly & date-wise charts</p>
+                </div>
+            </a>
+
+            <a asp-controller="Budget" asp-action="Index" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; display: flex; align-items: center; justify-content: center; color: #a855f7; font-size: 20px;">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">Family Budget</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Set monthly budget limits</p>
+                </div>
+            </a>
+
+            <a asp-controller="Member" asp-action="Index" class="action-card">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; display: flex; align-items: center; justify-content: center; color: #38bdf8; font-size: 20px;">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700;">Manage Members</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--hud-text-muted);">Add / view family members</p>
+                </div>
+            </a>
         </div>
     </div>
 
