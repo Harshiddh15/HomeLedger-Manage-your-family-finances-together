@@ -21,7 +21,7 @@
                     <span id="headerStatusBadge" class="badge badge-rose">Pending</span>
                 }
             </div>
-            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Update principal, repayments, or terms for @Model.PersonName</p>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Update repayments or principal for @Model.PersonName</p>
         </div>
         <a asp-action="Index" class="btn btn-secondary btn-sm">
             <i class="fa-solid fa-arrow-left"></i> Back to Ledger
@@ -36,7 +36,7 @@
                 <span id="calcTotal" class="currency-amount" style="font-size: 17px; font-weight: 800; color: var(--text-primary);">₹@Model.Amount.ToString("N2")</span>
             </div>
             <div style="border-right: 1px solid var(--border-hairline);">
-                <span id="calcRepaidLabel" style="font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Repaid / Wapas</span>
+                <span id="calcRepaidLabel" style="font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Total Repaid So Far</span>
                 <span id="calcRepaid" class="currency-amount" style="font-size: 17px; font-weight: 800; color: var(--emerald-400);">₹@Model.PaidAmount.ToString("N2")</span>
             </div>
             <div style="border-right: 1px solid var(--border-hairline);">
@@ -77,6 +77,7 @@
 
             <form asp-action="Edit" method="post" autocomplete="off" id="udharEditForm">
                 <input type="hidden" name="Id" value="@Model.Id" />
+                <input type="hidden" id="BasePaidAmount" value="@Model.PaidAmount.ToString("F2")" />
 
                 <div class="form-group">
                     <label class="form-label" for="PersonName">External Person / Store Name *</label>
@@ -113,35 +114,52 @@
                     </small>
                 </div>
 
-                <!-- Total Amount Field -->
+                <!-- Total Principal Amount -->
                 <div class="form-group">
                     <label class="form-label" for="Amount">Total Principal Amount (₹) *</label>
                     <input type="number" id="Amount" name="Amount" class="form-control font-mono" required step="0.01" min="0" value="@Model.Amount.ToString("F2")" style="font-size: 18px; font-weight: 700;" oninput="updateCalculations()" />
                 </div>
 
-                <!-- Repaid / Settled Field with Helper Presets -->
-                <div class="form-group">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <label class="form-label" for="PaidAmount" id="paidAmountLabel" style="margin: 0;">
-                            @(isLene ? "Repayment Received (Wapas Mil Gaya) ₹" : "Repayment Paid (Wapas De Diya) ₹")
-                        </label>
-                        <!-- Quick Repayment Presets -->
+                <!-- SMART REPAYMENT / INSTALMENT SECTION -->
+                <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-md); padding: 18px; margin-bottom: 22px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                        <div>
+                            <span style="font-size: 13.5px; font-weight: 700; color: var(--emerald-400); display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-plus-circle"></i> Aaj Ki Nayi Rashi / Kisht Katwayein (+₹)
+                            </span>
+                            <small style="font-size: 11.5px; color: var(--text-dim);">
+                                Pehle jama ho chuka tha: <strong>₹@Model.PaidAmount.ToString("N2")</strong> | Baaki bacha tha: <strong>₹@Model.RemainingAmount.ToString("N2")</strong>
+                            </small>
+                        </div>
+
+                        <!-- Quick Increment Presets -->
                         <div style="display: flex; gap: 6px;">
-                            <button type="button" class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 11px;" onclick="setRepayment(0)">
-                                ₹0 (Kuch Nahi)
-                            </button>
-                            <button type="button" class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 11px;" onclick="setRepayment('half')">
-                                50%
-                            </button>
-                            <button type="button" class="btn btn-primary btn-sm" style="padding: 2px 8px; font-size: 11px; background: linear-gradient(135deg, #10b981, #059669);" onclick="setRepayment('full')">
-                                Full Settle (Chukta)
-                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 11px;" onclick="addInstallment(500)">+₹500</button>
+                            <button type="button" class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 11px;" onclick="addInstallment(1000)">+₹1,000</button>
+                            <button type="button" class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 11px;" onclick="addInstallment(2000)">+₹2,000</button>
+                            <button type="button" class="btn btn-primary btn-sm" style="padding: 2px 8px; font-size: 11px; background: linear-gradient(135deg, #10b981, #059669);" onclick="addFullRemaining()">Pura Baaki (₹@Model.RemainingAmount.ToString("N0"))</button>
                         </div>
                     </div>
-                    <input type="number" id="PaidAmount" name="PaidAmount" class="form-control font-mono" step="0.01" min="0" value="@Model.PaidAmount.ToString("F2")" oninput="updateCalculations()" />
-                    <small style="color: var(--text-dim); font-size: 11.5px; display: block; margin-top: 4px;">
-                        Agar udhar abhi pura wapas nahi hua hai, to yahan sirf utni hi rashi likhein jitni wapas mil chuki ya chuka chuke hain (agar kuch nahi diya to <strong>0</strong> rakhein).
+
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div style="flex: 1;">
+                            <input type="number" id="NewInstallmentInput" class="form-control font-mono" placeholder="Enter amount received/paid today (e.g. 500)" step="0.01" min="0" oninput="onInstallmentInput()" style="font-size: 16px; font-weight: 700; color: var(--emerald-400);" />
+                        </div>
+                    </div>
+                    <small id="installmentEffectText" style="color: #38bdf8; font-size: 12px; display: block; margin-top: 6px; font-weight: 600;">
+                        💡 Yahan jo rashi likhenge, wo baaki balance me se sidha kat jayegi.
                     </small>
+
+                    <!-- Advanced Toggle for Direct Total Override -->
+                    <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(255, 255, 255, 0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" for="PaidAmount" id="paidAmountLabel" style="margin: 0; font-size: 12px; color: var(--text-dim);">
+                                Kul Jama Rashi (Total Repaid Amount Submitted):
+                            </label>
+                            <span id="calculatedPaidBadge" style="font-family: monospace; font-size: 14px; font-weight: 700; color: var(--emerald-400);">₹@Model.PaidAmount.ToString("N2")</span>
+                        </div>
+                        <input type="hidden" id="PaidAmount" name="PaidAmount" value="@Model.PaidAmount.ToString("F2")" />
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -151,13 +169,13 @@
 
                 <div class="form-group">
                     <label class="form-label" for="Reason">Reason / Terms (Optional)</label>
-                    <textarea id="Reason" name="Reason" class="form-control" rows="3" placeholder="Notes on interest, expected repayment date, or reason...">@Model.Reason</textarea>
+                    <textarea id="Reason" name="Reason" class="form-control" rows="3" placeholder="Notes on installments, dates, or reason...">@Model.Reason</textarea>
                 </div>
 
                 <!-- Action Buttons -->
                 <div style="display: flex; gap: 12px; margin-top: 28px;">
                     <button type="submit" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.4);">
-                        <i class="fa-solid fa-floppy-disk"></i> Update Udhar Entry
+                        <i class="fa-solid fa-floppy-disk"></i> Update & Katwayein
                     </button>
                     <a asp-action="Index" class="btn btn-secondary">
                         Cancel
@@ -169,39 +187,62 @@
 </div>
 
 <script>
+    const basePaid = parseFloat(document.getElementById('BasePaidAmount').value) || 0;
+
     function handleTypeChange() {
         const type = document.getElementById('Type').value;
-        const paidLabel = document.getElementById('paidAmountLabel');
         const explanation = document.getElementById('typeExplanation');
         const calcRepaidLabel = document.getElementById('calcRepaidLabel');
         const calcRemainingLabel = document.getElementById('calcRemainingLabel');
 
         if (type === 'Lene Hai') {
-            paidLabel.textContent = 'Repayment Received (Wapas Mil Gaya) ₹';
             explanation.textContent = 'Aapne kisi ko udhar diya hai, paise wapas lene baaki hain.';
-            calcRepaidLabel.textContent = 'Repayment Received';
+            calcRepaidLabel.textContent = 'Total Received So Far';
             calcRemainingLabel.textContent = 'Remaining Lene Hai';
         } else {
-            paidLabel.textContent = 'Repayment Paid (Wapas De Diya) ₹';
             explanation.textContent = 'Aapne kisi se udhar liya hai, paise wapas chukane baaki hain.';
-            calcRepaidLabel.textContent = 'Repayment Paid';
+            calcRepaidLabel.textContent = 'Total Paid So Far';
             calcRemainingLabel.textContent = 'Remaining Dene Hai';
         }
         updateCalculations();
     }
 
-    function setRepayment(val) {
-        const amountInput = document.getElementById('Amount');
-        const paidInput = document.getElementById('PaidAmount');
-        const total = parseFloat(amountInput.value) || 0;
+    function addInstallment(val) {
+        document.getElementById('NewInstallmentInput').value = val;
+        onInstallmentInput();
+    }
 
-        if (val === 0) {
-            paidInput.value = (0).toFixed(2);
-        } else if (val === 'half') {
-            paidInput.value = (total / 2).toFixed(2);
-        } else if (val === 'full') {
-            paidInput.value = total.toFixed(2);
+    function addFullRemaining() {
+        const totalAmount = parseFloat(document.getElementById('Amount').value) || 0;
+        const remaining = Math.max(0, totalAmount - basePaid);
+        document.getElementById('NewInstallmentInput').value = remaining.toFixed(2);
+        onInstallmentInput();
+    }
+
+    function onInstallmentInput() {
+        const newInstallment = parseFloat(document.getElementById('NewInstallmentInput').value) || 0;
+        const totalAmount = parseFloat(document.getElementById('Amount').value) || 0;
+        
+        // New Total Paid = basePaid + newInstallment
+        let finalPaid = basePaid + newInstallment;
+        if (finalPaid > totalAmount) {
+            finalPaid = totalAmount;
         }
+
+        document.getElementById('PaidAmount').value = finalPaid.toFixed(2);
+        document.getElementById('calculatedPaidBadge').textContent = '₹' + finalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        const newRemaining = Math.max(0, totalAmount - finalPaid);
+        const effectElem = document.getElementById('installmentEffectText');
+
+        if (newInstallment > 0) {
+            effectElem.innerHTML = `✓ <strong>₹${newInstallment.toLocaleString('en-IN', {minimumFractionDigits: 2})}</strong> jama karne par naya baki balance <strong>₹${newRemaining.toLocaleString('en-IN', {minimumFractionDigits: 2})}</strong> reh jayega.`;
+            effectElem.style.color = '#34d399';
+        } else {
+            effectElem.innerHTML = '💡 Yahan jo rashi likhenge, wo baaki balance me se sidha kat jayegi.';
+            effectElem.style.color = '#38bdf8';
+        }
+
         updateCalculations();
     }
 
@@ -240,7 +281,6 @@
         }
     }
 
-    // Run on initial page load
     document.addEventListener('DOMContentLoaded', function() {
         updateCalculations();
     });

@@ -229,6 +229,80 @@ namespace FinanceManagementNet.Controllers
         }
 
         [HttpPost]
+        public IActionResult AddRepayment(int id, decimal repaymentAmount, string? note)
+        {
+            var familyDbId = HttpContext.Session.GetInt32("FamilyDbId");
+            if (familyDbId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            Udhar? udhar;
+            if (loginType == "Admin")
+            {
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
+            }
+            else
+            {
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value && u.MemberName == memberName);
+                if (udhar == null)
+                {
+                    TempData["Error"] = "Aap sirf apna hi udhar update kar sakte hain.";
+                    return RedirectToAction("Index");
+                }
+            }
+
+            if (udhar == null)
+            {
+                return NotFound();
+            }
+
+            if (repaymentAmount <= 0)
+            {
+                TempData["Error"] = "Kripya 0 se badi rashi darj karein.";
+                return RedirectToAction("Index");
+            }
+
+            // Add repayment incrementally
+            udhar.PaidAmount += repaymentAmount;
+            if (udhar.PaidAmount > udhar.Amount)
+            {
+                udhar.PaidAmount = udhar.Amount;
+            }
+
+            udhar.RemainingAmount = udhar.Amount - udhar.PaidAmount;
+            udhar.Status = udhar.RemainingAmount <= 0 ? "Completed" : "Pending";
+
+            // Append installment entry to notes for transparent record keeping
+            var dateStr = DateTime.Now.ToString("dd MMM");
+            var paymentLog = $"[{dateStr}: +₹{repaymentAmount:N0}{(string.IsNullOrWhiteSpace(note) ? "" : $" ({note})")}]";
+            if (string.IsNullOrWhiteSpace(udhar.Reason))
+            {
+                udhar.Reason = paymentLog;
+            }
+            else
+            {
+                udhar.Reason = udhar.Reason + " | " + paymentLog;
+            }
+
+            _context.SaveChanges();
+
+            if (udhar.Status == "Completed")
+            {
+                TempData["Success"] = $"₹{repaymentAmount:N2} jama ho gaye! Udhar pura chukta (Settled) ho gaya!";
+            }
+            else
+            {
+                TempData["Success"] = $"₹{repaymentAmount:N2} baki me se kat gaye! Naya baki balance: ₹{udhar.RemainingAmount:N2}";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public IActionResult Settle(int id)
         {
             var familyDbId = HttpContext.Session.GetInt32("FamilyDbId");
