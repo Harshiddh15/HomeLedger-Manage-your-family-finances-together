@@ -4,64 +4,72 @@
     var memberName = Context.Session.GetString("MemberName");
     ViewData["Title"] = isMember ? "My Expenses" : "Expense Management";
     Layout = "_Layout";
+    var totalAmount = Model?.Sum(e => e.Amount) ?? 0;
 }
 
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
-    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
-        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> @(isMember ? $"My Expense Records ({memberName})" : "Expense Management")
-    </h1>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        @if (isMember)
-        {
-            <a asp-controller="Home" asp-action="MemberDashboard" class="btn btn-secondary">
-                <i class="fa-solid fa-arrow-left"></i> Member Dashboard
-            </a>
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="fa-solid fa-plus"></i> Add Expense
-            </a>
-        }
-        else
-        {
-            <a asp-action="ExportToCsv" class="btn btn-secondary">
-                <i class="fa-solid fa-file-csv"></i> Export CSV
-            </a>
-            <a asp-action="ExportToPdf" class="btn btn-secondary">
-                <i class="fa-solid fa-file-pdf"></i> Export PDF
-            </a>
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="fa-solid fa-plus"></i> Add Expense
-            </a>
-        }
-    </div>
-</div>
+<div>
+    <!-- Page Header & Action Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                <h1 style="font-size: 24px; font-weight: 800; margin: 0;">
+                    @(isMember ? $"My Recorded Expenses ({memberName})" : "Family Expense Ledger")
+                </h1>
+                <span class="badge badge-rose">@Model.Count Entries</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">
+                Cumulative Outflow: <strong class="currency-amount" style="color: #fb7185;">₹@totalAmount.ToString("N2")</strong>
+            </p>
+        </div>
 
-<div class="card" style="margin-bottom: 20px;">
-    <div class="card-body">
-        <form asp-action="Index" method="get" style="display: flex; gap: 10px;">
-            <input type="text" name="search" class="form-control" placeholder="Search by category, member, or description..." value="@Context.Request.Query["search"]" style="flex: 1;">
-            <button type="submit" class="btn btn-secondary">
-                <i class="fa-solid fa-search"></i> Search
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            @if (isMember)
+            {
+                <a asp-controller="Home" asp-action="MemberDashboard" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-arrow-left"></i> Member Portal
+                </a>
+            }
+            else
+            {
+                <a asp-action="ExportToCsv" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-file-csv"></i> CSV
+                </a>
+                <a asp-action="ExportToPdf" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </a>
+            }
+            <a asp-action="Create" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #f43f5e, #e11d48); box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);">
+                <i class="fa-solid fa-plus"></i> Add Expense
+            </a>
+        </div>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="glass-card" style="margin-bottom: 20px; padding: 14px 20px;">
+        <form asp-action="Index" method="get" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <div style="position: relative; flex: 1; min-width: 240px;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 13px;"></i>
+                <input type="text" name="search" class="form-control" placeholder="Search by category, member, or description..." value="@Context.Request.Query["search"]" style="padding-left: 38px;" />
+            </div>
+            <button type="submit" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-filter"></i> Search
             </button>
-            <a asp-action="Index" class="btn btn-secondary">Clear</a>
+            @if (!string.IsNullOrEmpty(Context.Request.Query["search"]))
+            {
+                <a asp-action="Index" class="btn btn-ghost btn-sm" style="color: var(--text-dim);">Clear</a>
+            }
         </form>
     </div>
-</div>
 
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="margin: 0; font-size: 16px; font-weight: 700;">
-            <i class="fa-solid fa-arrow-trend-down" style="color: #ef4444; margin-right: 8px;"></i>
-            @(isMember ? $"My Recorded Expenses ({Model.Count})" : $"All Family Expense Records ({Model.Count})")
-        </h3>
-    </div>
-    <div class="table-responsive">
-        @if (Model.Any())
+    <!-- Modern Table Container -->
+    <div class="table-container">
+        @if (Model != null && Model.Any())
         {
-            <table>
+            <table class="modern-table">
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Member Name</th>
+                        <th>Member</th>
                         <th>Category</th>
                         <th>Amount</th>
                         <th>Description</th>
@@ -72,27 +80,42 @@
                     @foreach (var expense in Model)
                     {
                         <tr>
-                            <td>@expense.Date.ToString("d MMM yyyy")</td>
+                            <td style="color: var(--text-muted); font-size: 13px; white-space: nowrap;">
+                                @expense.Date.ToString("dd MMM yyyy")
+                            </td>
                             <td>
-                                <span class="badge" style="background: rgba(0, 229, 255, 0.1); color: var(--hud-cyan); border: 1px solid rgba(0, 229, 255, 0.3);">
+                                <span class="badge badge-indigo">
+                                    <i class="fa-solid fa-user" style="font-size: 10px;"></i>
                                     @expense.MemberName
                                 </span>
                             </td>
-                            <td>@expense.Category</td>
-                            <td style="font-weight: 700; color: #ef4444; font-family: 'JetBrains Mono', monospace;">₹@expense.Amount.ToString("N2")</td>
-                            <td>@(expense.Description ?? "-")</td>
+                            <td>
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                    @expense.Category
+                                </span>
+                            </td>
+                            <td class="currency-amount" style="font-weight: 700; color: #fb7185; font-size: 15px;">
+                                -₹@expense.Amount.ToString("N2")
+                            </td>
+                            <td style="color: var(--text-secondary); font-size: 13px;">
+                                @(string.IsNullOrEmpty(expense.Description) ? "—" : expense.Description)
+                            </td>
                             <td style="text-align: right;">
                                 @if (isMember)
                                 {
-                                    <span style="font-size: 11px; color: var(--hud-text-muted); padding: 4px 8px; background: rgba(255, 255, 255, 0.05); border-radius: 4px;">
+                                    <span style="font-size: 11px; color: var(--text-dim); padding: 4px 8px; background: rgba(255, 255, 255, 0.03); border-radius: 4px;">
                                         <i class="fa-solid fa-lock" style="font-size: 9px;"></i> View Only
                                     </span>
                                 }
                                 else
                                 {
-                                    <div class="action-buttons" style="display: inline-flex; gap: 6px;">
-                                        <a asp-action="Edit" asp-route-id="@expense.Id" class="btn btn-sm btn-success">Edit</a>
-                                        <a asp-action="Delete" asp-route-id="@expense.Id" class="btn btn-sm btn-danger">Delete</a>
+                                    <div style="display: inline-flex; gap: 6px;">
+                                        <a asp-action="Edit" asp-route-id="@expense.Id" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 11px;">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@expense.Id" class="btn btn-danger btn-sm" style="padding: 4px 10px; font-size: 11px;">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
                                     </div>
                                 }
                             </td>
@@ -103,9 +126,13 @@
         }
         else
         {
-            <div class="empty-state" style="text-align: center; padding: 40px; color: var(--hud-text-muted);">
-                <i class="fa-solid fa-receipt" style="font-size: 32px; opacity: 0.5; margin-bottom: 12px; display: block;"></i>
-                <p>No expense records found.</p>
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                <i class="fa-solid fa-receipt" style="font-size: 36px; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                <h4 style="font-size: 16px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">No Expense Records Found</h4>
+                <p style="font-size: 13.5px; margin: 0 0 16px;">Log your everyday household expenditures here.</p>
+                <a asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Record First Expense
+                </a>
             </div>
         }
     </div>

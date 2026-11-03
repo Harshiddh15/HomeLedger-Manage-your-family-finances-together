@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Login - HomeLedger";
+    ViewData["Title"] = "Sign In — HomeLedger";
     Layout = null;
 }
 
@@ -9,289 +9,275 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    
+    <!-- Google Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Design System -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
+    <style>
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: #0b111e;
-            background-image: 
-                linear-gradient(rgba(15, 23, 42, 0.85), rgba(11, 17, 30, 0.95)),
-                linear-gradient(90deg, rgba(0, 229, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(rgba(0, 229, 255, 0.1) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            color: #f8fafc;
+            padding: 30px 20px;
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.12), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.1), transparent 50%);
         }
 
-        .login-container {
+        .auth-wrapper {
             width: 100%;
-            max-width: 440px;
+            max-width: 460px;
+            animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .login-card {
+        .auth-card {
+            background: rgba(18, 26, 42, 0.88);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-xl);
+            padding: 40px 36px;
+            box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.7);
+        }
+
+        .tab-switcher {
+            display: flex;
+            background: rgba(12, 18, 30, 0.8);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-full);
+            padding: 4px;
+            margin-bottom: 28px;
             position: relative;
-            background: rgba(19, 29, 45, 0.92);
-            backdrop-filter: blur(16px);
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 229, 255, 0.15);
-            border: 1px solid #1e2d42;
         }
 
-        .login-card::before, .login-card::after {
-            content: '';
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            pointer-events: none;
-        }
-
-        .login-card::before {
-            top: 0;
-            left: 0;
-            border-top: 3px solid #00e5ff;
-            border-left: 3px solid #00e5ff;
-        }
-
-        .login-card::after {
-            bottom: 0;
-            right: 0;
-            border-bottom: 3px solid #00e5ff;
-            border-right: 3px solid #00e5ff;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .logo-icon {
-            width: 68px;
-            height: 68px;
-            background: rgba(0, 229, 255, 0.1);
-            border: 2px solid #00e5ff;
-            border-radius: 16px;
+        .tab-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: var(--radius-full);
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-fast);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            color: #00e5ff;
-            font-size: 28px;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+            gap: 8px;
         }
 
-        .login-header h2 {
-            color: #f8fafc;
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            font-family: 'JetBrains Mono', monospace;
+        .tab-btn.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
         }
 
-        .login-header p {
-            color: #94a3b8;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .tab-btn.member-active {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
         }
 
-        .alert {
-            background: rgba(244, 63, 94, 0.15);
-            border: 1px solid #f43f5e;
-            border-radius: 6px;
-            padding: 12px 16px;
-            margin-bottom: 24px;
-            color: #fb7185;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #94a3b8;
-            font-weight: 700;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-icon-wrapper {
+        .input-group-custom {
             position: relative;
         }
 
-        .input-icon-wrapper i {
+        .input-group-custom .toggle-eye {
             position: absolute;
-            left: 14px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: #00e5ff;
-        }
-
-        .input-icon-wrapper input {
-            width: 100%;
-            padding: 13px 14px 13px 44px;
-            border: 1px solid #1e2d42;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.3s;
-            background: #0f1826;
-            color: #f8fafc;
-        }
-
-        .input-icon-wrapper input:focus {
-            outline: none;
-            border-color: #00e5ff;
-            box-shadow: 0 0 16px rgba(0, 229, 255, 0.3);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #00e5ff;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 700;
+            background: none;
+            border: none;
+            color: var(--text-dim);
             cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 14px;
+            padding: 4px;
+            transition: color var(--transition-fast);
         }
 
-        .btn-primary {
-            background: rgba(0, 229, 255, 0.15);
-            color: #00e5ff;
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
-        }
-
-        .btn-primary:hover {
-            background: #00e5ff;
-            color: #0b111e;
-            box-shadow: 0 0 25px rgba(0, 229, 255, 0.7);
-            transform: translateY(-2px);
-        }
-
-        .btn-block {
-            display: block;
+        .input-group-custom .toggle-eye:hover {
+            color: var(--text-primary);
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="logo-icon">
-                    <i class="fa-solid fa-wallet"></i>
+    <div class="auth-wrapper">
+        <!-- Brand Header -->
+        <div style="text-align: center; margin-bottom: 28px;">
+            <a href="/" style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 12px; text-decoration: none;">
+                <div class="brand-icon-box" style="width: 44px; height: 44px; font-size: 20px;">
+                    <i class="fa-solid fa-vault"></i>
                 </div>
-                <h2>HomeLedger</h2>
-                <p>Manage your family finances together</p>
-            </div>
+                <div style="text-align: left;">
+                    <span style="font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">
+                        Home<span style="color: var(--emerald-400);">Ledger</span>
+                    </span>
+                    <small style="display: block; font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px;">
+                        Family Wealth OS
+                    </small>
+                </div>
+            </a>
+            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Sign In to Your Workspace</h2>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Select your account type to proceed</p>
+        </div>
 
-            <div style="display: flex; gap: 10px; margin-bottom: 24px;">
-                <button type="button" id="adminTab" class="btn btn-primary btn-block" style="flex: 1; background: rgba(0, 229, 255, 0.3);" onclick="showAdminLogin()">Admin Login</button>
-                <button type="button" id="memberTab" class="btn btn-secondary btn-block" style="flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid #00e5ff; color: #00e5ff;" onclick="showMemberLogin()">Member Login</button>
-            </div>
-            
+        <div class="auth-card">
+            <!-- Flash Alert Messages -->
             @if (TempData["Error"] != null)
             {
-                <div class="alert">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    @TempData["Error"]
+                <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #fb7185; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-circle-exclamation" style="font-size: 16px;"></i>
+                    <span>@TempData["Error"]</span>
                 </div>
             }
 
-            <form id="adminLoginForm" asp-action="Login" method="post" class="login-form">
+            @if (TempData["Success"] != null)
+            {
+                <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #34d399; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-circle-check" style="font-size: 16px;"></i>
+                    <span>@TempData["Success"]</span>
+                </div>
+            }
+
+            <!-- Dual Tab Switcher -->
+            <div class="tab-switcher">
+                <button type="button" class="tab-btn active" id="tabAdmin" onclick="setLoginMode('admin')">
+                    <i class="fa-solid fa-crown" style="font-size: 12px;"></i>
+                    <span>Family Head (Admin)</span>
+                </button>
+                <button type="button" class="tab-btn" id="tabMember" onclick="setLoginMode('member')">
+                    <i class="fa-solid fa-user-check" style="font-size: 12px;"></i>
+                    <span>Family Member</span>
+                </button>
+            </div>
+
+            <!-- 1. ADMIN LOGIN FORM -->
+            <form id="adminForm" asp-action="Login" method="post" autocomplete="on">
                 <div class="form-group">
-                    <label for="family_id">Family ID</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-users"></i>
-                        <input type="text" id="family_id" name="familyId" placeholder="e.g. RADADIYA_HOME" required>
+                    <label class="form-label" for="adminFamilyId">Family ID *</label>
+                    <input type="text" id="adminFamilyId" name="familyId" class="form-control" placeholder="e.g. Patel's Family" required autofocus />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="adminPassword">Admin Password *</label>
+                    <div class="input-group-custom">
+                        <input type="password" id="adminPassword" name="password" class="form-control" placeholder="Enter family admin password" required />
+                        <button type="button" class="toggle-eye" onclick="togglePassword('adminPassword', 'eyeAdmin')">
+                            <i class="fa-solid fa-eye" id="eyeAdmin"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="password" name="password" placeholder="Enter password" required>
-                    </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <a asp-action="ForgotPassword" style="font-size: 12.5px; color: var(--emerald-400); font-weight: 600;">Forgot Password?</a>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">
-                    Login as Admin <i class="fa-solid fa-arrow-right"></i>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 15px;">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <span>Sign In as Family Head</span>
                 </button>
             </form>
 
-            <form id="memberLoginForm" asp-action="MemberLogin" method="post" class="login-form" style="display: none;">
+            <!-- 2. MEMBER LOGIN FORM (ISOLATED) -->
+            <form id="memberForm" asp-action="MemberLogin" method="post" autocomplete="on" style="display: none;">
                 <div class="form-group">
-                    <label for="family_id_member">Family ID</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-users"></i>
-                        <input type="text" id="family_id_member" name="familyId" placeholder="Enter Family ID" required>
+                    <label class="form-label" for="memberFamilyId">Family ID *</label>
+                    <input type="text" id="memberFamilyId" name="familyId" class="form-control" placeholder="e.g. Patel's Family" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="memberNameInput">Your Member Name *</label>
+                    <input type="text" id="memberNameInput" name="memberName" class="form-control" placeholder="e.g. Mother, Son, Rohan" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="memberPassword">Member Password *</label>
+                    <div class="input-group-custom">
+                        <input type="password" id="memberPassword" name="password" class="form-control" placeholder="Enter your member password (e.g. 123)" required />
+                        <button type="button" class="toggle-eye" onclick="togglePassword('memberPassword', 'eyeMember')">
+                            <i class="fa-solid fa-eye" id="eyeMember"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="member_name">Member Name</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-user"></i>
-                        <input type="text" id="member_name" name="memberName" placeholder="Enter your name" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="password_member">Password</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="password_member" name="password" placeholder="Enter password" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">
-                    Login as Member <i class="fa-solid fa-arrow-right"></i>
+
+                <button type="submit" class="btn btn-indigo" style="width: 100%; padding: 13px; font-size: 15px; margin-top: 10px;">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Access Member Portal</span>
                 </button>
             </form>
 
-            <div style="text-align: center; margin-top: 24px; color: #94a3b8; font-size: 13px;">
-                <a asp-action="ForgotPassword" style="color: #00e5ff; text-decoration: none; font-weight: 600;">Forgot Password?</a>
+            <!-- Quick Evaluation Helper Badge -->
+            <div style="margin-top: 24px; padding: 12px 14px; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); font-size: 12px; color: var(--text-dim); line-height: 1.5;">
+                <span style="color: var(--emerald-400); font-weight: 700; display: block; margin-bottom: 2px;">
+                    <i class="fa-solid fa-lightbulb"></i> Quick Test Credentials:
+                </span>
+                <span><strong>Admin:</strong> <code>Patel's Family</code> / <code>123</code></span> &bull; 
+                <span><strong>Member:</strong> <code>Mother</code> / <code>123</code></span>
             </div>
 
-            <div style="text-align: center; margin-top: 16px; color: #94a3b8; font-size: 13px;">
-                Don't have an account? <a asp-action="Register" style="color: #00e5ff; text-decoration: none; font-weight: 600;">Register here</a>
+            <!-- Footer Links Inside Card -->
+            <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--border-subtle); padding-top: 18px; font-size: 13px; color: var(--text-muted);">
+                Don't have a family workspace yet?
+                <a asp-action="Register" style="color: var(--emerald-400); font-weight: 700; margin-left: 4px;">Register Free</a>
             </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/" style="font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Home Overview
+            </a>
         </div>
     </div>
 
+    <!-- Interactive Tab Script -->
     <script>
-        function showAdminLogin() {
-            document.getElementById('adminLoginForm').style.display = 'block';
-            document.getElementById('memberLoginForm').style.display = 'none';
-            document.getElementById('adminTab').style.background = 'rgba(0, 229, 255, 0.3)';
-            document.getElementById('adminTab').style.color = '#00e5ff';
-            document.getElementById('memberTab').style.background = 'rgba(255, 255, 255, 0.1)';
-            document.getElementById('memberTab').style.color = '#00e5ff';
+        function setLoginMode(mode) {
+            const adminTab = document.getElementById('tabAdmin');
+            const memberTab = document.getElementById('tabMember');
+            const adminForm = document.getElementById('adminForm');
+            const memberForm = document.getElementById('memberForm');
+
+            if (mode === 'admin') {
+                adminTab.className = 'tab-btn active';
+                memberTab.className = 'tab-btn';
+                adminForm.style.display = 'block';
+                memberForm.style.display = 'none';
+            } else {
+                adminTab.className = 'tab-btn';
+                memberTab.className = 'tab-btn member-active';
+                adminForm.style.display = 'none';
+                memberForm.style.display = 'block';
+            }
         }
 
-        function showMemberLogin() {
-            document.getElementById('adminLoginForm').style.display = 'none';
-            document.getElementById('memberLoginForm').style.display = 'block';
-            document.getElementById('memberTab').style.background = 'rgba(0, 229, 255, 0.3)';
-            document.getElementById('memberTab').style.color = '#00e5ff';
-            document.getElementById('adminTab').style.background = 'rgba(255, 255, 255, 0.1)';
-            document.getElementById('adminTab').style.color = '#00e5ff';
+        // Auto-select tab if URL has ?tab=member
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('tab') === 'member') {
+            setLoginMode('member');
+        }
+
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
         }
     </script>
 </body>

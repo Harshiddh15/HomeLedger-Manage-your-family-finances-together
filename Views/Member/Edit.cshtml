@@ -1,213 +1,83 @@
 @model Member
 @{
-    ViewData["Title"] = "Edit Member";
+    ViewData["Title"] = "Edit Member Profile";
     Layout = "_Layout";
 }
 
-<style>
-    .page-header {
-        margin-bottom: 30px;
-        text-align: center;
-    }
-
-    .page-title {
-        font-size: 26px;
-        font-weight: 800;
-        color: var(--hud-text-white);
-        font-family: 'JetBrains Mono', monospace;
-        letter-spacing: 1px;
-    }
-
-    .card {
-        background: var(--hud-bg-card);
-        border: 1px solid var(--hud-border);
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-        overflow: hidden;
-        max-width: 600px;
-        width: 100%;
-        margin: 0 auto;
-    }
-
-    .card-header {
-        background: rgba(0, 229, 255, 0.12);
-        border-bottom: 1px solid rgba(0, 229, 255, 0.3);
-        color: var(--hud-cyan);
-        padding: 20px 25px;
-    }
-
-    .card-header h3 {
-        font-size: 18px;
-        font-weight: 700;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .card-body {
-        padding: 30px 25px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        color: var(--hud-text-white);
-        font-weight: 600;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px 14px;
-        background: var(--hud-bg-input);
-        border: 1px solid var(--hud-border);
-        border-radius: 8px;
-        color: var(--hud-text-white);
-        font-size: 14px;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: var(--hud-cyan);
-        box-shadow: 0 0 10px rgba(0, 229, 255, 0.25);
-    }
-
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #00e5ff 0%, #0099ff 100%);
-        color: #0b111e;
-        border: none;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 229, 255, 0.35);
-    }
-
-    .btn-secondary {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid var(--hud-border);
-        color: var(--hud-text-muted);
-        margin-left: 10px;
-    }
-
-    .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-    }
-
-    .validation-summary {
-        background: rgba(244, 63, 94, 0.12);
-        border: 1px solid #f43f5e;
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-bottom: 20px;
-        color: #f43f5e;
-        font-size: 13px;
-    }
-</style>
-
-<div class="page-header">
-    <h1 class="page-title"><span style="color: var(--hud-cyan);">//</span> Edit Family Member</h1>
-</div>
-
-<div class="card">
-    <div class="card-header">
-        <h3><i class="fa-solid fa-user-pen"></i> Edit Member & Password</h3>
+<div style="max-width: 640px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-size: 24px; font-weight: 800; margin: 0;">Edit Member Profile</h1>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Update member details and portal password</p>
+        </div>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Cancel
+        </a>
     </div>
-    <div class="card-body">
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="validation-summary">
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <p style="margin: 0 0 5px 0;"><i class="fa-solid fa-circle-exclamation"></i> @error.ErrorMessage</p>
-                }
-            </div>
-        }
 
-        <form asp-action="Edit" method="post" autocomplete="off">
-            <input type="hidden" name="Id" value="@Model.Id">
-
-            <div class="form-group">
-                <label for="MemberName">Member Name *</label>
-                <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@Model.MemberName">
-            </div>
-
-            <div class="form-group">
-                <label for="Relation">Relation *</label>
-                <input type="text" id="Relation" name="Relation" class="form-control" required value="@Model.Relation">
-            </div>
-
-            <div class="form-group">
-                <label for="Password">Reset / Update Member Password</label>
-                <div style="position: relative;">
-                    <input type="password" id="Password" name="Password" class="form-control" placeholder="Naya password dalein (khali chhodne par purana password rahega)" autocomplete="new-password">
-                    <button type="button" onclick="togglePasswordVisibility('Password', 'toggleIconEdit')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px;">
-                        <i class="fa-solid fa-eye" id="toggleIconEdit"></i>
-                    </button>
+    <div class="glass-card">
+        <div class="glass-card-header" style="background: rgba(14, 165, 233, 0.08); border-bottom: 1px solid rgba(14, 165, 233, 0.2);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(14, 165, 233, 0.2); color: #0ea5e9; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                    <i class="fa-solid fa-user-pen"></i>
                 </div>
-                <small style="color: var(--hud-text-muted); font-size: 12px; margin-top: 6px; display: block; line-height: 1.4;">
-                    <i class="fa-solid fa-circle-info" style="color: var(--hud-cyan);"></i> Agar password change nahi karna hai, to isse khali chhod dein.
-                </small>
+                <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: var(--text-primary);">Update @Model.MemberName</h3>
             </div>
+            <span class="badge badge-cyan">Identity Key</span>
+        </div>
 
-            <div class="form-group">
-                <label for="Mobile">Mobile Number (Optional)</label>
-                <input type="text" id="Mobile" name="Mobile" class="form-control" placeholder="e.g. 9876543210" value="@Model.Mobile">
-            </div>
+        <div class="glass-card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #fb7185; font-size: 13px;">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p style="margin: 0 0 4px;"><i class="fa-solid fa-circle-exclamation"></i> @error.ErrorMessage</p>
+                    }
+                </div>
+            }
 
-            <div class="form-group">
-                <label for="ProfileImage">Profile Image URL (Optional)</label>
-                <input type="text" id="ProfileImage" name="ProfileImage" class="form-control" placeholder="https://example.com/photo.jpg" value="@Model.ProfileImage">
-            </div>
+            <form asp-action="Edit" method="post" autocomplete="off">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="FamilyId" />
 
-            <div style="margin-top: 30px; display: flex; align-items: center;">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-save"></i> Update Member
-                </button>
-                <a asp-action="Index" class="btn btn-secondary">
-                    <i class="fa-solid fa-xmark"></i> Cancel
-                </a>
-            </div>
-        </form>
+                <div class="form-group">
+                    <label class="form-label" for="MemberName">Member Name *</label>
+                    <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@Model?.MemberName" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Relation">Relationship *</label>
+                    <input type="text" id="Relation" name="Relation" class="form-control" required value="@Model?.Relation" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Password">New Member Password (Optional)</label>
+                    <div style="position: relative;">
+                        <input type="password" id="Password" name="Password" class="form-control" placeholder="Leave empty to keep current password" autocomplete="new-password" />
+                        <button type="button" onclick="togglePassword('Password', 'toggleIconEdit')" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px;">
+                            <i class="fa-solid fa-eye" id="toggleIconEdit"></i>
+                        </button>
+                    </div>
+                    <small style="color: var(--text-dim); font-size: 12px; margin-top: 6px; display: block;">
+                        Naya password set karne ke liye type karein, warna purana password hi rahega.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Mobile">Mobile Number (Optional)</label>
+                    <input type="text" id="Mobile" name="Mobile" class="form-control" value="@Model?.Mobile" />
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        function togglePasswordVisibility(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-    </script>
-}

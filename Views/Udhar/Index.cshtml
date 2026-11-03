@@ -2,109 +2,177 @@
 @{
     var isMember = Context.Session.GetString("LoginType") == "Member";
     var memberName = Context.Session.GetString("MemberName");
-    ViewData["Title"] = isMember ? "My Udhar" : "Udhar Management";
+    ViewData["Title"] = isMember ? "My Udhar Ledger" : "Family Udhar Bahi-Khata";
     Layout = "_Layout";
+    var totalLene = Model?.Where(u => u.Type == "Lene Hai" && u.Status == "Pending").Sum(u => u.RemainingAmount) ?? 0;
+    var totalDene = Model?.Where(u => u.Type == "Dene Hai" && u.Status == "Pending").Sum(u => u.RemainingAmount) ?? 0;
+    var pendingCount = Model?.Count(u => u.Status == "Pending") ?? 0;
+    var completedCount = Model?.Count(u => u.Status == "Completed") ?? 0;
 }
 
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
-    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
-        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> @(isMember ? $"My Udhar Ledger ({memberName})" : "Udhar Management")
-    </h1>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        @if (isMember)
-        {
-            <a asp-controller="Home" asp-action="MemberDashboard" class="btn btn-secondary">
-                <i class="fa-solid fa-arrow-left"></i> Member Dashboard
-            </a>
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="fa-solid fa-plus"></i> Add Udhar
-            </a>
-        }
-        else
-        {
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="fa-solid fa-plus"></i> Add Udhar
-            </a>
-        }
-    </div>
-</div>
+<div>
+    <!-- Top Summary Banner -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                <h1 style="font-size: 24px; font-weight: 800; margin: 0;">
+                    @(isMember ? $"My Udhar Ledger ({memberName})" : "Family Udhar Bahi-Khata")
+                </h1>
+                <span class="badge badge-amber">@Model.Count Total Records</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">
+                Baki Lene Hai (Receivable): <strong class="currency-amount" style="color: #38bdf8;">₹@totalLene.ToString("N2")</strong> &bull;
+                Baki Dene Hai (Payable): <strong class="currency-amount" style="color: #fbbf24;">₹@totalDene.ToString("N2")</strong>
+            </p>
+        </div>
 
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="margin: 0; font-size: 16px; font-weight: 700;">
-            <i class="fa-solid fa-hand-holding-dollar" style="color: #f59e0b; margin-right: 8px;"></i>
-            @(isMember ? $"My Udhar Records ({Model.Count})" : $"All Family Udhar Records ({Model.Count})")
-        </h3>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            @if (isMember)
+            {
+                <a asp-controller="Home" asp-action="MemberDashboard" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-arrow-left"></i> Member Portal
+                </a>
+            }
+            <a asp-action="Create" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);">
+                <i class="fa-solid fa-plus"></i> Record Udhar
+            </a>
+        </div>
     </div>
-    <div class="table-responsive">
-        @if (Model.Any())
+
+    <!-- Quick Filter Tabs -->
+    <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-secondary btn-sm filter-btn active" data-filter="all" onclick="filterUdhar('all', this)" style="border-radius: var(--radius-full); padding: 5px 14px; font-size: 12px;">
+            All (@Model.Count)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm filter-btn" data-filter="Pending" onclick="filterUdhar('Pending', this)" style="border-radius: var(--radius-full); padding: 5px 14px; font-size: 12px; color: #fb7185;">
+            <i class="fa-solid fa-clock"></i> Pending Baaki (@pendingCount)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm filter-btn" data-filter="Completed" onclick="filterUdhar('Completed', this)" style="border-radius: var(--radius-full); padding: 5px 14px; font-size: 12px; color: var(--emerald-400);">
+            <i class="fa-solid fa-circle-check"></i> Settled Chukta (@completedCount)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm filter-btn" data-filter="Lene" onclick="filterUdhar('Lene', this)" style="border-radius: var(--radius-full); padding: 5px 14px; font-size: 12px; color: #38bdf8;">
+            Lene Hai (Receivable)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm filter-btn" data-filter="Dene" onclick="filterUdhar('Dene', this)" style="border-radius: var(--radius-full); padding: 5px 14px; font-size: 12px; color: #fbbf24;">
+            Dene Hai (Payable)
+        </button>
+    </div>
+
+    <!-- Modern Table Container -->
+    <div class="table-container">
+        @if (Model != null && Model.Any())
         {
-            <table>
+            <table class="modern-table">
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Person Name</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Paid</th>
-                        <th>Remaining</th>
+                        <th>Person / Store</th>
+                        <th>Classification</th>
+                        <th>Total Udhar</th>
+                        <th>Repaid / Wapas</th>
+                        <th>Remaining Baaki</th>
                         <th>Status</th>
                         <th style="text-align: right;">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="udharTableBody">
                     @foreach (var udhar in Model)
                     {
-                        <tr>
-                            <td>@udhar.Date.ToString("d MMM yyyy")</td>
+                        var rowType = udhar.Type == "Lene Hai" ? "Lene" : "Dene";
+                        <tr class="udhar-row" data-status="@udhar.Status" data-type="@rowType">
+                            <td style="color: var(--text-muted); font-size: 13px; white-space: nowrap;">
+                                @udhar.Date.ToString("dd MMM yyyy")
+                            </td>
                             <td>
-                                <strong style="color: var(--hud-text-white);">@udhar.PersonName</strong>
-                                @if (!string.IsNullOrEmpty(udhar.Reason))
-                                {
-                                    <small style="display: block; color: var(--hud-text-dim); font-size: 11px;">@udhar.Reason</small>
-                                }
+                                <strong style="color: var(--text-primary); font-size: 14px; display: block;">@udhar.PersonName</strong>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px;">
+                                    @if (!string.IsNullOrEmpty(udhar.MemberName))
+                                    {
+                                        <span style="font-size: 11px; color: var(--text-dim);"><i class="fa-solid fa-user"></i> @udhar.MemberName</span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(udhar.Reason))
+                                    {
+                                        <span style="font-size: 11px; color: var(--text-dim);">&bull; @udhar.Reason</span>
+                                    }
+                                </div>
                             </td>
                             <td>
                                 @if (udhar.Type == "Lene Hai")
                                 {
-                                    <span class="badge" style="background: rgba(0, 229, 255, 0.15); color: var(--hud-cyan); border: 1px solid rgba(0, 229, 255, 0.4);">
-                                        <i class="fa-solid fa-arrow-down-left"></i> Lene Hai (Receivable)
+                                    <span class="badge badge-cyan" title="Receivable - Humne udhar diya hai, paise wapas lene hain">
+                                        <i class="fa-solid fa-arrow-down-left"></i> Lene Hai
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4);">
-                                        <i class="fa-solid fa-arrow-up-right"></i> Dene Hai (Payable)
+                                    <span class="badge badge-amber" title="Payable - Humne udhar liya hai, paise wapas dene hain">
+                                        <i class="fa-solid fa-arrow-up-right"></i> Dene Hai
                                     </span>
                                 }
                             </td>
-                            <td style="font-weight: 700; font-family: 'JetBrains Mono', monospace;">₹@udhar.Amount.ToString("N2")</td>
-                            <td style="color: #10b981; font-family: 'JetBrains Mono', monospace;">₹@udhar.PaidAmount.ToString("N2")</td>
-                            <td style="font-weight: 700; font-family: 'JetBrains Mono', monospace; color: @(udhar.RemainingAmount > 0 ? "#ef4444" : "#10b981");">
+                            <td class="currency-amount" style="font-weight: 700; color: var(--text-primary);">
+                                ₹@udhar.Amount.ToString("N2")
+                            </td>
+                            <td class="currency-amount" style="color: var(--emerald-400);">
+                                ₹@udhar.PaidAmount.ToString("N2")
+                            </td>
+                            <td class="currency-amount" style="font-weight: 800; font-size: 15px; color: @(udhar.RemainingAmount > 0 ? (udhar.Type == "Lene Hai" ? "#38bdf8" : "#fbbf24") : "var(--text-dim)");">
                                 ₹@udhar.RemainingAmount.ToString("N2")
                             </td>
                             <td>
                                 @if (udhar.Status == "Pending")
                                 {
-                                    <span class="badge badge-danger">Pending</span>
+                                    <span class="badge badge-rose">
+                                        <i class="fa-solid fa-clock" style="font-size: 10px;"></i> Pending
+                                    </span>
                                 }
                                 else
                                 {
-                                    <span class="badge badge-success">Completed</span>
+                                    <span class="badge badge-emerald">
+                                        <i class="fa-solid fa-check" style="font-size: 10px;"></i> Settled
+                                    </span>
                                 }
                             </td>
                             <td style="text-align: right;">
                                 @if (isMember)
                                 {
-                                    <span style="font-size: 11px; color: var(--hud-text-muted); padding: 4px 8px; background: rgba(255, 255, 255, 0.05); border-radius: 4px;">
+                                    <span style="font-size: 11px; color: var(--text-dim); padding: 4px 8px; background: rgba(255, 255, 255, 0.03); border-radius: 4px;">
                                         <i class="fa-solid fa-lock" style="font-size: 9px;"></i> View Only
                                     </span>
                                 }
                                 else
                                 {
-                                    <div class="action-buttons" style="display: inline-flex; gap: 6px;">
-                                        <a asp-action="Edit" asp-route-id="@udhar.Id" class="btn btn-sm btn-success">Edit</a>
-                                        <a asp-action="Delete" asp-route-id="@udhar.Id" class="btn btn-sm btn-danger">Delete</a>
+                                    <div style="display: inline-flex; gap: 6px; align-items: center;">
+                                        @if (udhar.Status == "Pending")
+                                        {
+                                            <!-- Quick Settle Form -->
+                                            <form asp-action="Settle" method="post" style="display: inline;" onsubmit="return confirm('Pura udhar chukta mark karein? (Mark as fully settled)?');">
+                                                <input type="hidden" name="id" value="@udhar.Id" />
+                                                <button type="submit" class="btn btn-secondary btn-sm" title="Quick Settle (Chukta Karein)" style="padding: 4px 8px; font-size: 11px; color: var(--emerald-400); border-color: rgba(16, 185, 129, 0.3);">
+                                                    <i class="fa-solid fa-check-double"></i> Settle
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <!-- Quick Reopen Form -->
+                                            <form asp-action="Reopen" method="post" style="display: inline;" onsubmit="return confirm('Dobara Pending karein (Reopen as pending)?');">
+                                                <input type="hidden" name="id" value="@udhar.Id" />
+                                                <button type="submit" class="btn btn-secondary btn-sm" title="Reopen as Pending" style="padding: 4px 8px; font-size: 11px; color: #fbbf24; border-color: rgba(245, 158, 11, 0.3);">
+                                                    <i class="fa-solid fa-rotate-left"></i> Reopen
+                                                </button>
+                                            </form>
+                                        }
+
+                                        <!-- Edit -->
+                                        <a asp-action="Edit" asp-route-id="@udhar.Id" class="btn btn-secondary btn-sm" title="Edit / Partial Repayment" style="padding: 4px 10px; font-size: 11px;">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+
+                                        <!-- Delete -->
+                                        <a asp-action="Delete" asp-route-id="@udhar.Id" class="btn btn-danger btn-sm" title="Delete" style="padding: 4px 10px; font-size: 11px;">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
                                     </div>
                                 }
                             </td>
@@ -115,10 +183,35 @@
         }
         else
         {
-            <div class="empty-state" style="text-align: center; padding: 40px; color: var(--hud-text-muted);">
-                <i class="fa-solid fa-hand-holding-dollar" style="font-size: 32px; opacity: 0.5; margin-bottom: 12px; display: block;"></i>
-                <p>No udhar records found.</p>
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                <i class="fa-solid fa-hand-holding-dollar" style="font-size: 36px; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                <h4 style="font-size: 16px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">No Udhar Records Found</h4>
+                <p style="font-size: 13.5px; margin: 0 0 16px;">Track money lent to friends, relatives, or shop credit here.</p>
+                <a asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Record First Udhar
+                </a>
             </div>
         }
     </div>
 </div>
+
+<script>
+    function filterUdhar(filter, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const rows = document.querySelectorAll('.udhar-row');
+        rows.forEach(row => {
+            const status = row.getAttribute('data-status');
+            const type = row.getAttribute('data-type');
+
+            if (filter === 'all') {
+                row.style.display = '';
+            } else if (filter === 'Pending' || filter === 'Completed') {
+                row.style.display = (status === filter) ? '' : 'none';
+            } else if (filter === 'Lene' || filter === 'Dene') {
+                row.style.display = (type === filter) ? '' : 'none';
+            }
+        });
+    }
+</script>

@@ -1,8 +1,719 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "HomeLedger — Modern Family Wealth & Shared Expense Intelligence";
+    Layout = null; // Full-page immersive landing experience
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Master Design System -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        /* Landing Page Specific High-Performance Styles */
+        .landing-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 16px 40px;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all var(--transition-normal);
+        }
+
+        .landing-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .landing-nav-links a {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color var(--transition-fast);
+        }
+
+        .landing-nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .hero-section {
+            padding: 140px 24px 80px;
+            max-width: 1280px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.28);
+            color: var(--emerald-400);
+            font-size: 12.5px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.2px;
+            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .hero-title {
+            font-size: clamp(38px, 5.5vw, 68px);
+            font-weight: 800;
+            line-height: 1.12;
+            letter-spacing: -0.035em;
+            margin-bottom: 24px;
+            max-width: 960px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(16px, 1.8vw, 19px);
+            color: var(--text-muted);
+            max-width: 720px;
+            margin: 0 auto 36px;
+            line-height: 1.6;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 48px;
+            animation: fadeInUp 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .trust-pills {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--text-dim);
+            animation: fadeInUp 1.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .trust-pill-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 3D Dashboard Mockup Card */
+        .mockup-wrapper {
+            position: relative;
+            max-width: 1040px;
+            margin: 50px auto 0;
+            perspective: 1200px;
+            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .mockup-card {
+            background: rgba(18, 26, 42, 0.88);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(16, 185, 129, 0.12);
+            overflow: hidden;
+            text-align: left;
+            transition: transform 0.5s ease;
+        }
+
+        .mockup-header-bar {
+            padding: 16px 24px;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .browser-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .browser-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+
+        .section-container {
+            padding: 90px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 680px;
+            margin: 0 auto 56px;
+        }
+
+        .section-tag {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--emerald-400);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .section-title {
+            font-size: clamp(28px, 3.5vw, 42px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Pillars Grid */
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
+
+        .pillar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 16px 36px -10px rgba(16, 185, 129, 0.16);
+        }
+
+        .pillar-icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        /* Scenario Tabs */
+        .scenario-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 36px;
+            flex-wrap: wrap;
+        }
+
+        .scenario-tab-btn {
+            padding: 10px 22px;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-card);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .scenario-tab-btn.active {
+            background: var(--emerald-500);
+            color: #ffffff;
+            border-color: var(--emerald-500);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-card);
+            background: var(--bg-card);
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .comparison-table th:first-child, .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table th {
+            background: rgba(15, 23, 42, 0.8);
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cta-banner {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(99, 102, 241, 0.16) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius-xl);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .landing-footer {
+            padding: 40px 24px;
+            border-top: 1px solid var(--border-subtle);
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Landing Header -->
+    <header class="landing-header">
+        <div class="brand-wrapper">
+            <a href="/" class="brand-logo">
+                <div class="brand-icon-box">
+                    <i class="fa-solid fa-vault"></i>
+                </div>
+                <div>
+                    <span>Home<span style="color: var(--emerald-400);">Ledger</span></span>
+                    <small style="display: block; font-size: 10px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px;">Family Wealth OS</small>
+                </div>
+            </a>
+        </div>
+
+        <ul class="landing-nav-links d-none d-lg-flex">
+            <li><a href="#features">Pillars</a></li>
+            <li><a href="#udhar">Udhar Ledger</a></li>
+            <li><a href="#scenarios">Family Scenarios</a></li>
+            <li><a href="#comparison">Why HomeLedger?</a></li>
+            <li><a href="#security">Privacy</a></li>
+        </ul>
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full);">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                <span>Sign In</span>
+            </a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm" style="border-radius: var(--radius-full);">
+                <i class="fa-solid fa-sparkles"></i>
+                <span>Start Free</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-badge">
+            <i class="fa-solid fa-shield-heart"></i>
+            <span>The Intelligent Financial OS for Indian Families</span>
+        </div>
+
+        <h1 class="hero-title">
+            Master Family Wealth &amp;<br>
+            <span class="gradient-text-emerald">Shared Expense Intelligence.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            The first household ledger built to unite families without sacrificing financial boundaries. Consolidate household income, isolate member expenditures, track date-wise Udhar, and safeguard family administration with enterprise-grade privacy.
+        </p>
+
+        <div class="hero-cta-group">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg" style="gap: 10px;">
+                <span>Create Family Account</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-lg" style="gap: 10px;">
+                <i class="fa-solid fa-user-shield" style="color: var(--emerald-400);"></i>
+                <span>Member Portal Login</span>
+            </a>
+        </div>
+
+        <div class="trust-pills">
+            <div class="trust-pill-item">
+                <i class="fa-solid fa-circle-check" style="color: var(--emerald-400);"></i>
+                <span>100% Private &amp; Self-Hosted</span>
+            </div>
+            <div class="trust-pill-item">
+                <i class="fa-solid fa-circle-check" style="color: var(--indigo-400);"></i>
+                <span>Dedicated Udhar (Lene/Dene) Bahi-Khata</span>
+            </div>
+            <div class="trust-pill-item">
+                <i class="fa-solid fa-circle-check" style="color: var(--cyan-400);"></i>
+                <span>Father Admin vs Member Isolation</span>
+            </div>
+            <div class="trust-pill-item">
+                <i class="fa-solid fa-circle-check" style="color: var(--amber-400);"></i>
+                <span>Instant PDF &amp; CSV Reports</span>
+            </div>
+        </div>
+
+        <!-- Interactive 3D Glass Dashboard Mockup -->
+        <div class="mockup-wrapper">
+            <div class="mockup-card">
+                <div class="mockup-header-bar">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div class="browser-dots">
+                            <span class="browser-dot" style="background: #f43f5e;"></span>
+                            <span class="browser-dot" style="background: #f59e0b;"></span>
+                            <span class="browser-dot" style="background: #10b981;"></span>
+                        </div>
+                        <span style="font-size: 12px; color: var(--text-dim); font-family: var(--font-mono);">homeledger://workspace/patel-family</span>
+                    </div>
+                    <div class="badge badge-emerald">
+                        <i class="fa-solid fa-circle" style="font-size: 7px;"></i>
+                        <span>Live Ledger Active</span>
+                    </div>
+                </div>
+
+                <div style="padding: 28px;">
+                    <!-- Top Metrics Banner Inside Mockup -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-md); padding: 18px;">
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Remaining Balance</span>
+                            <h2 style="font-size: 28px; font-weight: 800; color: var(--emerald-400); font-family: var(--font-mono); margin: 0;">₹34,500.00</h2>
+                            <small style="color: var(--text-dim); font-size: 11px;">Surplus ready for savings</small>
+                        </div>
+                        <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-md); padding: 18px;">
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Total Income</span>
+                            <h2 style="font-size: 28px; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); margin: 0;">₹49,500.00</h2>
+                            <small style="color: var(--emerald-400); font-size: 11px;"><i class="fa-solid fa-arrow-up"></i> Salary + Freelance</small>
+                        </div>
+                        <div style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.25); border-radius: var(--radius-md); padding: 18px;">
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Household Expenses</span>
+                            <h2 style="font-size: 28px; font-weight: 800; color: #fb7185; font-family: var(--font-mono); margin: 0;">₹15,000.00</h2>
+                            <small style="color: var(--text-dim); font-size: 11px;">Groceries, Electricity, School</small>
+                        </div>
+                        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); padding: 18px;">
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Udhar (Dene Hai)</span>
+                            <h2 style="font-size: 28px; font-weight: 800; color: var(--amber-400); font-family: var(--font-mono); margin: 0;">₹17,500.00</h2>
+                            <small style="color: var(--amber-400); font-size: 11px;">To Receive: ₹2,000.00</small>
+                        </div>
+                    </div>
+
+                    <!-- Live Sample Activity Stream Inside Mockup -->
+                    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted);">Recent Household Transactions</span>
+                            <span style="font-size: 11px; color: var(--emerald-400);"><i class="fa-solid fa-lock"></i> Admin Vault Encrypted</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-arrow-up"></i></div>
+                                    <span style="font-size: 13.5px; font-weight: 600;">Father's salary (01 Oct)</span>
+                                </div>
+                                <span style="font-family: var(--font-mono); font-weight: 700; color: #10b981;">+₹25,000.00</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(244, 63, 94, 0.15); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-arrow-down"></i></div>
+                                    <span style="font-size: 13.5px; font-weight: 600;">Grocery shopping (02 Oct)</span>
+                                </div>
+                                <span style="font-family: var(--font-mono); font-weight: 700; color: #f43f5e;">-₹2,500.00</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                                    <span style="font-size: 13.5px; font-weight: 600;">Friend ko udhar diya (16 Oct)</span>
+                                </div>
+                                <span style="font-family: var(--font-mono); font-weight: 700; color: #f59e0b;">₹3,500.00 (Lene Hai)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 1: The 4 Core Pillars -->
+    <section class="section-container" id="features">
+        <div class="section-header">
+            <span class="section-tag">Core Architecture</span>
+            <h2 class="section-title">Engineered Specifically For Indian Household Dynamics</h2>
+            <p class="section-desc">Traditional Western budgeting apps don't understand Indian joint families, shop credit, or informal lending. HomeLedger bridges that gap with four unbreakable pillars.</p>
+        </div>
+
+        <div class="pillars-grid">
+            <div class="pillar-card">
+                <div class="pillar-icon-box" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald-400);">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <h3 style="font-size: 18px; margin-bottom: 10px;">Role-Based Family Hierarchy</h3>
+                <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                    The Family Head (Father) retains overall budget authority and secret keys. Family members (Mother, Son, etc.) record their own contributions in an isolated space without touching Admin configurations.
+                </p>
+            </div>
+
+            <div class="pillar-card" id="udhar">
+                <div class="pillar-icon-box" style="background: rgba(245, 158, 11, 0.15); color: var(--amber-400);">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+                <h3 style="font-size: 18px; margin-bottom: 10px;">Dedicated Udhar (Credit) Bahi-Khata</h3>
+                <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                    Stop mixing grocery expenses with money lent to friends or store credit. Our standalone Udhar ledger tracks <em>Lene Hai</em> and <em>Dene Hai</em> so your monthly cash balances never get double-counted.
+                </p>
+            </div>
+
+            <div class="pillar-card">
+                <div class="pillar-icon-box" style="background: rgba(99, 102, 241, 0.15); color: var(--indigo-400);">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <h3 style="font-size: 18px; margin-bottom: 10px;">Visual Analytics &amp; Instant Reports</h3>
+                <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                    Interactive category doughnut charts, timeline cash flows, and one-click PDF/CSV reports formatted in Indian rupees (₹) for transparent family audits and monthly planning.
+                </p>
+            </div>
+
+            <div class="pillar-card" id="security">
+                <div class="pillar-icon-box" style="background: rgba(14, 165, 233, 0.15); color: var(--cyan-400);">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 style="font-size: 18px; margin-bottom: 10px;">Bank-Grade Privacy &amp; Local Storage</h3>
+                <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                    Zero bank logins, zero third-party data tracking, BCrypt cryptographic password hashing, and local database resilience that guarantees your family's financial numbers stay yours alone.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Real Family Scenarios (Interactive Tabs) -->
+    <section class="section-container" id="scenarios" style="background: rgba(255, 255, 255, 0.015); border-radius: var(--radius-xl); border: 1px solid var(--border-subtle);">
+        <div class="section-header">
+            <span class="section-tag">Real-World Case Studies</span>
+            <h2 class="section-title">Tested Across October 2026 Household Audits</h2>
+            <p class="section-desc">See how real households successfully managed salary, tuition, credit purchases, and repayments on HomeLedger.</p>
+        </div>
+
+        <div class="scenario-tabs">
+            <button class="scenario-tab-btn active" onclick="switchScenario('patel', this)">
+                <i class="fa-solid fa-house-chimney"></i> Patel's Family
+            </button>
+            <button class="scenario-tab-btn" onclick="switchScenario('rana', this)">
+                <i class="fa-solid fa-house-chimney"></i> Rana's Family
+            </button>
+            <button class="scenario-tab-btn" onclick="switchScenario('rathod', this)">
+                <i class="fa-solid fa-house-chimney"></i> Rathod's Family
+            </button>
+        </div>
+
+        <!-- Scenario 1: Patel's Family -->
+        <div id="scenario-patel" class="scenario-content">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                <div class="glass-card" style="padding: 20px;">
+                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Total Income</span>
+                    <h3 style="font-size: 26px; color: var(--emerald-400); font-family: var(--font-mono); margin: 6px 0;">₹49,500.00</h3>
+                    <small style="color: var(--text-muted);">Father's salary (₹25k) + Mother (₹8k) + Freelance (₹15k)</small>
+                </div>
+                <div class="glass-card" style="padding: 20px;">
+                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Paid Expenses</span>
+                    <h3 style="font-size: 26px; color: #f43f5e; font-family: var(--font-mono); margin: 6px 0;">₹15,000.00</h3>
+                    <small style="color: var(--text-muted);">Groceries, electricity, school fees, transport, medical</small>
+                </div>
+                <div class="glass-card" style="padding: 20px;">
+                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Closing Udhar Position</span>
+                    <h3 style="font-size: 26px; color: var(--amber-400); font-family: var(--font-mono); margin: 6px 0;">₹17,500 <span style="font-size: 14px; font-weight: 500; color: var(--text-dim);">dene baki</span></h3>
+                    <small style="color: var(--text-muted);">Receivable: ₹2,000 from friends</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenario 2: Rana's Family -->
+        <div id="scenario-rana" class="scenario-content" style="display: none;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                <div class="glass-card" style="padding: 20px;">
+                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Total Income</span>
+                    <h3 style="font-size: 26px; color: var(--emerald-400); font-family: var(--font-mono); margin: 6px 0;">₹55,000.00</h3>
+                    <small style="color: var(--text-muted);">Father (₹30k) + Mother (₹10k) + Extra work (₹15k)</small>
+                </div>
+                <div class="glass-card" style="padding: 20px;">
+                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Paid Expenses</span>
+                    <h3 style="font-size: 26px; color: #f43f5e; font-family: var(--font-mono); margin: 6px 0;">₹13,500.00</h3>
+                    <small style="color: var(--text-muted);">Electricity, transport, education, medical</small>
+                </div>
+                <div class="glass-card" style="padding: 20px;">
+                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Closing Udhar Position</span>
+                    <h3 style="font-size: 26px; color: var(--amber-400); font-family: var(--font-mono); margin: 6px 0;">₹25,200 <span style="font-size: 14px; font-weight: 500; color: var(--text-dim);">dene baki</span></h3>
+                    <small style="color: var(--text-muted);">Receivable: ₹4,000 lent to relative</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenario 3: Rathod's Family -->
+        <div id="scenario-rathod" class="scenario-content" style="display: none;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                <div class="glass-card" style="padding: 20px;">
+                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Total Income</span>
+                    <h3 style="font-size: 26px; color: var(--emerald-400); font-family: var(--font-mono); margin: 6px 0;">₹42,000.00</h3>
+                    <small style="color: var(--text-muted);">Father (₹22k) + Mother (₹7k) + Side work (₹13k)</small>
+                </div>
+                <div class="glass-card" style="padding: 20px;">
+                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Paid Expenses</span>
+                    <h3 style="font-size: 26px; color: #f43f5e; font-family: var(--font-mono); margin: 6px 0;">₹10,000.00</h3>
+                    <small style="color: var(--text-muted);">Grocery shopping, education, medical, bills</small>
+                </div>
+                <div class="glass-card" style="padding: 20px;">
+                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Closing Udhar Position</span>
+                    <h3 style="font-size: 26px; color: var(--amber-400); font-family: var(--font-mono); margin: 6px 0;">₹18,600 <span style="font-size: 14px; font-weight: 500; color: var(--text-dim);">dene baki</span></h3>
+                    <small style="color: var(--text-muted);">Receivable: ₹4,000 neighbour lending</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Feature Comparison -->
+    <section class="section-container" id="comparison">
+        <div class="section-header">
+            <span class="section-tag">Transparent Comparison</span>
+            <h2 class="section-title">Why HomeLedger Outclasses Other Alternatives</h2>
+            <p class="section-desc">See how HomeLedger compares against generic apps and paper diaries.</p>
+        </div>
+
+        <div class="table-container">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Key Capability</th>
+                        <th style="width: 25%; color: var(--emerald-400);"><i class="fa-solid fa-vault"></i> HomeLedger</th>
+                        <th style="width: 20%;">Splitwise / Khatabook</th>
+                        <th style="width: 20%;">Paper Bahi-Khata / Excel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Role-Based Privacy (Father Admin vs Members)</td>
+                        <td style="color: var(--emerald-400); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> Built-in Isolation</td>
+                        <td style="color: #f43f5e;"><i class="fa-solid fa-circle-xmark"></i> Not Supported</td>
+                        <td style="color: #f43f5e;"><i class="fa-solid fa-circle-xmark"></i> Open to Anyone</td>
+                    </tr>
+                    <tr>
+                        <td>Separate Udhar (Lene/Dene) Ledger</td>
+                        <td style="color: var(--emerald-400); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> Dedicated Module</td>
+                        <td style="color: var(--amber-400);"><i class="fa-solid fa-triangle-exclamation"></i> Only Split or Business</td>
+                        <td style="color: var(--amber-400);"><i class="fa-solid fa-triangle-exclamation"></i> Prone to Calculation Errors</td>
+                    </tr>
+                    <tr>
+                        <td>Consolidated Monthly Reports + Charts</td>
+                        <td style="color: var(--emerald-400); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> Visual &amp; Instant</td>
+                        <td style="color: var(--amber-400);"><i class="fa-solid fa-triangle-exclamation"></i> Paywalled or Basic</td>
+                        <td style="color: #f43f5e;"><i class="fa-solid fa-circle-xmark"></i> Manual Charting</td>
+                    </tr>
+                    <tr>
+                        <td>Private Self-Hosted &amp; Zero Ad Tracking</td>
+                        <td style="color: var(--emerald-400); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> 100% Private Database</td>
+                        <td style="color: #f43f5e;"><i class="fa-solid fa-circle-xmark"></i> Cloud Third-Party Ads</td>
+                        <td style="color: var(--emerald-400);"><i class="fa-solid fa-circle-check"></i> Offline Only</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Section 4: High-Impact Call to Action Banner -->
+    <section class="section-container" style="padding-top: 20px;">
+        <div class="cta-banner">
+            <h2 style="font-size: clamp(30px, 4vw, 44px); font-weight: 800; margin-bottom: 16px;">
+                Bring Financial Clarity to Your Family Today.
+            </h2>
+            <p style="font-size: 17px; color: var(--text-secondary); max-width: 600px; margin: 0 auto 32px; line-height: 1.6;">
+                Join hundreds of households tracking income, smart budgets, and Udhar with complete role protection. Setup takes less than 60 seconds.
+            </p>
+            <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Create Your Family Vault</span>
+                </a>
+                <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-lg">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <span>Sign In to Existing Account</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="brand-icon-box" style="width: 28px; height: 28px; font-size: 13px;">
+                    <i class="fa-solid fa-vault"></i>
+                </div>
+                <span style="font-weight: 700; color: var(--text-primary);">HomeLedger</span>
+                <span>— Secure Family Wealth OS</span>
+            </div>
+            <div>
+                <span class="badge badge-emerald" style="text-transform: none; font-size: 11px;">
+                    <i class="fa-solid fa-circle-check"></i> System Online &amp; Database Connected
+                </span>
+            </div>
+            <div>
+                <p style="margin: 0;">&copy; @DateTime.Now.Year HomeLedger. Engineered for Modern Households.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Script for Scenario Tabs -->
+    <script>
+        function switchScenario(key, btn) {
+            document.querySelectorAll('.scenario-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.scenario-tab-btn').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById('scenario-' + key);
+            if (target) {
+                target.style.display = 'block';
+                target.classList.add('animate-fade-in-up');
+            }
+            if (btn) btn.classList.add('active');
+        }
+    </script>
+</body>
+</html>

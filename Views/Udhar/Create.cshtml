@@ -2,221 +2,205 @@
 @{
     var isMember = Context.Session.GetString("LoginType") == "Member";
     var memberName = Context.Session.GetString("MemberName") ?? Model?.MemberName;
-    ViewData["Title"] = "Add Udhar";
+    ViewData["Title"] = "Record Udhar Entry";
     Layout = "_Layout";
 }
 
-<style>
-    .page-header {
-        margin-bottom: 30px;
-        text-align: center;
-    }
-
-    .page-title {
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--hud-text-white);
-        font-family: 'JetBrains Mono', monospace;
-    }
-
-    .card {
-        background: var(--hud-bg-card);
-        border: 1px solid var(--hud-border);
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        overflow: hidden;
-        max-width: 600px;
-        width: 100%;
-        margin: 0 auto;
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(244, 63, 94, 0.25) 100%);
-        border-bottom: 1px solid rgba(245, 158, 11, 0.4);
-        color: white;
-        padding: 20px 25px;
-    }
-
-    .card-header h3 {
-        font-size: 18px;
-        font-weight: 700;
-        margin: 0;
-        color: var(--hud-text-white);
-    }
-
-    .card-body {
-        padding: 30px 25px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        color: var(--hud-text-white);
-        font-weight: 600;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px 14px;
-        background: var(--hud-bg-input);
-        border: 1px solid var(--hud-border);
-        border-radius: 8px;
-        color: var(--hud-text-white);
-        font-size: 14px;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #f59e0b;
-        box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
-    }
-
-    textarea.form-control {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #f59e0b 0%, #f43f5e 100%);
-        color: white;
-        border: none;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
-    }
-
-    .btn-secondary {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid var(--hud-border);
-        color: var(--hud-text-muted);
-        margin-left: 10px;
-    }
-
-    .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-    }
-
-    .validation-summary {
-        background: rgba(244, 63, 94, 0.12);
-        border: 1px solid #f43f5e;
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-bottom: 20px;
-        color: #f43f5e;
-        font-size: 13px;
-    }
-</style>
-
-<div class="page-header">
-    <h1 class="page-title"><span style="color: var(--hud-cyan);">//</span> Add Udhar Record</h1>
-</div>
-
-<div class="card">
-    <div class="card-header">
-        <h3><i class="fa-solid fa-hand-holding-dollar" style="color: #f59e0b; margin-right: 8px;"></i> New Udhar Entry</h3>
+<div style="max-width: 680px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-size: 24px; font-weight: 800; margin: 0;">Record Udhar Transaction</h1>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Track borrowed (Dene Hai) or lent (Lene Hai) funds separately from expenses</p>
+        </div>
+        <a asp-action="@(isMember ? "MemberDashboard" : "Index")" asp-controller="@(isMember ? "Home" : "Udhar")" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Cancel
+        </a>
     </div>
-    <div class="card-body">
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="validation-summary">
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <p style="margin: 0 0 5px 0;"><i class="fa-solid fa-circle-exclamation"></i> @error.ErrorMessage</p>
-                }
-            </div>
-        }
 
-        <form asp-action="Create" method="post">
-            <div class="form-group">
-                <label for="PersonName">Person Name *</label>
-                <input type="text" id="PersonName" name="PersonName" class="form-control" required placeholder="e.g. Ramesh, Sharmaji, Neighbour" value="@Model?.PersonName">
+    <!-- Live Calculation Ribbon -->
+    <div class="glass-card" style="margin-bottom: 24px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.25);">
+        <div style="padding: 16px 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px; text-align: center;">
+            <div style="border-right: 1px solid var(--border-hairline);">
+                <span style="font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Total Udhar</span>
+                <span id="calcTotal" class="currency-amount" style="font-size: 17px; font-weight: 800; color: var(--text-primary);">₹0.00</span>
             </div>
+            <div style="border-right: 1px solid var(--border-hairline);">
+                <span id="calcRepaidLabel" style="font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Initial Repayment</span>
+                <span id="calcRepaid" class="currency-amount" style="font-size: 17px; font-weight: 800; color: var(--emerald-400);">₹0.00</span>
+            </div>
+            <div style="border-right: 1px solid var(--border-hairline);">
+                <span id="calcRemainingLabel" style="font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Balance Remaining</span>
+                <span id="calcRemaining" class="currency-amount" style="font-size: 17px; font-weight: 800; color: #fbbf24;">₹0.00</span>
+            </div>
+            <div>
+                <span style="font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Status</span>
+                <span id="calcStatusText" style="font-size: 13px; font-weight: 700; color: #fb7185;">⏳ Pending</span>
+            </div>
+        </div>
+    </div>
 
-            <div class="form-group">
-                <label for="MemberName">Family Member</label>
-                @if (isMember)
-                {
-                    <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@memberName" readonly style="opacity: 0.9; font-weight: 700; color: #f59e0b;">
-                    <small style="color: #f59e0b; font-size: 11px; display: block; margin-top: 4px;">
-                        <i class="fa-solid fa-lock"></i> Auto-locked to your logged-in Member account: <strong>@memberName</strong>
+    <div class="glass-card">
+        <div class="glass-card-header" style="background: rgba(245, 158, 11, 0.08); border-bottom: 1px solid rgba(245, 158, 11, 0.2);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(245, 158, 11, 0.2); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: var(--text-primary);">Udhar Bahi-Khata Details</h3>
+            </div>
+            <span class="badge badge-amber">Credit Ledger</span>
+        </div>
+
+        <div class="glass-card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #fb7185; font-size: 13px;">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p style="margin: 0 0 4px;"><i class="fa-solid fa-circle-exclamation"></i> @error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form asp-action="Create" method="post" autocomplete="off" id="udharCreateForm">
+                <div class="form-group">
+                    <label class="form-label" for="PersonName">External Person / Store Name *</label>
+                    <input type="text" id="PersonName" name="PersonName" class="form-control" required placeholder="e.g. Ramesh Bhai (Friend), Sharmaji Grocer, Relative" value="@Model?.PersonName" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="MemberName">Family Member Involved</label>
+                    @if (isMember)
+                    {
+                        <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@memberName" readonly style="opacity: 0.9; font-weight: 700; color: #fbbf24;" />
+                        <small style="color: #fbbf24; font-size: 11.5px; display: block; margin-top: 4px;">
+                            <i class="fa-solid fa-lock"></i> Auto-locked to your authenticated member identity: <strong>@memberName</strong>
+                        </small>
+                    }
+                    else
+                    {
+                        <input type="text" id="MemberName" name="MemberName" class="form-control" value="@Model?.MemberName" placeholder="e.g. Father, Mother, Rohan" />
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Type">Transaction Classification *</label>
+                    <select id="Type" name="Type" class="form-control" required onchange="handleTypeChange()">
+                        <option value="">-- Select Classification --</option>
+                        <option value="Lene Hai" selected="@(Model?.Type == "Lene Hai" ? "selected" : null)">
+                            Lene Hai (To Receive — Humne Udhar Diya Hai / Asset)
+                        </option>
+                        <option value="Dene Hai" selected="@(Model?.Type == "Dene Hai" ? "selected" : null)">
+                            Dene Hai (To Pay — Humne Udhar Liya Hai / Liability)
+                        </option>
+                    </select>
+                    <small id="typeExplanation" style="color: var(--text-dim); font-size: 12px; display: block; margin-top: 4px;">
+                        Chuniye ki aapko paise lene hain ya chukane hain.
                     </small>
-                }
-                else
-                {
-                    <input type="text" id="MemberName" name="MemberName" class="form-control" value="@Model?.MemberName" placeholder="e.g. Father, Mother, Rohan">
-                }
-            </div>
+                </div>
 
-            <div class="form-group">
-                <label for="Type">Type *</label>
-                <select id="Type" name="Type" class="form-control" required style="background: var(--hud-bg-input); color: var(--hud-text-white);">
-                    <option value="">Select Type</option>
-                    <option value="Lene Hai" selected="@(Model?.Type == "Lene Hai" ? "selected" : null)">Lene Hai (To Receive / Receivable)</option>
-                    <option value="Dene Hai" selected="@(Model?.Type == "Dene Hai" ? "selected" : null)">Dene Hai (To Pay / Payable)</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label class="form-label" for="Amount">Total Amount (₹) *</label>
+                    <input type="number" id="Amount" name="Amount" class="form-control font-mono" required step="0.01" min="0" placeholder="0.00" value="@(Model?.Amount > 0 ? Model.Amount.ToString("F2") : "")" style="font-size: 18px; font-weight: 700;" oninput="updateCalculations()" />
+                </div>
 
-            <div class="form-group">
-                <label for="Amount">Total Amount (₹) *</label>
-                <input type="number" id="Amount" name="Amount" class="form-control" required step="0.01" min="0" value="@Model?.Amount">
-            </div>
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label class="form-label" for="PaidAmount" id="paidAmountLabel" style="margin: 0;">
+                            Already Paid / Settled Amount (₹)
+                        </label>
+                        <span style="font-size: 11px; color: var(--text-dim);">Default: ₹0</span>
+                    </div>
+                    <input type="number" id="PaidAmount" name="PaidAmount" class="form-control font-mono" step="0.01" min="0" value="@(Model?.PaidAmount ?? 0)" oninput="updateCalculations()" />
+                    <small style="color: var(--text-dim); font-size: 11.5px; display: block; margin-top: 4px;">
+                        Naye udhar me ise <strong>0</strong> hi rakhein, jab tak ki samne wale ne turant kuch rashi wapas na ki ho.
+                    </small>
+                </div>
 
-            <div class="form-group">
-                <label for="PaidAmount">Paid Amount (₹)</label>
-                <input type="number" id="PaidAmount" name="PaidAmount" class="form-control" step="0.01" min="0" value="0">
-            </div>
+                <div class="form-group">
+                    <label class="form-label" for="Date">Transaction Date *</label>
+                    <input type="date" id="Date" name="Date" class="form-control" required value="@(Model?.Date != null && Model.Date != default ? Model.Date.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd"))" />
+                </div>
 
-            <div class="form-group">
-                <label for="Date">Date *</label>
-                <input type="date" id="Date" name="Date" class="form-control" required value="@(Model?.Date != null ? Model.Date.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd"))">
-            </div>
+                <div class="form-group">
+                    <label class="form-label" for="Reason">Reason / Terms (Optional)</label>
+                    <textarea id="Reason" name="Reason" class="form-control" rows="3" placeholder="Reason for borrowing/lending, repayment date agreement, etc...">@Model?.Reason</textarea>
+                </div>
 
-            <div class="form-group">
-                <label for="Reason">Reason (Optional)</label>
-                <textarea id="Reason" name="Reason" class="form-control" rows="3" placeholder="e.g. Emergency, Grocery credit, Personal loan">@Model?.Reason</textarea>
-            </div>
-
-            <div style="margin-top: 25px; display: flex; align-items: center;">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-save"></i> Save Udhar
-                </button>
-                @if (isMember)
-                {
-                    <a asp-controller="Home" asp-action="MemberDashboard" class="btn btn-secondary">
-                        <i class="fa-solid fa-xmark"></i> Cancel
-                    </a>
-                }
-                else
-                {
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="fa-solid fa-xmark"></i> Cancel
-                    </a>
-                }
-            </div>
-        </form>
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.4);">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Udhar Record
+                    </button>
+                    @if (isMember)
+                    {
+                        <a asp-controller="Home" asp-action="MemberDashboard" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Index" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    }
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<script>
+    function handleTypeChange() {
+        const type = document.getElementById('Type').value;
+        const paidLabel = document.getElementById('paidAmountLabel');
+        const explanation = document.getElementById('typeExplanation');
+        const calcRepaidLabel = document.getElementById('calcRepaidLabel');
+        const calcRemainingLabel = document.getElementById('calcRemainingLabel');
+
+        if (type === 'Lene Hai') {
+            paidLabel.textContent = 'Repayment Received (Wapas Mil Gaya) ₹';
+            explanation.textContent = 'Aapne kisi ko udhar diya hai — samne wale se paise wapas lene hain.';
+            calcRepaidLabel.textContent = 'Received So Far';
+            calcRemainingLabel.textContent = 'Remaining Lene Hai';
+        } else if (type === 'Dene Hai') {
+            paidLabel.textContent = 'Repayment Paid (Wapas De Diya) ₹';
+            explanation.textContent = 'Aapne kisi se udhar liya hai — samne wale ko paise chukane hain.';
+            calcRepaidLabel.textContent = 'Paid Back So Far';
+            calcRemainingLabel.textContent = 'Remaining Dene Hai';
+        } else {
+            paidLabel.textContent = 'Already Paid / Settled Amount (₹)';
+            explanation.textContent = 'Chuniye ki aapko paise lene hain ya chukane hain.';
+            calcRepaidLabel.textContent = 'Initial Repayment';
+            calcRemainingLabel.textContent = 'Balance Remaining';
+        }
+        updateCalculations();
+    }
+
+    function updateCalculations() {
+        const amount = parseFloat(document.getElementById('Amount').value) || 0;
+        const paid = parseFloat(document.getElementById('PaidAmount').value) || 0;
+        const remaining = Math.max(0, amount - paid);
+
+        document.getElementById('calcTotal').textContent = '₹' + amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('calcRepaid').textContent = '₹' + paid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        const remElem = document.getElementById('calcRemaining');
+        remElem.textContent = '₹' + remaining.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        const statusElem = document.getElementById('calcStatusText');
+
+        if (remaining <= 0 && amount > 0) {
+            statusElem.textContent = '✓ Settled';
+            statusElem.style.color = 'var(--emerald-400)';
+            remElem.style.color = 'var(--text-dim)';
+        } else {
+            statusElem.textContent = '⏳ Pending';
+            statusElem.style.color = '#fb7185';
+            remElem.style.color = '#fbbf24';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        handleTypeChange();
+        updateCalculations();
+    });
+</script>

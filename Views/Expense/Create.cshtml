@@ -2,202 +2,97 @@
 @{
     var isMember = Context.Session.GetString("LoginType") == "Member";
     var memberName = Context.Session.GetString("MemberName") ?? Model?.MemberName;
-    ViewData["Title"] = "Add Expense";
+    ViewData["Title"] = "Record Expense";
     Layout = "_Layout";
 }
 
-<style>
-    .page-header {
-        margin-bottom: 30px;
-        text-align: center;
-    }
-
-    .page-title {
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--hud-text-white);
-        font-family: 'JetBrains Mono', monospace;
-    }
-
-    .card {
-        background: var(--hud-bg-card);
-        border: 1px solid var(--hud-border);
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        overflow: hidden;
-        max-width: 600px;
-        width: 100%;
-        margin: 0 auto;
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(245, 158, 11, 0.25) 100%);
-        border-bottom: 1px solid rgba(239, 68, 68, 0.4);
-        color: white;
-        padding: 20px 25px;
-    }
-
-    .card-header h3 {
-        font-size: 18px;
-        font-weight: 700;
-        margin: 0;
-        color: var(--hud-text-white);
-    }
-
-    .card-body {
-        padding: 30px 25px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        color: var(--hud-text-white);
-        font-weight: 600;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px 14px;
-        background: var(--hud-bg-input);
-        border: 1px solid var(--hud-border);
-        border-radius: 8px;
-        color: var(--hud-text-white);
-        font-size: 14px;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #ef4444;
-        box-shadow: 0 0 10px rgba(239, 68, 68, 0.25);
-    }
-
-    textarea.form-control {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #ef4444 0%, #f59e0b 100%);
-        color: white;
-        border: none;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-secondary {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid var(--hud-border);
-        color: var(--hud-text-muted);
-        margin-left: 10px;
-    }
-
-    .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-    }
-
-    .validation-summary {
-        background: rgba(244, 63, 94, 0.12);
-        border: 1px solid #f43f5e;
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-bottom: 20px;
-        color: #f43f5e;
-        font-size: 13px;
-    }
-</style>
-
-<div class="page-header">
-    <h1 class="page-title"><span style="color: var(--hud-cyan);">//</span> Add Expense</h1>
-</div>
-
-<div class="card">
-    <div class="card-header">
-        <h3><i class="fa-solid fa-arrow-trend-down" style="color: #ef4444; margin-right: 8px;"></i> New Expense Record</h3>
+<div style="max-width: 640px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-size: 24px; font-weight: 800; margin: 0;">Record Household Expense</h1>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Log a household expenditure entry</p>
+        </div>
+        <a asp-action="@(isMember ? "MemberDashboard" : "Index")" asp-controller="@(isMember ? "Home" : "Expense")" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Cancel
+        </a>
     </div>
-    <div class="card-body">
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="validation-summary">
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <p style="margin: 0 0 5px 0;"><i class="fa-solid fa-circle-exclamation"></i> @error.ErrorMessage</p>
-                }
-            </div>
-        }
 
-        <form asp-action="Create" method="post">
-            <div class="form-group">
-                <label for="MemberName">Member Name</label>
-                @if (isMember)
-                {
-                    <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@memberName" readonly style="opacity: 0.9; font-weight: 700; color: #ef4444;">
-                    <small style="color: #ef4444; font-size: 11px; display: block; margin-top: 4px;">
-                        <i class="fa-solid fa-lock"></i> Auto-locked to your logged-in Member account: <strong>@memberName</strong>
-                    </small>
-                }
-                else
-                {
-                    <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@Model?.MemberName" placeholder="e.g. Father, Mother, Rohan">
-                }
+    <div class="glass-card">
+        <div class="glass-card-header" style="background: rgba(244, 63, 94, 0.08); border-bottom: 1px solid rgba(244, 63, 94, 0.2);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(244, 63, 94, 0.2); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: var(--text-primary);">Expense Details</h3>
             </div>
-            <div class="form-group">
-                <label for="Category">Category</label>
-                <input type="text" id="Category" name="Category" class="form-control" required placeholder="e.g., Grocery, Electricity, Medical, Education" value="@Model?.Category">
-            </div>
-            <div class="form-group">
-                <label for="Amount">Amount (₹)</label>
-                <input type="number" id="Amount" name="Amount" class="form-control" required step="0.01" min="0" value="@Model?.Amount">
-            </div>
-            <div class="form-group">
-                <label for="Date">Date</label>
-                <input type="date" id="Date" name="Date" class="form-control" required value="@(Model?.Date != null ? Model.Date.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd"))">
-            </div>
-            <div class="form-group">
-                <label for="Description">Description (Optional)</label>
-                <textarea id="Description" name="Description" class="form-control" rows="3">@Model?.Description</textarea>
-            </div>
-            <div style="margin-top: 25px; display: flex; align-items: center;">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-save"></i> Save Expense
-                </button>
-                @if (isMember)
-                {
-                    <a asp-controller="Home" asp-action="MemberDashboard" class="btn btn-secondary">
-                        <i class="fa-solid fa-xmark"></i> Cancel
-                    </a>
-                }
-                else
-                {
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="fa-solid fa-xmark"></i> Cancel
-                    </a>
-                }
-            </div>
-        </form>
+            <span class="badge badge-rose">Debit (−)</span>
+        </div>
+
+        <div class="glass-card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #fb7185; font-size: 13px;">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p style="margin: 0 0 4px;"><i class="fa-solid fa-circle-exclamation"></i> @error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form asp-action="Create" method="post" autocomplete="off">
+                <div class="form-group">
+                    <label class="form-label" for="MemberName">Incurring Member *</label>
+                    @if (isMember)
+                    {
+                        <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@memberName" readonly style="opacity: 0.9; font-weight: 700; color: #fb7185;" />
+                        <small style="color: #fb7185; font-size: 11.5px; display: block; margin-top: 4px;">
+                            <i class="fa-solid fa-lock"></i> Auto-locked to your authenticated member identity: <strong>@memberName</strong>
+                        </small>
+                    }
+                    else
+                    {
+                        <input type="text" id="MemberName" name="MemberName" class="form-control" required value="@Model?.MemberName" placeholder="e.g. Father, Mother, Rohan" />
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Category">Category *</label>
+                    <input type="text" id="Category" name="Category" class="form-control" required placeholder="e.g. Grocery, Electricity, Tuition Fees, Medical, Transport" value="@Model?.Category" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Amount">Amount (₹) *</label>
+                    <input type="number" id="Amount" name="Amount" class="form-control font-mono" required step="0.01" min="0" placeholder="0.00" value="@Model?.Amount" style="font-size: 18px; font-weight: 700;" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Date">Transaction Date *</label>
+                    <input type="date" id="Date" name="Date" class="form-control" required value="@(Model?.Date != null ? Model.Date.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Description">Description / Notes (Optional)</label>
+                    <textarea id="Description" name="Description" class="form-control" rows="3" placeholder="Vendor name, bill number, or specific purpose...">@Model?.Description</textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); box-shadow: 0 8px 24px -4px rgba(244, 63, 94, 0.4);">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Expense Entry
+                    </button>
+                    @if (isMember)
+                    {
+                        <a asp-controller="Home" asp-action="MemberDashboard" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Index" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    }
+                </div>
+            </form>
+        </div>
     </div>
 </div>

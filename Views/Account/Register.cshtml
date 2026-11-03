@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Register - HomeLedger";
+    ViewData["Title"] = "Create Family Workspace — HomeLedger";
     Layout = null;
 }
 
@@ -9,279 +9,165 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    
+    <!-- Google Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Master Design System -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
+    <style>
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: #0b111e;
-            background-image: 
-                linear-gradient(rgba(15, 23, 42, 0.85), rgba(11, 17, 30, 0.95)),
-                linear-gradient(90deg, rgba(0, 229, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(rgba(0, 229, 255, 0.1) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            color: #f8fafc;
+            padding: 30px 20px;
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.12), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.1), transparent 50%);
         }
 
-        .register-container {
+        .auth-wrapper {
             width: 100%;
-            max-width: 440px;
+            max-width: 480px;
+            animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .register-card {
-            position: relative;
-            background: rgba(19, 29, 45, 0.92);
-            backdrop-filter: blur(16px);
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 229, 255, 0.15);
-            border: 1px solid #1e2d42;
+        .auth-card {
+            background: rgba(18, 26, 42, 0.88);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-xl);
+            padding: 40px 36px;
+            box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.7);
         }
 
-        .register-card::before, .register-card::after {
-            content: '';
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            pointer-events: none;
-        }
-
-        .register-card::before {
-            top: 0;
-            left: 0;
-            border-top: 3px solid #00e5ff;
-            border-left: 3px solid #00e5ff;
-        }
-
-        .register-card::after {
-            bottom: 0;
-            right: 0;
-            border-bottom: 3px solid #00e5ff;
-            border-right: 3px solid #00e5ff;
-        }
-
-        .register-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .logo-icon {
-            width: 68px;
-            height: 68px;
-            background: rgba(0, 229, 255, 0.1);
-            border: 2px solid #00e5ff;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: #00e5ff;
-            font-size: 28px;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
-        }
-
-        .register-header h2 {
-            color: #f8fafc;
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .register-header p {
-            color: #94a3b8;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .alert {
-            background: rgba(244, 63, 94, 0.15);
-            border: 1px solid #f43f5e;
-            border-radius: 6px;
-            padding: 12px 16px;
-            margin-bottom: 24px;
-            color: #fb7185;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .alert-success {
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid #22c55e;
-            color: #4ade80;
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #94a3b8;
-            font-weight: 700;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-icon-wrapper {
+        .input-group-custom {
             position: relative;
         }
 
-        .input-icon-wrapper i {
+        .input-group-custom .toggle-eye {
             position: absolute;
-            left: 14px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: #00e5ff;
-        }
-
-        .input-icon-wrapper input {
-            width: 100%;
-            padding: 13px 14px 13px 44px;
-            border: 1px solid #1e2d42;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.3s;
-            background: #0f1826;
-            color: #f8fafc;
-        }
-
-        .input-icon-wrapper input:focus {
-            outline: none;
-            border-color: #00e5ff;
-            box-shadow: 0 0 16px rgba(0, 229, 255, 0.3);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #00e5ff;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 700;
+            background: none;
+            border: none;
+            color: var(--text-dim);
             cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 14px;
+            padding: 4px;
+            transition: color var(--transition-fast);
         }
 
-        .btn-primary {
-            background: rgba(0, 229, 255, 0.15);
-            color: #00e5ff;
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
-        }
-
-        .btn-primary:hover {
-            background: #00e5ff;
-            color: #0b111e;
-            box-shadow: 0 0 25px rgba(0, 229, 255, 0.7);
-            transform: translateY(-2px);
-        }
-
-        .btn-block {
-            display: block;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 24px;
-            color: #94a3b8;
-            font-size: 13px;
-        }
-
-        .login-link a {
-            color: #00e5ff;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .login-link a:hover {
-            text-decoration: underline;
+        .input-group-custom .toggle-eye:hover {
+            color: var(--text-primary);
         }
     </style>
 </head>
 <body>
-    <div class="register-container">
-        <div class="register-card">
-            <div class="register-header">
-                <div class="logo-icon">
-                    <i class="fa-solid fa-user-plus"></i>
+    <div class="auth-wrapper">
+        <!-- Brand Header -->
+        <div style="text-align: center; margin-bottom: 28px;">
+            <a href="/" style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 12px; text-decoration: none;">
+                <div class="brand-icon-box" style="width: 44px; height: 44px; font-size: 20px;">
+                    <i class="fa-solid fa-vault"></i>
                 </div>
-                <h2>Create Account</h2>
-                <p>Join HomeLedger today</p>
-            </div>
-            
+                <div style="text-align: left;">
+                    <span style="font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">
+                        Home<span style="color: var(--emerald-400);">Ledger</span>
+                    </span>
+                    <small style="display: block; font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px;">
+                        Family Wealth OS
+                    </small>
+                </div>
+            </a>
+            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Create Your Family Workspace</h2>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Set up your household ledger in under 60 seconds</p>
+        </div>
+
+        <div class="auth-card">
+            <!-- Flash Alert Messages -->
             @if (TempData["Error"] != null)
             {
-                <div class="alert">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    @TempData["Error"]
+                <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #fb7185; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-circle-exclamation" style="font-size: 16px;"></i>
+                    <span>@TempData["Error"]</span>
                 </div>
             }
 
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check"></i>
-                    @TempData["Success"]
+            <form asp-action="Register" method="post" autocomplete="off">
+                <div class="form-group">
+                    <label class="form-label" for="familyId">Unique Family ID *</label>
+                    <input type="text" id="familyId" name="familyId" class="form-control" placeholder="e.g. Patel's Family or Sharma2026" required autofocus />
+                    <small style="color: var(--text-dim); font-size: 11.5px; display: block; margin-top: 4px;">
+                        Family members will use this identifier to locate your family portal.
+                    </small>
                 </div>
-            }
 
-            <form asp-action="Register" method="post" class="register-form">
                 <div class="form-group">
-                    <label for="family_id">Family ID</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-users"></i>
-                        <input type="text" id="family_id" name="familyId" placeholder="e.g. RADADIYA_HOME" required>
+                    <label class="form-label" for="familyName">Display Family Name *</label>
+                    <input type="text" id="familyName" name="familyName" class="form-control" placeholder="e.g. The Patel Household" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Family Head (Admin) Password *</label>
+                    <div class="input-group-custom">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password (min 6 characters)" required />
+                        <button type="button" class="toggle-eye" onclick="togglePassword('password', 'eyeReg1')">
+                            <i class="fa-solid fa-eye" id="eyeReg1"></i>
+                        </button>
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="family_name">Family Name</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-house"></i>
-                        <input type="text" id="family_name" name="familyName" placeholder="e.g. Radadiya Family" required>
+                    <label class="form-label" for="confirmPassword">Confirm Password *</label>
+                    <div class="input-group-custom">
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Re-enter admin password" required />
+                        <button type="button" class="toggle-eye" onclick="togglePassword('confirmPassword', 'eyeReg2')">
+                            <i class="fa-solid fa-eye" id="eyeReg2"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="password" name="password" placeholder="Min 6 characters" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="confirm_password">Confirm Password</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="confirm_password" name="confirmPassword" placeholder="Re-enter password" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">
-                    Create Account <i class="fa-solid fa-arrow-right"></i>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 15px; margin-top: 10px;">
+                    <i class="fa-solid fa-sparkles"></i>
+                    <span>Register Family Vault</span>
                 </button>
             </form>
 
-            <div class="login-link">
-                Already have an account? <a asp-action="Login">Login here</a>
+            <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--border-subtle); padding-top: 18px; font-size: 13px; color: var(--text-muted);">
+                Already have a family workspace?
+                <a asp-action="Login" style="color: var(--emerald-400); font-weight: 700; margin-left: 4px;">Sign In</a>
             </div>
         </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/" style="font-size: 13px; color: var(--text-dim); text-decoration: none;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Home Overview
+            </a>
+        </div>
     </div>
+
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+    </script>
 </body>
 </html>

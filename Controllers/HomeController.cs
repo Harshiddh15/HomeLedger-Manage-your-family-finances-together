@@ -19,7 +19,8 @@ namespace FinanceManagementNet.Controllers
         {
             if (HttpContext.Session.GetInt32("FamilyDbId") == null)
             {
-                return RedirectToAction("Login", "Account");
+                // Render the world-class Landing Page for guests and visitors
+                return View();
             }
 
             var loginType = HttpContext.Session.GetString("LoginType");
@@ -29,6 +30,12 @@ namespace FinanceManagementNet.Controllers
             }
 
             return RedirectToAction("Dashboard");
+        }
+
+        public IActionResult Landing()
+        {
+            // Direct route to view the landing page anytime
+            return View("Index");
         }
 
         public IActionResult Dashboard()

@@ -80,9 +80,20 @@ namespace FinanceManagementNet.Controllers
                 udhar.MemberName = memberName ?? "Member";
             }
 
+            // Remove calculated/navigation properties from validation
+            ModelState.Remove("FamilyId");
+            ModelState.Remove("RemainingAmount");
+            ModelState.Remove("Status");
+            ModelState.Remove("Family");
+
             if (ModelState.IsValid)
             {
                 udhar.FamilyId = familyDbId.Value;
+
+                // Ensure non-negative and bounded paid amount
+                if (udhar.PaidAmount < 0) udhar.PaidAmount = 0;
+                if (udhar.PaidAmount > udhar.Amount) udhar.PaidAmount = udhar.Amount;
+
                 udhar.RemainingAmount = udhar.Amount - udhar.PaidAmount;
                 udhar.Status = udhar.RemainingAmount <= 0 ? "Completed" : "Pending";
                 _context.Udhar.Add(udhar);
@@ -144,6 +155,12 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("MemberDashboard", "Home");
             }
 
+            // Remove calculated/navigation properties from validation
+            ModelState.Remove("FamilyId");
+            ModelState.Remove("RemainingAmount");
+            ModelState.Remove("Status");
+            ModelState.Remove("Family");
+
             if (ModelState.IsValid)
             {
                 var existingUdhar = _context.Udhar.FirstOrDefault(u => u.Id == udhar.Id && u.FamilyId == familyDbId.Value);
@@ -152,15 +169,21 @@ namespace FinanceManagementNet.Controllers
                     return NotFound();
                 }
 
+                // Validate and clamp paid amount
+                if (udhar.PaidAmount < 0) udhar.PaidAmount = 0;
+                if (udhar.PaidAmount > udhar.Amount) udhar.PaidAmount = udhar.Amount;
+
                 existingUdhar.PersonName = udhar.PersonName;
                 existingUdhar.MemberName = udhar.MemberName;
                 existingUdhar.Type = udhar.Type;
                 existingUdhar.Amount = udhar.Amount;
                 existingUdhar.PaidAmount = udhar.PaidAmount;
-                existingUdhar.RemainingAmount = udhar.Amount - udhar.PaidAmount;
+                existingUdhar.RemainingAmount = existingUdhar.Amount - existingUdhar.PaidAmount;
                 existingUdhar.Reason = udhar.Reason;
                 existingUdhar.Date = udhar.Date;
-                existingUdhar.Status = udhar.RemainingAmount <= 0 ? "Completed" : "Pending";
+                
+                // CRITICAL FIX: Base status on existingUdhar.RemainingAmount
+                existingUdhar.Status = existingUdhar.RemainingAmount <= 0 ? "Completed" : "Pending";
 
                 _context.SaveChanges();
                 TempData["Success"] = "Udhar record updated successfully.";
@@ -168,6 +191,64 @@ namespace FinanceManagementNet.Controllers
             }
 
             return View(udhar);
+        }
+
+        [HttpPost]
+        public IActionResult Settle(int id)
+        {
+            var familyDbId = HttpContext.Session.GetInt32("FamilyDbId");
+            if (familyDbId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked. Members cannot settle udhar records.";
+                return RedirectToAction("MemberDashboard", "Home");
+            }
+
+            var udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
+            if (udhar != null)
+            {
+                udhar.PaidAmount = udhar.Amount;
+                udhar.RemainingAmount = 0;
+                udhar.Status = "Completed";
+                _context.SaveChanges();
+                TempData["Success"] = $"Udhar record for {udhar.PersonName} has been fully settled!";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Reopen(int id)
+        {
+            var familyDbId = HttpContext.Session.GetInt32("FamilyDbId");
+            if (familyDbId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var loginType = HttpContext.Session.GetString("LoginType");
+            if (loginType != "Admin")
+            {
+                TempData["Error"] = "Admin function is locked.";
+                return RedirectToAction("MemberDashboard", "Home");
+            }
+
+            var udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
+            if (udhar != null)
+            {
+                udhar.PaidAmount = 0;
+                udhar.RemainingAmount = udhar.Amount;
+                udhar.Status = "Pending";
+                _context.SaveChanges();
+                TempData["Success"] = $"Udhar record for {udhar.PersonName} has been reopened as pending.";
+            }
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult Delete(int id)
