@@ -124,18 +124,31 @@ namespace FinanceManagementNet.Controllers
             }
 
             var loginType = HttpContext.Session.GetString("LoginType");
-            if (loginType != "Admin")
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            Udhar? udhar;
+            if (loginType == "Admin")
             {
-                TempData["Error"] = "Admin function is locked. Members cannot edit udhar records.";
-                return RedirectToAction("MemberDashboard", "Home");
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
+            }
+            else
+            {
+                // Member can only edit their own udhar entries
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value && u.MemberName == memberName);
+                if (udhar == null)
+                {
+                    TempData["Error"] = "Aap sirf apna hi udhar record edit ya update kar sakte hain.";
+                    return RedirectToAction("Index");
+                }
             }
 
-            var udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
             if (udhar == null)
             {
                 return NotFound();
             }
 
+            ViewBag.IsMember = (loginType == "Member");
+            ViewBag.MemberName = memberName;
             return View(udhar);
         }
 
@@ -149,10 +162,26 @@ namespace FinanceManagementNet.Controllers
             }
 
             var loginType = HttpContext.Session.GetString("LoginType");
-            if (loginType != "Admin")
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            Udhar? existingUdhar;
+            if (loginType == "Admin")
             {
-                TempData["Error"] = "Admin function is locked. Members cannot edit udhar records.";
-                return RedirectToAction("MemberDashboard", "Home");
+                existingUdhar = _context.Udhar.FirstOrDefault(u => u.Id == udhar.Id && u.FamilyId == familyDbId.Value);
+            }
+            else
+            {
+                existingUdhar = _context.Udhar.FirstOrDefault(u => u.Id == udhar.Id && u.FamilyId == familyDbId.Value && u.MemberName == memberName);
+                if (existingUdhar == null)
+                {
+                    TempData["Error"] = "Aap sirf apna hi udhar record update kar sakte hain.";
+                    return RedirectToAction("Index");
+                }
+            }
+
+            if (existingUdhar == null)
+            {
+                return NotFound();
             }
 
             // Remove calculated/navigation properties from validation
@@ -163,18 +192,22 @@ namespace FinanceManagementNet.Controllers
 
             if (ModelState.IsValid)
             {
-                var existingUdhar = _context.Udhar.FirstOrDefault(u => u.Id == udhar.Id && u.FamilyId == familyDbId.Value);
-                if (existingUdhar == null)
-                {
-                    return NotFound();
-                }
-
                 // Validate and clamp paid amount
                 if (udhar.PaidAmount < 0) udhar.PaidAmount = 0;
                 if (udhar.PaidAmount > udhar.Amount) udhar.PaidAmount = udhar.Amount;
 
                 existingUdhar.PersonName = udhar.PersonName;
-                existingUdhar.MemberName = udhar.MemberName;
+                
+                // If Member, lock MemberName to their own identity
+                if (loginType == "Member")
+                {
+                    existingUdhar.MemberName = memberName;
+                }
+                else
+                {
+                    existingUdhar.MemberName = udhar.MemberName;
+                }
+
                 existingUdhar.Type = udhar.Type;
                 existingUdhar.Amount = udhar.Amount;
                 existingUdhar.PaidAmount = udhar.PaidAmount;
@@ -190,6 +223,8 @@ namespace FinanceManagementNet.Controllers
                 return RedirectToAction("Index");
             }
 
+            ViewBag.IsMember = (loginType == "Member");
+            ViewBag.MemberName = memberName;
             return View(udhar);
         }
 
@@ -203,13 +238,24 @@ namespace FinanceManagementNet.Controllers
             }
 
             var loginType = HttpContext.Session.GetString("LoginType");
-            if (loginType != "Admin")
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            Udhar? udhar;
+            if (loginType == "Admin")
             {
-                TempData["Error"] = "Admin function is locked. Members cannot settle udhar records.";
-                return RedirectToAction("MemberDashboard", "Home");
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
+            }
+            else
+            {
+                // Member can settle their own udhar
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value && u.MemberName == memberName);
+                if (udhar == null)
+                {
+                    TempData["Error"] = "Aap sirf apna hi udhar settle kar sakte hain.";
+                    return RedirectToAction("Index");
+                }
             }
 
-            var udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
             if (udhar != null)
             {
                 udhar.PaidAmount = udhar.Amount;
@@ -232,13 +278,24 @@ namespace FinanceManagementNet.Controllers
             }
 
             var loginType = HttpContext.Session.GetString("LoginType");
-            if (loginType != "Admin")
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            Udhar? udhar;
+            if (loginType == "Admin")
             {
-                TempData["Error"] = "Admin function is locked.";
-                return RedirectToAction("MemberDashboard", "Home");
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
+            }
+            else
+            {
+                // Member can reopen their own udhar
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value && u.MemberName == memberName);
+                if (udhar == null)
+                {
+                    TempData["Error"] = "Aap sirf apna hi udhar reopen kar sakte hain.";
+                    return RedirectToAction("Index");
+                }
             }
 
-            var udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
             if (udhar != null)
             {
                 udhar.PaidAmount = 0;
@@ -260,13 +317,24 @@ namespace FinanceManagementNet.Controllers
             }
 
             var loginType = HttpContext.Session.GetString("LoginType");
-            if (loginType != "Admin")
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            Udhar? udhar;
+            if (loginType == "Admin")
             {
-                TempData["Error"] = "Admin function is locked. Members cannot delete udhar records.";
-                return RedirectToAction("MemberDashboard", "Home");
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
+            }
+            else
+            {
+                // Member can delete their own udhar entry
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value && u.MemberName == memberName);
+                if (udhar == null)
+                {
+                    TempData["Error"] = "Aap sirf apna hi udhar delete kar sakte hain.";
+                    return RedirectToAction("Index");
+                }
             }
 
-            var udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
             if (udhar == null)
             {
                 return NotFound();
@@ -285,13 +353,18 @@ namespace FinanceManagementNet.Controllers
             }
 
             var loginType = HttpContext.Session.GetString("LoginType");
-            if (loginType != "Admin")
+            var memberName = HttpContext.Session.GetString("MemberName");
+
+            Udhar? udhar;
+            if (loginType == "Admin")
             {
-                TempData["Error"] = "Admin function is locked. Members cannot delete udhar records.";
-                return RedirectToAction("MemberDashboard", "Home");
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
+            }
+            else
+            {
+                udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value && u.MemberName == memberName);
             }
 
-            var udhar = _context.Udhar.FirstOrDefault(u => u.Id == id && u.FamilyId == familyDbId.Value);
             if (udhar != null)
             {
                 _context.Udhar.Remove(udhar);

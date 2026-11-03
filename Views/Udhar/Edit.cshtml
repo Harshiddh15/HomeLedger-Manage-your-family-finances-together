@@ -1,5 +1,6 @@
 @model Udhar
 @{
+    var isMember = Context.Session.GetString("LoginType") == "Member";
     ViewData["Title"] = "Edit Udhar Transaction";
     Layout = "_Layout";
     var isLene = Model.Type == "Lene Hai";
@@ -60,7 +61,7 @@
                 </div>
                 <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: var(--text-primary);">Udhar Record Details</h3>
             </div>
-            <span class="badge badge-amber">Admin Function</span>
+            <span class="badge badge-amber">@(isMember ? "Member Ledger" : "Admin Function")</span>
         </div>
 
         <div class="glass-card-body">
@@ -84,7 +85,17 @@
 
                 <div class="form-group">
                     <label class="form-label" for="MemberName">Family Member Involved</label>
-                    <input type="text" id="MemberName" name="MemberName" class="form-control" value="@Model.MemberName" placeholder="e.g. Father, Mother, Self" />
+                    @if (isMember)
+                    {
+                        <input type="text" id="MemberName" name="MemberName" class="form-control" value="@Model.MemberName" readonly style="opacity: 0.9; font-weight: 700; color: #fbbf24;" />
+                        <small style="color: #fbbf24; font-size: 11.5px; display: block; margin-top: 4px;">
+                            <i class="fa-solid fa-lock"></i> Locked to your authenticated identity: <strong>@Model.MemberName</strong>
+                        </small>
+                    }
+                    else
+                    {
+                        <input type="text" id="MemberName" name="MemberName" class="form-control" value="@Model.MemberName" placeholder="e.g. Father, Mother, Self" />
+                    }
                 </div>
 
                 <div class="form-group">

@@ -134,47 +134,38 @@
                                 }
                             </td>
                             <td style="text-align: right;">
-                                @if (isMember)
-                                {
-                                    <span style="font-size: 11px; color: var(--text-dim); padding: 4px 8px; background: rgba(255, 255, 255, 0.03); border-radius: 4px;">
-                                        <i class="fa-solid fa-lock" style="font-size: 9px;"></i> View Only
-                                    </span>
-                                }
-                                else
-                                {
-                                    <div style="display: inline-flex; gap: 6px; align-items: center;">
-                                        @if (udhar.Status == "Pending")
-                                        {
-                                            <!-- Quick Settle Form -->
-                                            <form asp-action="Settle" method="post" style="display: inline;" onsubmit="return confirm('Pura udhar chukta mark karein? (Mark as fully settled)?');">
-                                                <input type="hidden" name="id" value="@udhar.Id" />
-                                                <button type="submit" class="btn btn-secondary btn-sm" title="Quick Settle (Chukta Karein)" style="padding: 4px 8px; font-size: 11px; color: var(--emerald-400); border-color: rgba(16, 185, 129, 0.3);">
-                                                    <i class="fa-solid fa-check-double"></i> Settle
-                                                </button>
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            <!-- Quick Reopen Form -->
-                                            <form asp-action="Reopen" method="post" style="display: inline;" onsubmit="return confirm('Dobara Pending karein (Reopen as pending)?');">
-                                                <input type="hidden" name="id" value="@udhar.Id" />
-                                                <button type="submit" class="btn btn-secondary btn-sm" title="Reopen as Pending" style="padding: 4px 8px; font-size: 11px; color: #fbbf24; border-color: rgba(245, 158, 11, 0.3);">
-                                                    <i class="fa-solid fa-rotate-left"></i> Reopen
-                                                </button>
-                                            </form>
-                                        }
+                                <div style="display: inline-flex; gap: 6px; align-items: center;">
+                                    @if (udhar.Status == "Pending")
+                                    {
+                                        <!-- Quick Settle Form -->
+                                        <form asp-action="Settle" method="post" style="display: inline;" onsubmit="return confirm('Pura udhar chukta mark karein? (Mark as fully settled)?');">
+                                            <input type="hidden" name="id" value="@udhar.Id" />
+                                            <button type="submit" class="btn btn-secondary btn-sm" title="Quick Settle (Chukta Karein)" style="padding: 4px 10px; font-size: 11px; color: var(--emerald-400); border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.1);">
+                                                <i class="fa-solid fa-check-double"></i> Settle
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <!-- Quick Reopen Form -->
+                                        <form asp-action="Reopen" method="post" style="display: inline;" onsubmit="return confirm('Dobara Pending karein (Reopen as pending)?');">
+                                            <input type="hidden" name="id" value="@udhar.Id" />
+                                            <button type="submit" class="btn btn-secondary btn-sm" title="Reopen as Pending" style="padding: 4px 10px; font-size: 11px; color: #fbbf24; border-color: rgba(245, 158, 11, 0.35); background: rgba(245, 158, 11, 0.1);">
+                                                <i class="fa-solid fa-rotate-left"></i> Reopen
+                                            </button>
+                                        </form>
+                                    }
 
-                                        <!-- Edit -->
-                                        <a asp-action="Edit" asp-route-id="@udhar.Id" class="btn btn-secondary btn-sm" title="Edit / Partial Repayment" style="padding: 4px 10px; font-size: 11px;">
-                                            <i class="fa-solid fa-pen"></i>
-                                        </a>
+                                    <!-- Edit / Partial Repayment -->
+                                    <a asp-action="Edit" asp-route-id="@udhar.Id" class="btn btn-secondary btn-sm" title="Edit / Update Repayment" style="padding: 4px 10px; font-size: 11px;">
+                                        <i class="fa-solid fa-pen"></i> Edit
+                                    </a>
 
-                                        <!-- Delete -->
-                                        <a asp-action="Delete" asp-route-id="@udhar.Id" class="btn btn-danger btn-sm" title="Delete" style="padding: 4px 10px; font-size: 11px;">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </a>
-                                    </div>
-                                }
+                                    <!-- Delete -->
+                                    <a asp-action="Delete" asp-route-id="@udhar.Id" class="btn btn-danger btn-sm" title="Delete" style="padding: 4px 10px; font-size: 11px;">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }
