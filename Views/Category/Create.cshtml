@@ -4,152 +4,145 @@
     Layout = "_Layout";
 }
 
+<div style="max-width: 620px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-size: 24px; font-weight: 800; margin: 0;">Add Financial Category</h1>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Create a new tracking bucket for income or expenses</p>
+        </div>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Cancel
+        </a>
+    </div>
+
+    <div class="glass-card">
+        <div class="glass-card-header" style="background: rgba(99, 102, 241, 0.08); border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(99, 102, 241, 0.2); color: #818cf8; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                    <i class="fa-solid fa-tags"></i>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: var(--text-primary);">Category Configuration</h3>
+            </div>
+            <span class="badge badge-indigo">Admin Setting</span>
+        </div>
+
+        <div class="glass-card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #fb7185; font-size: 13px;">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p style="margin: 0 0 4px;"><i class="fa-solid fa-circle-exclamation"></i> @error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form asp-action="Create" method="post" autocomplete="off">
+                <!-- Name -->
+                <div class="form-group">
+                    <label class="form-label" for="Name">Category Name *</label>
+                    <input type="text" id="Name" name="Name" class="form-control" required placeholder="e.g. Groceries, Electricity, Salary, Medical" value="@Model?.Name" />
+                </div>
+
+                <!-- Type -->
+                <div class="form-group">
+                    <label class="form-label" for="Type">Classification Type *</label>
+                    <select id="Type" name="Type" class="form-control" required>
+                        <option value="">-- Select Type --</option>
+                        <option value="Expense" selected="@(Model?.Type == "Expense" ? "selected" : null)">Expense (Outflow / Kharcha)</option>
+                        <option value="Income" selected="@(Model?.Type == "Income" ? "selected" : null)">Income (Inflow / Kamai)</option>
+                    </select>
+                </div>
+
+                <!-- Visual Icon Picker Presets -->
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label class="form-label" style="margin: 0;">Choose Category Icon</label>
+                        <span id="selectedIconPreview" style="font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 6px;">
+                            Selected: <i id="previewIconTag" class="fa-solid @(string.IsNullOrWhiteSpace(Model?.Icon) ? "fa-tag" : Model.Icon)" style="color: #818cf8; font-size: 14px;"></i>
+                        </span>
+                    </div>
+
+                    <input type="hidden" id="IconInput" name="Icon" value="@(string.IsNullOrWhiteSpace(Model?.Icon) ? "fa-tag" : Model.Icon)" />
+
+                    <!-- Quick Icon Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 8px; background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-hairline);">
+                        <button type="button" class="icon-preset-btn" data-icon="fa-cart-shopping" title="Groceries / Shopping" onclick="selectIcon('fa-cart-shopping')"><i class="fa-solid fa-cart-shopping"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-utensils" title="Food / Dining" onclick="selectIcon('fa-utensils')"><i class="fa-solid fa-utensils"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-bolt" title="Utilities / Electricity" onclick="selectIcon('fa-bolt')"><i class="fa-solid fa-bolt"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-car" title="Transport / Fuel" onclick="selectIcon('fa-car')"><i class="fa-solid fa-car"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-heart-pulse" title="Medical / Healthcare" onclick="selectIcon('fa-heart-pulse')"><i class="fa-solid fa-heart-pulse"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-graduation-cap" title="Education / Tuition" onclick="selectIcon('fa-graduation-cap')"><i class="fa-solid fa-graduation-cap"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-house" title="Rent / Housing" onclick="selectIcon('fa-house')"><i class="fa-solid fa-house"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-money-bill-wave" title="Salary / Cash" onclick="selectIcon('fa-money-bill-wave')"><i class="fa-solid fa-money-bill-wave"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-laptop-code" title="Freelance / Tech" onclick="selectIcon('fa-laptop-code')"><i class="fa-solid fa-laptop-code"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-briefcase" title="Business / Office" onclick="selectIcon('fa-briefcase')"><i class="fa-solid fa-briefcase"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-wallet" title="Investments / Savings" onclick="selectIcon('fa-wallet')"><i class="fa-solid fa-wallet"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-receipt" title="Bills / Taxes" onclick="selectIcon('fa-receipt')"><i class="fa-solid fa-receipt"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-film" title="Entertainment / Movies" onclick="selectIcon('fa-film')"><i class="fa-solid fa-film"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-shirt" title="Clothing / Apparel" onclick="selectIcon('fa-shirt')"><i class="fa-solid fa-shirt"></i></button>
+                        <button type="button" class="icon-preset-btn" data-icon="fa-tag" title="General Tag" onclick="selectIcon('fa-tag')"><i class="fa-solid fa-tag"></i></button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.4);">
+                        <i class="fa-solid fa-floppy-disk"></i> Create Category
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <style>
-    .page-header {
-        margin-bottom: 30px;
-        text-align: center;
-    }
-
-    .page-title {
-        font-size: 28px;
-        font-weight: 700;
-        color: #333;
-    }
-
-    .card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-        max-width: 600px;
+    .icon-preset-btn {
         width: 100%;
-        margin: 0 auto;
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 20px 25px;
-    }
-
-    .card-header h3 {
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .card-body {
-        padding: 30px 25px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        color: #333;
-        font-weight: 500;
-        font-size: 14px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px 14px;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        font-size: 14px;
-        transition: border-color 0.3s;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #667eea;
-    }
-
-    .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-hairline);
+        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        transition: transform 0.2s, box-shadow 0.2s;
+        font-size: 15px;
+        transition: all 0.2s ease;
     }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .btn-primary:hover {
+    .icon-preset-btn:hover {
+        background: rgba(99, 102, 241, 0.15);
+        border-color: rgba(99, 102, 241, 0.4);
+        color: #818cf8;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     }
-
-    .btn-secondary {
-        background: #6c757d;
-        color: white;
-    }
-
-    .validation-summary {
-        background: #fee;
-        border: 1px solid #fcc;
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-bottom: 20px;
-        color: #c33;
-        font-size: 14px;
+    .icon-preset-btn.active {
+        background: rgba(99, 102, 241, 0.25);
+        border-color: #6366f1;
+        color: #a5b4fc;
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
     }
 </style>
 
-<div class="page-header">
-    <h1 class="page-title">Add Category</h1>
-</div>
+<script>
+    function selectIcon(iconName) {
+        document.getElementById('IconInput').value = iconName;
+        document.getElementById('previewIconTag').className = 'fa-solid ' + iconName;
 
-<div class="card">
-    <div class="card-header">
-        <h3>New Category</h3>
-    </div>
-    <div class="card-body">
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="validation-summary">
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <p>@error.ErrorMessage</p>
-                }
-            </div>
-        }
+        document.querySelectorAll('.icon-preset-btn').forEach(btn => {
+            if (btn.getAttribute('data-icon') === iconName) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
 
-        <form asp-action="Create" method="post">
-            <div class="form-group">
-                <label for="Name">Category Name</label>
-                <input type="text" id="Name" name="Name" class="form-control" required placeholder="e.g., Food, Rent, Salary" value="@Model?.Name">
-            </div>
-            <div class="form-group">
-                <label for="Type">Type</label>
-                <select id="Type" name="Type" class="form-control" required>
-                    <option value="">Select Type</option>
-                    <option value="Expense" selected="@(Model?.Type == "Expense" ? "selected" : null)">Expense</option>
-                    <option value="Income" selected="@(Model?.Type == "Income" ? "selected" : null)">Income</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="Icon">Icon (Optional)</label>
-                <input type="text" id="Icon" name="Icon" class="form-control" placeholder="e.g., fa-solid fa-utensils" value="@Model?.Icon">
-            </div>
-            <div class="form-group">
-                <label for="Color">Color (Optional)</label>
-                <input type="color" id="Color" name="Color" class="form-control" value="@Model?.Color" style="height: 50px;">
-            </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fa-solid fa-save"></i> Create Category
-            </button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-</div>
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentIcon = document.getElementById('IconInput').value || 'fa-tag';
+        selectIcon(currentIcon);
+    });
+</script>

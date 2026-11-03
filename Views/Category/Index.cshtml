@@ -1,61 +1,100 @@
 @model List<Category>
 @{
-    ViewData["Title"] = "Categories";
+    ViewData["Title"] = "Financial Categories";
     Layout = "_Layout";
+    var expenseCount = Model?.Count(c => c.Type == "Expense") ?? 0;
+    var incomeCount = Model?.Count(c => c.Type == "Income") ?? 0;
 }
 
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
-        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Categories
-    </h1>
-    <a asp-action="Create" class="btn btn-primary">
-        <i class="fa-solid fa-plus"></i> Add Category
-    </a>
-</div>
+<div>
+    <!-- Page Header & Action Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                <h1 style="font-size: 24px; font-weight: 800; margin: 0;">Financial Categories</h1>
+                <span class="badge badge-indigo">@Model.Count Categories</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">
+                Income and expense classifications used for budgets and monthly reports &bull;
+                <span style="color: var(--rose-400);">@expenseCount Expenses</span> &bull;
+                <span style="color: var(--emerald-400);">@incomeCount Incomes</span>
+            </p>
+        </div>
 
-<div class="card">
-    <div class="card-header">
-        <h3>All Categories</h3>
+        <a asp-action="Create" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);">
+            <i class="fa-solid fa-plus"></i> Add New Category
+        </a>
     </div>
-    <div class="table-responsive">
-        @if (Model.Any())
+
+    <!-- Quick Filter Tabs -->
+    <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-secondary btn-sm filter-btn active" data-filter="all" onclick="filterCategories('all', this)" style="border-radius: var(--radius-full); padding: 5px 14px; font-size: 12px;">
+            All (@Model.Count)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm filter-btn" data-filter="Expense" onclick="filterCategories('Expense', this)" style="border-radius: var(--radius-full); padding: 5px 14px; font-size: 12px; color: var(--rose-400);">
+            <i class="fa-solid fa-arrow-trend-down"></i> Expense Categories (@expenseCount)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm filter-btn" data-filter="Income" onclick="filterCategories('Income', this)" style="border-radius: var(--radius-full); padding: 5px 14px; font-size: 12px; color: var(--emerald-400);">
+            <i class="fa-solid fa-arrow-trend-up"></i> Income Categories (@incomeCount)
+        </button>
+    </div>
+
+    <!-- Modern Table Container -->
+    <div class="table-container">
+        @if (Model != null && Model.Any())
         {
-            <table>
+            <table class="modern-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th style="width: 60px;">Icon</th>
+                        <th>Category Name</th>
                         <th>Type</th>
-                        <th>Icon</th>
-                        <th>Color</th>
-                        <th>Actions</th>
+                        <th style="text-align: right;">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="categoryTableBody">
                     @foreach (var category in Model)
                     {
-                        <tr>
-                            <td style="font-weight: 600;">@category.Name</td>
-                            <td>
-                                @if (category.Type == "Expense")
+                        var iconClass = string.IsNullOrWhiteSpace(category.Icon) ? "fa-tag" : category.Icon.Replace("fa-solid ", "");
+                        var isExpense = category.Type == "Expense";
+                        <tr class="category-row" data-type="@category.Type">
+                            <!-- Visual Icon Render -->
+                            <td style="vertical-align: middle;">
+                                <div style="width: 38px; height: 38px; border-radius: var(--radius-md); background: @(isExpense ? "rgba(244, 63, 94, 0.12)" : "rgba(16, 185, 129, 0.12)"); color: @(isExpense ? "var(--rose-400)" : "var(--emerald-400)"); display: flex; align-items: center; justify-content: center; font-size: 16px; border: 1px solid @(isExpense ? "rgba(244, 63, 94, 0.25)" : "rgba(16, 185, 129, 0.25)");">
+                                    <i class="fa-solid @iconClass"></i>
+                                </div>
+                            </td>
+
+                            <!-- Category Name -->
+                            <td style="vertical-align: middle;">
+                                <strong style="color: var(--text-primary); font-size: 14.5px;">@category.Name</strong>
+                            </td>
+
+                            <!-- Type Badge -->
+                            <td style="vertical-align: middle;">
+                                @if (isExpense)
                                 {
-                                    <span style="background: rgba(244, 63, 94, 0.15); color: var(--hud-rose); padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Expense</span>
+                                    <span class="badge badge-rose">
+                                        <i class="fa-solid fa-arrow-trend-down" style="font-size: 10px;"></i> Expense
+                                    </span>
                                 }
                                 else
                                 {
-                                    <span style="background: rgba(16, 185, 129, 0.15); color: var(--hud-teal); padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Income</span>
+                                    <span class="badge badge-emerald">
+                                        <i class="fa-solid fa-arrow-trend-up" style="font-size: 10px;"></i> Income
+                                    </span>
                                 }
                             </td>
-                            <td>@category.Icon</td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(category.Color))
-                                {
-                                    <span style="display: inline-block; width: 20px; height: 20px; background: @category.Color; border-radius: 4px; border: 1px solid var(--hud-border);"></span>
-                                }
-                            </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-warning">Edit</a>
-                                    <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-danger">Delete</a>
+
+                            <!-- Actions -->
+                            <td style="text-align: right; vertical-align: middle;">
+                                <div style="display: inline-flex; gap: 6px;">
+                                    <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-secondary btn-sm" title="Edit Category" style="padding: 4px 10px; font-size: 11.5px;">
+                                        <i class="fa-solid fa-pen"></i> Edit
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-danger btn-sm" title="Delete Category" style="padding: 4px 10px; font-size: 11.5px;">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -65,10 +104,31 @@
         }
         else
         {
-            <div class="empty-state">
-                <i class="fa-solid fa-tags"></i>
-                <p>No categories found. Add your first category!</p>
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                <i class="fa-solid fa-tags" style="font-size: 36px; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                <h4 style="font-size: 16px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">No Categories Found</h4>
+                <p style="font-size: 13.5px; margin: 0 0 16px;">Create categories like Groceries, Rent, Salary, or Healthcare.</p>
+                <a asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Add First Category
+                </a>
             </div>
         }
     </div>
 </div>
+
+<script>
+    function filterCategories(filter, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const rows = document.querySelectorAll('.category-row');
+        rows.forEach(row => {
+            const type = row.getAttribute('data-type');
+            if (filter === 'all' || type === filter) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
