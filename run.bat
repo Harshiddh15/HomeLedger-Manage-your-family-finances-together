@@ -1,5 +1,6 @@
 @echo off
 title Family Finance Management Portal
+cd /d "%~dp0"
 cls
 echo ========================================================
 echo   HomeLedger - Family Finance Management Portal

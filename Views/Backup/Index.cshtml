@@ -1,84 +1,250 @@
 @{
-    ViewData["Title"] = "Backup & Restore";
+    ViewData["Title"] = "Backup & Data Vault";
     Layout = "_Layout";
 }
 
-<div class="page-header" style="margin-bottom: 30px;">
-    <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px;">
-        <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Backup & Restore
-    </h1>
+<div class="page-header" style="margin-bottom: 28px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <h1 class="page-title" style="font-size: 24px; font-weight: 800; color: var(--hud-text-white); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px 0;">
+                <span style="color: var(--hud-cyan); margin-right: 8px;">//</span> Family Data Vault & Backup
+            </h1>
+            <p style="margin: 0; color: var(--hud-text-muted); font-size: 14px;">
+                Export complete family finances into Excel, CSV, PDF, or JSON — and safely restore without duplicate records.
+            </p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <span style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px;">
+                <i class="fa-solid fa-shield-halved" style="margin-right: 6px;"></i> ZERO DATA LOSS SHIELD
+            </span>
+        </div>
+    </div>
 </div>
 
 @if (TempData["Success"] != null)
 {
-    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--hud-teal); color: var(--hud-teal); padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;">
-        <i class="fa-solid fa-check-circle"></i> @TempData["Success"]
+    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--hud-teal); color: var(--hud-teal); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-weight: 600;">
+        <i class="fa-solid fa-circle-check" style="font-size: 20px;"></i>
+        <span>@TempData["Success"]</span>
     </div>
 }
 
 @if (TempData["Error"] != null)
 {
-    <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid var(--hud-rose); color: var(--hud-rose); padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;">
-        <i class="fa-solid fa-exclamation-circle"></i> @TempData["Error"]
+    <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid var(--hud-rose); color: var(--hud-rose); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-weight: 600;">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size: 20px;"></i>
+        <span>@TempData["Error"]</span>
     </div>
 }
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="fa-solid fa-download"></i> Export Backup</h3>
-        </div>
-        <div class="card-body">
-            <p style="margin-bottom: 20px; color: var(--hud-text-muted);">
-                Download a complete backup of all your family finance data including income, expenses, members, savings goals, and more.
-            </p>
-            <a asp-action="ExportBackup" class="btn btn-primary" style="width: 100%; justify-content: center;">
-                <i class="fa-solid fa-download"></i> Download Backup
-            </a>
-        </div>
+<!-- EXPORT SECTION: 3 PRIMARY FORMATS -->
+<div style="margin-bottom: 32px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+        <i class="fa-solid fa-file-export" style="color: var(--hud-cyan); font-size: 18px;"></i>
+        <h2 style="font-size: 17px; font-weight: 700; color: var(--hud-text-white); margin: 0; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px;">
+            STEP 1: SELECT EXPORT FORMAT (ALL DATA INCLUDED)
+        </h2>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="fa-solid fa-upload"></i> Import Backup</h3>
-        </div>
-        <div class="card-body">
-            <p style="margin-bottom: 20px; color: var(--hud-text-muted);">
-                Restore your data from a previously exported backup file. This will add new records without overwriting existing ones.
-            </p>
-            <form asp-action="ImportBackup" method="post" enctype="multipart/form-data">
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 8px; color: var(--hud-text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px;">
-                        Select Backup File
-                    </label>
-                    <input type="file" name="backupFile" accept=".json" class="form-control" required>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <!-- EXCEL CARD -->
+        <div class="card" style="border-top: 3px solid #10b981; background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, rgba(15, 23, 42, 0.6) 100%);">
+            <div class="card-body" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            <i class="fa-solid fa-file-excel"></i>
+                        </div>
+                        <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
+                            RECOMMENDED
+                        </span>
+                    </div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 8px 0;">Excel Workbook (.xlsx)</h3>
+                    <p style="font-size: 13px; color: var(--hud-text-muted); line-height: 1.5; margin-bottom: 16px;">
+                        Multi-sheet formatted spreadsheet with separate tabs for <strong>Overview, Members, Incomes, Expenses, Udhar, Savings Goals, Categories, and Budgets</strong>.
+                    </p>
+                    <div style="font-size: 12px; color: var(--hud-text-dim); margin-bottom: 20px;">
+                        <div style="margin-bottom: 4px;"><i class="fa-solid fa-check" style="color: #10b981; margin-right: 6px;"></i> High readability & styled dark headers</div>
+                        <div><i class="fa-solid fa-check" style="color: #10b981; margin-right: 6px;"></i> 100% Import & Export compatible</div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
-                    <i class="fa-solid fa-upload"></i> Import Backup
+                <a asp-action="ExportExcel" class="btn btn-primary" style="background: linear-gradient(135deg, #059669, #10b981); border: none; justify-content: center; font-weight: 700; padding: 12px 18px; border-radius: 8px;">
+                    <i class="fa-solid fa-download" style="margin-right: 8px;"></i> Download Excel (.xlsx)
+                </a>
+            </div>
+        </div>
+
+        <!-- CSV CARD -->
+        <div class="card" style="border-top: 3px solid #f59e0b; background: linear-gradient(180deg, rgba(245, 158, 11, 0.05) 0%, rgba(15, 23, 42, 0.6) 100%);">
+            <div class="card-body" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            <i class="fa-solid fa-file-csv"></i>
+                        </div>
+                        <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
+                            UNIVERSAL RAW
+                        </span>
+                    </div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 8px 0;">CSV Data Stream (.csv)</h3>
+                    <p style="font-size: 13px; color: var(--hud-text-muted); line-height: 1.5; margin-bottom: 16px;">
+                        Standard comma-separated text file compatible with Google Sheets, LibreOffice, Python, and external software. Includes all financial entities.
+                    </p>
+                    <div style="font-size: 12px; color: var(--hud-text-dim); margin-bottom: 20px;">
+                        <div style="margin-bottom: 4px;"><i class="fa-solid fa-check" style="color: #f59e0b; margin-right: 6px;"></i> Lightweight & universal standard</div>
+                        <div><i class="fa-solid fa-check" style="color: #f59e0b; margin-right: 6px;"></i> Safe CSV quoting & UTF-8 encoded</div>
+                    </div>
+                </div>
+                <a asp-action="ExportCsv" class="btn btn-primary" style="background: linear-gradient(135deg, #d97706, #f59e0b); border: none; justify-content: center; font-weight: 700; padding: 12px 18px; border-radius: 8px;">
+                    <i class="fa-solid fa-download" style="margin-right: 8px;"></i> Download CSV (.csv)
+                </a>
+            </div>
+        </div>
+
+        <!-- PDF CARD -->
+        <div class="card" style="border-top: 3px solid #06b6d4; background: linear-gradient(180deg, rgba(6, 182, 212, 0.05) 0%, rgba(15, 23, 42, 0.6) 100%);">
+            <div class="card-body" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); color: #06b6d4; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <span style="background: rgba(6, 182, 212, 0.15); color: #06b6d4; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
+                            PRINT & AUDIT
+                        </span>
+                    </div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 8px 0;">Executive PDF Dossier (.pdf)</h3>
+                    <p style="font-size: 13px; color: var(--hud-text-muted); line-height: 1.5; margin-bottom: 16px;">
+                        Printable landscape executive report with summary KPI cards and comprehensive tables, plus an embedded lossless data vault for 100% restore.
+                    </p>
+                    <div style="font-size: 12px; color: var(--hud-text-dim); margin-bottom: 20px;">
+                        <div style="margin-bottom: 4px;"><i class="fa-solid fa-check" style="color: #06b6d4; margin-right: 6px;"></i> High-res printable financial summary</div>
+                        <div><i class="fa-solid fa-check" style="color: #06b6d4; margin-right: 6px;"></i> Re-importable lossless payload inside</div>
+                    </div>
+                </div>
+                <a asp-action="ExportPdf" class="btn btn-primary" style="background: linear-gradient(135deg, #0891b2, #06b6d4); border: none; justify-content: center; font-weight: 700; padding: 12px 18px; border-radius: 8px;">
+                    <i class="fa-solid fa-download" style="margin-right: 8px;"></i> Download PDF (.pdf)
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JSON DEV OPTION -->
+    <div style="margin-top: 14px; text-align: right;">
+        <span style="font-size: 12px; color: var(--hud-text-dim);">Developer or Database migration? </span>
+        <a asp-action="ExportJson" style="font-size: 12px; color: var(--hud-cyan); text-decoration: underline; font-weight: 600;">
+            <i class="fa-solid fa-code" style="margin-right: 4px;"></i> Export Raw JSON (.json)
+        </a>
+    </div>
+</div>
+
+<!-- RESTORE / IMPORT SECTION -->
+<div class="card" style="border: 1px dashed rgba(6, 182, 212, 0.4); background: rgba(15, 23, 42, 0.7); margin-bottom: 30px;">
+    <div class="card-header" style="border-bottom: 1px solid var(--hud-border); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-file-import" style="color: var(--hud-teal); font-size: 20px;"></i>
+            <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0; font-family: 'JetBrains Mono', monospace;">
+                RESTORE & IMPORT DATA (.xlsx, .csv, .pdf, .json)
+            </h3>
+        </div>
+        <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px;">
+            <i class="fa-solid fa-lock" style="margin-right: 4px;"></i> DUPLICATE-SAFE
+        </span>
+    </div>
+    <div class="card-body" style="padding: 28px 24px;">
+        <p style="color: var(--hud-text-muted); font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+            Upload any backup file exported by HomeLedger (<strong>Excel .xlsx, CSV .csv, PDF .pdf, or JSON .json</strong>). The importer scans and verifies every entry, adding new records while preserving your existing records without duplicates.
+        </p>
+
+        <form asp-action="ImportBackup" method="post" enctype="multipart/form-data" id="importForm">
+            <div style="border: 2px dashed rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 32px 20px; text-align: center; background: rgba(0, 0, 0, 0.2); transition: all 0.2s ease; cursor: pointer;" id="dropZone" onclick="document.getElementById('backupFileInput').click();">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 44px; color: var(--hud-cyan); margin-bottom: 14px; display: block;"></i>
+                <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px;">
+                    Click to select file or drag & drop here
+                </div>
+                <div style="font-size: 12px; color: var(--hud-text-muted); margin-bottom: 16px;">
+                    Supports <strong>Excel (.xlsx)</strong>, <strong>CSV (.csv)</strong>, <strong>PDF (.pdf)</strong>, or <strong>JSON (.json)</strong>
+                </div>
+                <input type="file" name="backupFile" id="backupFileInput" accept=".xlsx,.csv,.pdf,.json" style="display: none;" required onchange="handleFileSelect(this);">
+                <div id="selectedFileName" style="display: none; background: rgba(6, 182, 212, 0.15); border: 1px solid var(--hud-cyan); color: #fff; padding: 10px 18px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; max-width: 420px; margin: 0 auto;">
+                    <i class="fa-solid fa-file" style="color: var(--hud-cyan); margin-right: 8px;"></i> <span id="fileNameText"></span>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn btn-primary" id="importSubmitBtn" style="padding: 12px 28px; font-weight: 700; font-size: 14px; border-radius: 8px;" disabled>
+                    <i class="fa-solid fa-upload" style="margin-right: 8px;"></i> Verify & Import File
                 </button>
-            </form>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- AUDIT & PROTECTION SPECIFICATIONS -->
+<div class="card" style="background: rgba(15, 23, 42, 0.4);">
+    <div class="card-header" style="border-bottom: 1px solid var(--hud-border); padding: 16px 20px;">
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--hud-text-white); margin: 0; font-family: 'JetBrains Mono', monospace;">
+            <i class="fa-solid fa-circle-info" style="color: var(--hud-cyan); margin-right: 8px;"></i> Complete Data Inclusion Guarantee
+        </h4>
+    </div>
+    <div class="card-body" style="padding: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; font-size: 13px;">
+            <div style="background: rgba(255, 255, 255, 0.03); padding: 14px; border-radius: 8px; border-left: 3px solid #10b981;">
+                <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">Family & Members</div>
+                <div style="color: var(--hud-text-muted);">Names, family head, relations, contact mobile numbers, and accounts.</div>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.03); padding: 14px; border-radius: 8px; border-left: 3px solid #06b6d4;">
+                <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">Incomes & Expenses</div>
+                <div style="color: var(--hud-text-muted);">Full ledger with exact dates, categories, member attribution, amounts, and notes.</div>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.03); padding: 14px; border-radius: 8px; border-left: 3px solid #f59e0b;">
+                <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">Udhar / Lending Tracker</div>
+                <div style="color: var(--hud-text-muted);">Persons, Lene/Dene classification, total amount, paid wapas, remaining baaki, and status.</div>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.03); padding: 14px; border-radius: 8px; border-left: 3px solid #8b5cf6;">
+                <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">Goals, Budgets & Rules</div>
+                <div style="color: var(--hud-text-muted);">Savings targets, deadlines, monthly category budget limits, reminders, and recurring rules.</div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="card" style="margin-top: 20px;">
-    <div class="card-header">
-        <h3><i class="fa-solid fa-info-circle"></i> Backup Information</h3>
-    </div>
-    <div class="card-body">
-        <ul style="list-style: none; padding: 0; margin: 0;">
-            <li style="padding: 10px 0; border-bottom: 1px solid var(--hud-border);">
-                <strong style="color: var(--hud-cyan);">Export Format:</strong> JSON file containing all your data
-            </li>
-            <li style="padding: 10px 0; border-bottom: 1px solid var(--hud-border);">
-                <strong style="color: var(--hud-cyan);">Data Included:</strong> Family info, Members, Income, Expenses, Udhar, Reminders, Budgets, Savings Goals, Recurring Expenses, Recurring Income, Categories
-            </li>
-            <li style="padding: 10px 0; border-bottom: 1px solid var(--hud-border);">
-                <strong style="color: var(--hud-cyan);">Import Behavior:</strong> Adds new records without overwriting existing ones
-            </li>
-            <li style="padding: 10px 0;">
-                <strong style="color: var(--hud-cyan);">Recommendation:</strong> Export backup regularly and keep multiple copies
-            </li>
-        </ul>
-    </div>
-</div>
+<script>
+    function handleFileSelect(input) {
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            document.getElementById('fileNameText').innerText = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+            document.getElementById('selectedFileName').style.display = 'inline-block';
+            document.getElementById('importSubmitBtn').disabled = false;
+        }
+    }
+
+    var dropZone = document.getElementById('dropZone');
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.style.borderColor = 'var(--hud-cyan)';
+            dropZone.style.background = 'rgba(6, 182, 212, 0.1)';
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+            dropZone.style.background = 'rgba(0, 0, 0, 0.2)';
+        }, false);
+    });
+
+    dropZone.addEventListener('drop', function (e) {
+        var dt = e.dataTransfer;
+        var files = dt.files;
+        if (files && files.length > 0) {
+            var fileInput = document.getElementById('backupFileInput');
+            fileInput.files = files;
+            handleFileSelect(fileInput);
+        }
+    }, false);
+</script>
