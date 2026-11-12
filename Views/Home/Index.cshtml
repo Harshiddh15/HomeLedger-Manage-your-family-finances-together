@@ -343,17 +343,70 @@
             will-change: transform, opacity;
         }
 
+        @@property --home-beam {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        .mockup-beam-shell {
+            padding: 1.5px;
+            border-radius: calc(var(--radius-xl) + 1.5px);
+            background: conic-gradient(from var(--home-beam), transparent 0deg, transparent 260deg, rgba(16, 185, 129, 0.8) 315deg, rgba(56, 189, 248, 0.9) 345deg, transparent 360deg);
+            animation: homeBeamOrbit 6s linear infinite;
+            box-shadow: var(--shadow-xl), 0 0 54px rgba(16, 185, 129, 0.14);
+        }
+
         .mockup-card {
             background: var(--bg-card);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--border-card);
+            border: 1px solid var(--border-subtle);
             border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl), 0 0 48px rgba(16, 185, 129, 0.14);
             overflow: hidden;
             text-align: left;
             transition: transform 0.22s ease-out, box-shadow 0.35s ease;
             transform-style: preserve-3d;
+        }
+
+        #homeLiveCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .live-pulse-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: liveBeacon 1.8s infinite;
+        }
+
+        .sparkline-draw {
+            stroke-dasharray: 420;
+            stroke-dashoffset: 420;
+            animation: sparkDraw 1.5s cubic-bezier(0.22, 1, 0.36, 1) 1.75s forwards;
+        }
+
+        @@keyframes homeBeamOrbit {
+            from { --home-beam: 0deg; }
+            to { --home-beam: 360deg; }
+        }
+
+        @@keyframes liveBeacon {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        @@keyframes sparkDraw {
+            to { stroke-dashoffset: 0; }
         }
 
         .mockup-header-bar {
@@ -717,12 +770,13 @@
     <div class="intro-kinetic-beam" id="kineticBeam"></div>
     <div class="scroll-progress-bar" id="scrollProgress"></div>
 
-    <!-- Subtle Floating Ambient Background Orbs -->
+    <!-- Subtle Floating Ambient Background Orbs + Live Constellation Canvas -->
     <div class="ambient-canvas" aria-hidden="true">
         <div class="ambient-orb ambient-orb-1"></div>
         <div class="ambient-orb ambient-orb-2"></div>
         <div class="ambient-orb ambient-orb-3"></div>
     </div>
+    <canvas id="homeLiveCanvas" aria-hidden="true"></canvas>
 
     <!-- Top Landing Header -->
     <header class="landing-header" id="landingHeader">
@@ -862,7 +916,8 @@
 
         <!-- Interactive 3D Glass Dashboard Mockup -->
         <div class="mockup-wrapper" id="mockupWrapper">
-            <div class="mockup-card" id="mockupCard">
+            <div class="mockup-beam-shell" id="mockupCard">
+            <div class="mockup-card">
                 <div class="mockup-header-bar">
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <div class="browser-dots">
@@ -873,7 +928,7 @@
                         <span style="font-size: 12px; color: var(--text-dim); font-family: var(--font-mono);">homeledger://workspace/patel-family</span>
                     </div>
                     <div class="badge badge-emerald">
-                        <i class="fa-solid fa-circle" style="font-size: 7px;"></i>
+                        <span class="live-pulse-dot"></span>
                         <span>Live Ledger Active</span>
                     </div>
                 </div>
@@ -933,7 +988,27 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Live Animated Savings Trend Sparkline -->
+                    <div style="margin-top: 14px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                        <div>
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-dim); display: block;">Monthly Surplus Velocity</span>
+                            <strong style="font-size: 15px; color: var(--emerald-400); font-family: var(--font-mono);">+18.4% vs last month</strong>
+                        </div>
+                        <svg width="260" height="44" viewBox="0 0 260 44" fill="none" style="max-width: 100%; overflow: visible;">
+                            <defs>
+                                <linearGradient id="sparkGrad" x1="0" y1="0" x2="260" y2="0" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#6366f1" />
+                                    <stop offset="50%" stop-color="#38bdf8" />
+                                    <stop offset="100%" stop-color="#10b981" />
+                                </linearGradient>
+                            </defs>
+                            <path class="sparkline-draw" d="M4 34 C 36 32, 52 20, 82 24 C 110 28, 128 12, 160 15 C 192 18, 218 6, 254 8" stroke="url(#sparkGrad)" stroke-width="2.6" stroke-linecap="round" />
+                            <circle cx="254" cy="8" r="4" fill="#10b981" />
+                        </svg>
+                    </div>
                 </div>
+            </div>
             </div>
         </div>
     </section>
@@ -1316,6 +1391,79 @@
             }
             if (btn) btn.classList.add('active');
         }
+
+        // 7. Live 60fps Interactive Financial Constellation Canvas
+        (function () {
+            const canvas = document.getElementById('homeLiveCanvas');
+            if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const ctx = canvas.getContext('2d');
+            let w = canvas.width = window.innerWidth;
+            let h = canvas.height = window.innerHeight;
+            let mouse = { x: -9999, y: -9999 };
+
+            window.addEventListener('resize', () => {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            });
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            }, { passive: true });
+            window.addEventListener('mouseleave', () => {
+                mouse.x = -9999; mouse.y = -9999;
+            });
+
+            const count = Math.min(44, Math.floor((w * h) / 30000));
+            const nodes = Array.from({ length: count }, (_, idx) => ({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                r: 1.4 + Math.random() * 1.6,
+                color: idx % 2 === 0 ? '52, 211, 153' : '56, 189, 248'
+            }));
+
+            function tick() {
+                ctx.clearRect(0, 0, w, h);
+                for (let i = 0; i < nodes.length; i++) {
+                    const n = nodes[i];
+                    n.x += n.vx;
+                    n.y += n.vy;
+                    if (n.x < 0 || n.x > w) n.vx *= -1;
+                    if (n.y < 0 || n.y > h) n.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${n.color}, 0.5)`;
+                    ctx.fill();
+
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const m = nodes[j];
+                        const d = Math.hypot(n.x - m.x, n.y - m.y);
+                        if (d < 135) {
+                            ctx.beginPath();
+                            ctx.moveTo(n.x, n.y);
+                            ctx.lineTo(m.x, m.y);
+                            ctx.strokeStyle = `rgba(52, 211, 153, ${(1 - d / 135) * 0.16})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+
+                    const md = Math.hypot(n.x - mouse.x, n.y - mouse.y);
+                    if (md < 170) {
+                        ctx.beginPath();
+                        ctx.moveTo(n.x, n.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${(1 - md / 170) * 0.35})`;
+                        ctx.lineWidth = 1.1;
+                        ctx.stroke();
+                    }
+                }
+                requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        })();
     </script>
 </body>
 </html>
