@@ -185,7 +185,7 @@
                     </div>
                 }
 
-                <form asp-action="MemberLogin" method="post">
+                <form asp-action="MemberLogin" method="post" onsubmit="markMemberLogin(this)">
                     <div class="form-group">
                         <label class="form-label" for="family_id">Family ID *</label>
                         <div class="input-icon-field">
@@ -231,5 +231,19 @@
     </main>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function markMemberLogin(form) {
+            try { sessionStorage.setItem('hl_just_logged_in', '1'); } catch (e) {}
+            var btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-shield-halved fa-beat-fade"></i> <span>Verifying Member...</span>';
+            }
+        }
+        @if (hasFlash)
+        {
+            <text>try { sessionStorage.removeItem('hl_just_logged_in'); } catch (e) {}</text>
+        }
+    </script>
 </body>
 </html>

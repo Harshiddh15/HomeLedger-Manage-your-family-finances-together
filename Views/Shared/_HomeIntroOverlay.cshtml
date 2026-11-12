@@ -259,18 +259,24 @@
                 var navType = (navEntries && navEntries.length > 0) ? navEntries[0].type : '';
                 var ref = document.referrer || '';
                 var isWorkspaceInternalNav = false;
+                var fromAuthFlow = !!(window.__hlPostLoginPlayed || sessionStorage.getItem('hl_just_logged_in') === '1');
 
                 if (ref) {
                     var refPath = new URL(ref).pathname.toLowerCase();
                     var workspacePaths = ['/income', '/expense', '/udhar', '/budget', '/category', '/member', '/savingsgoal', '/reminder', '/report', '/backup', '/recurring'];
                     isWorkspaceInternalNav = workspacePaths.some(function (p) { return refPath.indexOf(p) === 0; });
+                    if (refPath.indexOf('/account/') === 0) {
+                        fromAuthFlow = true;
+                    }
                 }
 
-                if (navType === 'reload' || !ref || !isWorkspaceInternalNav) {
+                if (!fromAuthFlow && (navType === 'reload' || !ref || !isWorkspaceInternalNav)) {
                     overlay.classList.add('is-playing');
                 }
             } catch (e) {
-                overlay.classList.add('is-playing');
+                if (!window.__hlPostLoginPlayed) {
+                    overlay.classList.add('is-playing');
+                }
             }
         }
 

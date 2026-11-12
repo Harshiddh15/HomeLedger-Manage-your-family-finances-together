@@ -602,11 +602,17 @@
         }
 
         function showSubmitSpin(form) {
+            try { sessionStorage.setItem('hl_just_logged_in', '1'); } catch (e) {}
             const btn = form.querySelector('button[type="submit"]');
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Signing In...</span>';
+                btn.innerHTML = '<i class="fa-solid fa-shield-halved fa-beat-fade"></i> <span>Verifying Credentials...</span>';
             }
+        }
+
+        @if (hasFlash)
+        {
+            <text>try { sessionStorage.removeItem('hl_just_logged_in'); } catch (e) {}</text>
         }
 
         const params = new URLSearchParams(window.location.search);
