@@ -64,6 +64,7 @@
     </style>
 </head>
 <body>
+    @await Html.PartialAsync("_LoginIntroOverlay")
     <div class="auth-wrapper">
         <div style="text-align: center; margin-bottom: 26px;">
             <a asp-controller="Home" asp-action="Landing" style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 12px; text-decoration: none;">

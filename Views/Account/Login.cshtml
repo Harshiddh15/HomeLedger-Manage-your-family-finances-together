@@ -35,7 +35,7 @@
         .auth-wrapper {
             width: 100%;
             max-width: 460px;
-            animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) @(TempData["Error"] != null || TempData["Success"] != null ? "0s" : "0.75s") both;
         }
 
         .auth-card {
@@ -112,6 +112,7 @@
     </style>
 </head>
 <body>
+    @await Html.PartialAsync("_LoginIntroOverlay")
     <div class="auth-wrapper">
         <!-- Brand Header -->
         <div style="text-align: center; margin-bottom: 28px;">
@@ -233,10 +234,14 @@
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 20px;">
+        <div style="text-align: center; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
             <a asp-controller="Home" asp-action="Landing" style="font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">
                 <i class="fa-solid fa-arrow-left"></i> Back to Home Overview
             </a>
+            <span style="color: var(--text-dim);">&bull;</span>
+            <button type="button" onclick="replayLoginVaultIntro()" style="background: none; border: none; padding: 0; font-size: 13px; color: var(--indigo-400); cursor: pointer; font-weight: 600;">
+                <i class="fa-solid fa-rotate-right"></i> Replay Login Intro
+            </button>
         </div>
     </div>
 

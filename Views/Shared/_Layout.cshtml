@@ -24,6 +24,10 @@
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
 }
 <body>
+    @if (currentController == "Home" && (currentAction == "Dashboard" || currentAction == "MemberDashboard"))
+    {
+        @await Html.PartialAsync("_HomeIntroOverlay", new ViewDataDictionary(ViewData) { { "AlwaysShowHomeIntro", false } })
+    }
     <!-- Top Glassmorphism Navigation Bar -->
     <header class="top-navbar">
         <div class="brand-wrapper">

@@ -1,0 +1,227 @@
+@* Pure [HomeLedger] 1.30s Brand Intro Animation Overlay (Home / Landing Only) *@
+@{
+    var alwaysShow = (ViewData["AlwaysShowHomeIntro"] as bool?) ?? false;
+}
+
+<style>
+    .hl-brand-curtain {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.14) 0%, rgba(19, 27, 43, 0.98) 65%);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    body.light-mode .hl-brand-curtain {
+        background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.12) 0%, rgba(237, 242, 247, 0.98) 65%);
+    }
+
+    .hl-brand-curtain.is-playing {
+        display: flex;
+        animation: hlCurtainExit 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.88s forwards;
+    }
+
+    .hl-brand-stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        position: relative;
+    }
+
+    .hl-brand-lockup {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: relative;
+    }
+
+    .hl-emblem-wrap {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hl-emblem-pulse {
+        position: absolute;
+        inset: -8px;
+        border-radius: 20px;
+        border: 2px solid rgba(16, 185, 129, 0.55);
+        opacity: 0;
+        animation: hlEmblemPulse 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.08s forwards;
+    }
+
+    .hl-emblem-box {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #10b981 0%, #6366f1 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 28px;
+        box-shadow: 0 12px 34px rgba(16, 185, 129, 0.42);
+        opacity: 0;
+        transform: scale(0.6) rotate(-8deg);
+        animation: hlEmblemSpring 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s forwards;
+    }
+
+    .hl-wordmark-clip {
+        overflow: hidden;
+        padding: 4px 2px;
+    }
+
+    .hl-wordmark {
+        font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
+        font-size: clamp(34px, 5vw, 48px);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text-primary, #f8fafc);
+        white-space: nowrap;
+        opacity: 0;
+        transform: translateX(-28px);
+        animation: hlWordmarkSlide 0.52s cubic-bezier(0.16, 1, 0.3, 1) 0.22s forwards;
+    }
+
+    .hl-wordmark span {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 55%, #38bdf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hl-underline-track {
+        width: 220px;
+        height: 3px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.2);
+        overflow: hidden;
+    }
+
+    .hl-underline-fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #38bdf8, #818cf8);
+        border-radius: 999px;
+        animation: hlLineSweep 0.72s cubic-bezier(0.16, 1, 0.3, 1) 0.22s forwards;
+    }
+
+    @@keyframes hlEmblemSpring {
+        from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+        to { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    @@keyframes hlEmblemPulse {
+        0% { opacity: 0.85; transform: scale(0.85); }
+        100% { opacity: 0; transform: scale(1.45); }
+    }
+
+    @@keyframes hlWordmarkSlide {
+        from { opacity: 0; transform: translateX(-28px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    @@keyframes hlLineSweep {
+        from { width: 0%; }
+        to { width: 100%; }
+    }
+
+    @@keyframes hlCurtainExit {
+        0% { opacity: 1; transform: scale(1); pointer-events: auto; }
+        15% { pointer-events: none; }
+        100% { opacity: 0; transform: scale(1.04); visibility: hidden; pointer-events: none; }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .hl-brand-curtain.is-playing { display: none !important; }
+    }
+</style>
+
+<script>
+    if (localStorage.getItem('homeledger_theme') === 'light') { document.body.classList.add('light-mode'); }
+</script>
+
+<div id="hlHomeIntroOverlay" class="hl-brand-curtain @(alwaysShow ? "is-playing" : "")" aria-hidden="true">
+    <div class="hl-brand-stage">
+        <div class="hl-brand-lockup">
+            <div class="hl-emblem-wrap">
+                <div class="hl-emblem-pulse"></div>
+                <div class="hl-emblem-box">
+                    <i class="fa-solid fa-vault"></i>
+                </div>
+            </div>
+            <div class="hl-wordmark-clip">
+                <div class="hl-wordmark">Home<span>Ledger</span></div>
+            </div>
+        </div>
+        <div class="hl-underline-track">
+            <div class="hl-underline-fill"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var overlay = document.getElementById('hlHomeIntroOverlay');
+        if (!overlay) return;
+
+        var alwaysShow = @(alwaysShow ? "true" : "false");
+
+        if (!alwaysShow) {
+            try {
+                var navEntries = performance.getEntriesByType && performance.getEntriesByType('navigation');
+                var navType = (navEntries && navEntries.length > 0) ? navEntries[0].type : '';
+                var ref = document.referrer || '';
+                var isWorkspaceInternalNav = false;
+
+                if (ref) {
+                    var refPath = new URL(ref).pathname.toLowerCase();
+                    var workspacePaths = ['/income', '/expense', '/udhar', '/budget', '/category', '/member', '/savingsgoal', '/reminder', '/report', '/backup', '/recurring'];
+                    isWorkspaceInternalNav = workspacePaths.some(function (p) { return refPath.indexOf(p) === 0; });
+                }
+
+                // Show [HomeLedger] animation on browser refresh (F5), fresh site open, or entering Home after login
+                if (navType === 'reload' || !ref || !isWorkspaceInternalNav) {
+                    overlay.classList.add('is-playing');
+                }
+            } catch (e) {
+                overlay.classList.add('is-playing');
+            }
+        }
+
+        function dismissHomeIntro() {
+            overlay.style.display = 'none';
+            overlay.classList.remove('is-playing');
+        }
+
+        if (overlay.classList.contains('is-playing')) {
+            setTimeout(function () {
+                overlay.style.pointerEvents = 'none';
+            }, 880);
+            setTimeout(dismissHomeIntro, 1360);
+            overlay.addEventListener('click', dismissHomeIntro, { once: true });
+            document.addEventListener('keydown', function (ev) {
+                if (ev.key === 'Escape') dismissHomeIntro();
+            }, { once: true });
+        }
+
+        window.replayHomeBrandIntro = function () {
+            overlay.style.display = '';
+            overlay.style.pointerEvents = 'auto';
+            overlay.classList.remove('is-playing');
+            void overlay.offsetWidth;
+            overlay.classList.add('is-playing');
+            setTimeout(function () { overlay.style.pointerEvents = 'none'; }, 880);
+            setTimeout(dismissHomeIntro, 1360);
+        };
+    })();
+</script>
