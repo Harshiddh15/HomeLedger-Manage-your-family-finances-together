@@ -61,8 +61,13 @@
                 </div>
             }
 
+            <!-- Quick Landing Page Preview -->
+            <a asp-controller="Home" asp-action="Landing" class="nav-icon-btn" title="View Product Landing Page">
+                <i class="fa-solid fa-house-laptop"></i>
+            </a>
+
             <!-- Quick Dark / Light Mode Toggle -->
-            <button class="nav-icon-btn" id="themeToggle" title="Toggle Theme (Dark / Light)">
+            <button class="nav-icon-btn" id="themeToggle" title="Toggle Theme (Balanced Slate / Soft Light)">
                 <i class="fa-solid fa-sun"></i>
             </button>
 
@@ -198,6 +203,12 @@
                         <a asp-controller="Report" asp-action="Index" class="sidebar-link @(currentController == "Report" ? "active" : "")">
                             <i class="fa-solid fa-chart-pie" style="color: #38bdf8;"></i>
                             <span>Reports & Charts</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Home" asp-action="Landing" class="sidebar-link">
+                            <i class="fa-solid fa-sparkles" style="color: #34d399;"></i>
+                            <span>Landing Overview</span>
                         </a>
                     </li>
                 </ul>

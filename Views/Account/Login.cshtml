@@ -39,18 +39,18 @@
         }
 
         .auth-card {
-            background: rgba(18, 26, 42, 0.88);
+            background: var(--bg-card);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--border-card);
             border-radius: var(--radius-xl);
             padding: 40px 36px;
-            box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.7);
+            box-shadow: var(--shadow-xl);
         }
 
         .tab-switcher {
             display: flex;
-            background: rgba(12, 18, 30, 0.8);
+            background: var(--bg-input);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-full);
             padding: 4px;
@@ -115,7 +115,7 @@
     <div class="auth-wrapper">
         <!-- Brand Header -->
         <div style="text-align: center; margin-bottom: 28px;">
-            <a href="/" style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 12px; text-decoration: none;">
+            <a asp-controller="Home" asp-action="Landing" style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 12px; text-decoration: none;">
                 <div class="brand-icon-box" style="width: 44px; height: 44px; font-size: 20px;">
                     <i class="fa-solid fa-vault"></i>
                 </div>
@@ -234,12 +234,13 @@
         </div>
 
         <div style="text-align: center; margin-top: 20px;">
-            <a href="/" style="font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s;">
+            <a asp-controller="Home" asp-action="Landing" style="font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">
                 <i class="fa-solid fa-arrow-left"></i> Back to Home Overview
             </a>
         </div>
     </div>
 
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <!-- Interactive Tab Script -->
     <script>
         function setLoginMode(mode) {

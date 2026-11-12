@@ -84,7 +84,7 @@ namespace FinanceManagementNet.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Login");
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -377,7 +377,7 @@ namespace FinanceManagementNet.Controllers
         public IActionResult MemberLogout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

@@ -1,6 +1,9 @@
 @{
     ViewData["Title"] = "HomeLedger — Modern Family Wealth & Shared Expense Intelligence";
-    Layout = null; // Full-page immersive landing experience
+    Layout = null;
+    var isLoggedIn = Context.Session.GetInt32("FamilyDbId") != null;
+    var loginType = Context.Session.GetString("LoginType");
+    var dashboardAction = loginType == "Member" ? "MemberDashboard" : "Dashboard";
 }
 
 <!DOCTYPE html>
@@ -9,117 +12,317 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
-    
+
     <!-- Premium Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <!-- Master Design System -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <style>
-        /* Landing Page Specific High-Performance Styles */
+        /* ========================================================
+           LANDING PAGE MOTION & VISUAL ARCHITECTURE (1.35s ENTRANCE)
+           ======================================================== */
+        .landing-body {
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Subtle Top Kinetic Intro Sweep (Finishes in 1.25s, Non-Blocking) */
+        .intro-kinetic-beam {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2.5px;
+            width: 0%;
+            z-index: 2000;
+            background: linear-gradient(90deg, #10b981, #38bdf8, #818cf8);
+            box-shadow: 0 0 14px rgba(16, 185, 129, 0.75);
+            pointer-events: none;
+            animation: kineticBeamSweep 1.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Live Scroll Progress Bar */
+        .scroll-progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2.5px;
+            background: linear-gradient(90deg, #10b981, #38bdf8);
+            transform-origin: 0% 50%;
+            transform: scaleX(0);
+            z-index: 1999;
+            pointer-events: none;
+        }
+
+        /* Ambient Background Orbs (Light GPU-only motion) */
+        .ambient-canvas {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(85px);
+            opacity: 0.24;
+            will-change: transform;
+        }
+
+        .ambient-orb-1 {
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.55), transparent 70%);
+            top: -140px;
+            left: 12%;
+            animation: orbDriftOne 16s ease-in-out infinite alternate;
+        }
+
+        .ambient-orb-2 {
+            width: 460px;
+            height: 460px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.45), transparent 70%);
+            top: 180px;
+            right: 6%;
+            animation: orbDriftTwo 19s ease-in-out infinite alternate;
+        }
+
+        .ambient-orb-3 {
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.35), transparent 70%);
+            bottom: 10%;
+            left: 22%;
+            animation: orbDriftOne 22s ease-in-out infinite alternate-reverse;
+        }
+
+        body.light-mode .ambient-orb {
+            opacity: 0.16;
+        }
+
+        /* Header Navigation */
         .landing-header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
-            padding: 16px 40px;
-            background: rgba(10, 14, 23, 0.75);
+            padding: 14px 36px;
+            background: var(--bg-glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: all var(--transition-normal);
+            transition: padding 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+            animation: headerSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .landing-header.is-scrolled {
+            padding: 11px 36px;
+            box-shadow: var(--shadow-lg);
         }
 
         .landing-nav-links {
             display: flex;
             align-items: center;
-            gap: 28px;
+            gap: 6px;
             list-style: none;
+            background: var(--bg-glass-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-full);
+            padding: 4px;
         }
 
         .landing-nav-links a {
-            font-size: 14px;
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: var(--radius-full);
+            font-size: 13.5px;
             font-weight: 500;
             color: var(--text-muted);
-            transition: color var(--transition-fast);
+            transition: color 0.2s ease, background-color 0.2s ease;
         }
 
-        .landing-nav-links a:hover {
+        .landing-nav-links a:hover,
+        .landing-nav-links a.active-link {
             color: var(--text-primary);
+            background: rgba(16, 185, 129, 0.14);
         }
 
+        .landing-nav-links a.active-link {
+            color: var(--emerald-400);
+            font-weight: 600;
+        }
+
+        /* Mobile Drawer for Landing Navigation */
+        .mobile-nav-drawer {
+            position: fixed;
+            top: 66px;
+            left: 16px;
+            right: 16px;
+            z-index: 999;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(-12px) scale(0.98);
+            pointer-events: none;
+            transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mobile-nav-drawer.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .mobile-nav-drawer a {
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .mobile-nav-drawer a:hover {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--emerald-400);
+        }
+
+        /* ========================================================
+           HERO SECTION & 1.35s CHOREOGRAPHED ENTRANCE
+           ======================================================== */
         .hero-section {
-            padding: 140px 24px 80px;
-            max-width: 1280px;
+            padding: 132px 24px 72px;
+            max-width: 1240px;
             margin: 0 auto;
             text-align: center;
             position: relative;
+            z-index: 1;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 16px;
+            padding: 7px 18px;
             border-radius: var(--radius-full);
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.28);
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.32);
             color: var(--emerald-400);
             font-size: 12.5px;
             font-weight: 600;
             margin-bottom: 24px;
-            letter-spacing: 0.2px;
-            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            letter-spacing: 0.25px;
+            opacity: 0;
+            animation: heroPopUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.08s forwards;
+        }
+
+        body.light-mode .hero-badge {
+            color: var(--emerald-600);
+            background: rgba(16, 185, 129, 0.1);
         }
 
         .hero-title {
-            font-size: clamp(38px, 5.5vw, 68px);
+            font-size: clamp(36px, 5.4vw, 66px);
             font-weight: 800;
-            line-height: 1.12;
+            line-height: 1.13;
             letter-spacing: -0.035em;
-            margin-bottom: 24px;
-            max-width: 960px;
+            margin-bottom: 22px;
+            max-width: 940px;
             margin-left: auto;
             margin-right: auto;
-            animation: fadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .reveal-mask {
+            display: block;
+            overflow: hidden;
+            padding-bottom: 4px;
+        }
+
+        .reveal-line-1 {
+            display: block;
+            opacity: 0;
+            transform: translateY(105%);
+            animation: maskLineRise 0.62s cubic-bezier(0.16, 1, 0.3, 1) 0.14s forwards;
+        }
+
+        .reveal-line-2 {
+            display: block;
+            opacity: 0;
+            transform: translateY(105%);
+            animation: maskLineRise 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.28s forwards;
         }
 
         .hero-subtitle {
-            font-size: clamp(16px, 1.8vw, 19px);
+            font-size: clamp(16px, 1.8vw, 18.5px);
             color: var(--text-muted);
-            max-width: 720px;
-            margin: 0 auto 36px;
-            line-height: 1.6;
-            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            max-width: 710px;
+            margin: 0 auto 34px;
+            line-height: 1.65;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: heroGlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.42s forwards;
         }
 
         .hero-cta-group {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;
+            gap: 14px;
             flex-wrap: wrap;
-            margin-bottom: 48px;
-            animation: fadeInUp 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            margin-bottom: 38px;
+            opacity: 0;
+            transform: translateY(18px) scale(0.97);
+            animation: heroPopUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.54s forwards;
+        }
+
+        /* Magnetic Shine Micro-Interaction on Primary CTA */
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+            transition: left 0.55s ease;
+        }
+
+        .btn-shine:hover::after {
+            left: 140%;
         }
 
         .trust-pills {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 24px;
+            gap: 22px;
             flex-wrap: wrap;
             font-size: 13px;
-            color: var(--text-dim);
-            animation: fadeInUp 1.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            color: var(--text-muted);
+            opacity: 0;
+            transform: translateY(14px);
+            animation: heroGlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.68s forwards;
         }
 
         .trust-pill-item {
@@ -128,57 +331,111 @@
             gap: 8px;
         }
 
-        /* 3D Dashboard Mockup Card */
+        /* 3D Interactive Glass Dashboard Mockup (Unfolds 0.58s -> 1.35s) */
         .mockup-wrapper {
             position: relative;
             max-width: 1040px;
-            margin: 50px auto 0;
-            perspective: 1200px;
-            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            margin: 48px auto 0;
+            perspective: 1400px;
+            opacity: 0;
+            transform: perspective(1200px) rotateX(10deg) translateY(38px) scale(0.96);
+            animation: mockupUnfold 0.78s cubic-bezier(0.16, 1, 0.3, 1) 0.58s forwards;
+            will-change: transform, opacity;
         }
 
         .mockup-card {
-            background: rgba(18, 26, 42, 0.88);
+            background: var(--bg-card);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.14);
+            border: 1px solid var(--border-card);
             border-radius: var(--radius-xl);
-            box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(16, 185, 129, 0.12);
+            box-shadow: var(--shadow-xl), 0 0 48px rgba(16, 185, 129, 0.14);
             overflow: hidden;
             text-align: left;
-            transition: transform 0.5s ease;
+            transition: transform 0.22s ease-out, box-shadow 0.35s ease;
+            transform-style: preserve-3d;
         }
 
         .mockup-header-bar {
-            padding: 16px 24px;
-            background: rgba(15, 23, 42, 0.9);
+            padding: 14px 22px;
+            background: var(--bg-surface);
             border-bottom: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .browser-dots {
             display: flex;
-            gap: 8px;
+            gap: 7px;
         }
 
         .browser-dot {
-            width: 11px;
-            height: 11px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
         }
 
+        .mockup-tx-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: var(--bg-glass-subtle);
+            border: 1px solid transparent;
+            border-radius: var(--radius-sm);
+            opacity: 0;
+            transform: translateX(-12px);
+            transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .mockup-tx-row:hover {
+            border-color: var(--border-card);
+            background: rgba(16, 185, 129, 0.06);
+        }
+
+        .mockup-tx-1 { animation: txSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.80s forwards; }
+        .mockup-tx-2 { animation: txSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.94s forwards; }
+        .mockup-tx-3 { animation: txSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) 1.08s forwards; }
+
+        .replay-intro-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-card);
+            background: var(--bg-glass-subtle);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .replay-intro-btn:hover {
+            color: var(--emerald-400);
+            border-color: var(--emerald-400);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* ========================================================
+           PAGE SECTIONS & CARDS
+           ======================================================== */
         .section-container {
-            padding: 90px 24px;
+            padding: 86px 24px;
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .section-header {
             text-align: center;
             max-width: 680px;
-            margin: 0 auto 56px;
+            margin: 0 auto 52px;
         }
 
         .section-tag {
@@ -187,15 +444,19 @@
             color: var(--emerald-400);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: inline-block;
         }
 
+        body.light-mode .section-tag {
+            color: var(--emerald-600);
+        }
+
         .section-title {
-            font-size: clamp(28px, 3.5vw, 42px);
+            font-size: clamp(28px, 3.5vw, 40px);
             font-weight: 800;
             letter-spacing: -0.03em;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .section-desc {
@@ -204,26 +465,25 @@
             line-height: 1.6;
         }
 
-        /* Pillars Grid */
         .pillars-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 24px;
+            gap: 22px;
         }
 
         .pillar-card {
             background: var(--bg-card);
             border: 1px solid var(--border-card);
             border-radius: var(--radius-lg);
-            padding: 32px 28px;
-            transition: all var(--transition-normal);
+            padding: 30px 26px;
+            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease, box-shadow 0.28s ease;
             position: relative;
         }
 
         .pillar-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 16px 36px -10px rgba(16, 185, 129, 0.16);
+            transform: translateY(-6px);
+            border-color: rgba(16, 185, 129, 0.45);
+            box-shadow: 0 18px 36px -10px rgba(16, 185, 129, 0.18);
         }
 
         .pillar-icon-box {
@@ -234,28 +494,37 @@
             align-items: center;
             justify-content: center;
             font-size: 22px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Scenario Tabs */
+        .pillar-card:hover .pillar-icon-box {
+            transform: scale(1.08) rotate(-3deg);
+        }
+
         .scenario-tabs {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin-bottom: 36px;
+            gap: 10px;
+            margin-bottom: 34px;
             flex-wrap: wrap;
         }
 
         .scenario-tab-btn {
             padding: 10px 22px;
             border-radius: var(--radius-full);
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--bg-glass-subtle);
             border: 1px solid var(--border-card);
             color: var(--text-muted);
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: all 0.22s ease;
+        }
+
+        .scenario-tab-btn:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            color: var(--text-primary);
         }
 
         .scenario-tab-btn.active {
@@ -265,7 +534,6 @@
             box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
         }
 
-        /* Comparison Table */
         .comparison-table {
             width: 100%;
             border-collapse: separate;
@@ -289,7 +557,7 @@
         }
 
         .comparison-table th {
-            background: rgba(15, 23, 42, 0.8);
+            background: var(--bg-surface);
             font-family: var(--font-display);
             font-size: 12px;
             font-weight: 700;
@@ -300,28 +568,164 @@
 
         .cta-banner {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(99, 102, 241, 0.16) 100%);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(16, 185, 129, 0.32);
             border-radius: var(--radius-xl);
-            padding: 60px 40px;
+            padding: 58px 36px;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
 
+        /* Structured Agency Footer */
         .landing-footer {
-            padding: 40px 24px;
+            padding: 56px 24px 36px;
             border-top: 1px solid var(--border-subtle);
-            text-align: center;
-            color: var(--text-dim);
+            background: var(--bg-surface);
+            color: var(--text-muted);
+            font-size: 13.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto 36px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+
+        .footer-col h4 {
             font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .footer-col a {
+            color: var(--text-muted);
+            font-size: 13.5px;
+        }
+
+        .footer-col a:hover {
+            color: var(--emerald-400);
+        }
+
+        /* ========================================================
+           CHOREOGRAPHED KEYFRAMES (ALL FINISH <= 1.35s)
+           ======================================================== */
+        @@keyframes kineticBeamSweep {
+            0% { width: 0%; opacity: 1; }
+            82% { width: 100%; opacity: 1; }
+            100% { width: 100%; opacity: 0; }
+        }
+
+        @@keyframes headerSlideIn {
+            from { opacity: 0; transform: translateY(-16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @@keyframes maskLineRise {
+            from { opacity: 0; transform: translateY(105%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @@keyframes heroGlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @@keyframes heroPopUp {
+            from { opacity: 0; transform: translateY(16px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @@keyframes mockupUnfold {
+            from {
+                opacity: 0;
+                transform: perspective(1200px) rotateX(10deg) translateY(38px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: perspective(1200px) rotateX(0deg) translateY(0) scale(1);
+            }
+        }
+
+        @@keyframes txSlideIn {
+            from { opacity: 0; transform: translateX(-12px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @@keyframes orbDriftOne {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 28px) scale(1.08); }
+        }
+
+        @@keyframes orbDriftTwo {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-36px, 22px) scale(1.06); }
+        }
+
+        /* Replay trigger utility */
+        .replay-reset .intro-kinetic-beam,
+        .replay-reset .hero-badge,
+        .replay-reset .reveal-line-1,
+        .replay-reset .reveal-line-2,
+        .replay-reset .hero-subtitle,
+        .replay-reset .hero-cta-group,
+        .replay-reset .trust-pills,
+        .replay-reset .mockup-wrapper,
+        .replay-reset .mockup-tx-row {
+            animation: none !important;
+        }
+
+        /* Responsive Adjustments */
+        @@media (max-width: 900px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @@media (max-width: 640px) {
+            .landing-header {
+                padding: 12px 18px;
+            }
+            .landing-header.is-scrolled {
+                padding: 10px 18px;
+            }
+            .hero-section {
+                padding: 108px 16px 56px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body>
+<body class="landing-body">
+    <!-- Top Kinetic Entrance Beam + Scroll Progress -->
+    <div class="intro-kinetic-beam" id="kineticBeam"></div>
+    <div class="scroll-progress-bar" id="scrollProgress"></div>
+
+    <!-- Subtle Floating Ambient Background Orbs -->
+    <div class="ambient-canvas" aria-hidden="true">
+        <div class="ambient-orb ambient-orb-1"></div>
+        <div class="ambient-orb ambient-orb-2"></div>
+        <div class="ambient-orb ambient-orb-3"></div>
+    </div>
+
     <!-- Top Landing Header -->
-    <header class="landing-header">
+    <header class="landing-header" id="landingHeader">
         <div class="brand-wrapper">
-            <a href="/" class="brand-logo">
+            <a asp-controller="Home" asp-action="Landing" class="brand-logo">
                 <div class="brand-icon-box">
                     <i class="fa-solid fa-vault"></i>
                 </div>
@@ -332,36 +736,78 @@
             </a>
         </div>
 
-        <ul class="landing-nav-links d-none d-lg-flex">
-            <li><a href="#features">Pillars</a></li>
-            <li><a href="#udhar">Udhar Ledger</a></li>
-            <li><a href="#scenarios">Family Scenarios</a></li>
-            <li><a href="#comparison">Why HomeLedger?</a></li>
-            <li><a href="#security">Privacy</a></li>
+        <ul class="landing-nav-links d-none d-lg-flex" id="landingNavLinks">
+            <li><a href="#features" data-section="features">Pillars</a></li>
+            <li><a href="#udhar" data-section="udhar">Udhar Ledger</a></li>
+            <li><a href="#scenarios" data-section="scenarios">Scenarios</a></li>
+            <li><a href="#comparison" data-section="comparison">Comparison</a></li>
+            <li><a href="#security" data-section="security">Privacy</a></li>
         </ul>
 
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full);">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                <span>Sign In</span>
-            </a>
-            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm" style="border-radius: var(--radius-full);">
-                <i class="fa-solid fa-sparkles"></i>
-                <span>Start Free</span>
-            </a>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="nav-icon-btn" id="themeToggle" title="Switch Theme (Balanced Slate / Soft Light)" aria-label="Toggle color theme">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+
+            @if (isLoggedIn)
+            {
+                <a asp-controller="Home" asp-action="@dashboardAction" class="btn btn-primary btn-sm btn-shine" style="border-radius: var(--radius-full);">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Go to Dashboard</span>
+                </a>
+                <a asp-controller="Account" asp-action="@(loginType == "Member" ? "MemberLogout" : "Logout")" class="btn btn-secondary btn-sm d-none d-sm-inline" style="border-radius: var(--radius-full);">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full);">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <span>Sign In</span>
+                </a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm btn-shine d-none d-sm-inline" style="border-radius: var(--radius-full);">
+                    <i class="fa-solid fa-sparkles"></i>
+                    <span>Start Free</span>
+                </a>
+            }
+
+            <button class="nav-icon-btn d-lg-none" id="mobileMenuBtn" aria-label="Toggle Navigation Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
     </header>
 
+    <!-- Mobile Navigation Drawer -->
+    <nav class="mobile-nav-drawer d-lg-none" id="mobileNavDrawer">
+        <a href="#features" onclick="closeMobileNav()">Core Pillars</a>
+        <a href="#udhar" onclick="closeMobileNav()">Udhar Ledger</a>
+        <a href="#scenarios" onclick="closeMobileNav()">Family Scenarios</a>
+        <a href="#comparison" onclick="closeMobileNav()">Why HomeLedger?</a>
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; display: flex; gap: 8px;">
+            @if (isLoggedIn)
+            {
+                <a asp-controller="Home" asp-action="@dashboardAction" class="btn btn-primary btn-sm" style="flex: 1;">Dashboard</a>
+                <a asp-controller="Account" asp-action="@(loginType == "Member" ? "MemberLogout" : "Logout")" class="btn btn-danger btn-sm" style="flex: 1;">Logout</a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-sm" style="flex: 1;">Sign In</a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm" style="flex: 1;">Start Free</a>
+            }
+        </div>
+    </nav>
+
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section" id="heroTop">
         <div class="hero-badge">
             <i class="fa-solid fa-shield-heart"></i>
             <span>The Intelligent Financial OS for Indian Families</span>
         </div>
 
         <h1 class="hero-title">
-            Master Family Wealth &amp;<br>
-            <span class="gradient-text-emerald">Shared Expense Intelligence.</span>
+            <span class="reveal-mask"><span class="reveal-line-1">Master Family Wealth &amp;</span></span>
+            <span class="reveal-mask"><span class="reveal-line-2 gradient-text-emerald">Shared Expense Intelligence.</span></span>
         </h1>
 
         <p class="hero-subtitle">
@@ -369,14 +815,28 @@
         </p>
 
         <div class="hero-cta-group">
-            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg" style="gap: 10px;">
-                <span>Create Family Account</span>
-                <i class="fa-solid fa-arrow-right"></i>
-            </a>
-            <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-lg" style="gap: 10px;">
-                <i class="fa-solid fa-user-shield" style="color: var(--emerald-400);"></i>
-                <span>Member Portal Login</span>
-            </a>
+            @if (isLoggedIn)
+            {
+                <a asp-controller="Home" asp-action="@dashboardAction" class="btn btn-primary btn-lg btn-shine" style="gap: 10px;">
+                    <span>Open Your Workspace</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a asp-controller="Report" asp-action="Index" class="btn btn-secondary btn-lg" style="gap: 10px;">
+                    <i class="fa-solid fa-chart-pie" style="color: var(--emerald-400);"></i>
+                    <span>View Live Reports</span>
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg btn-shine" style="gap: 10px;">
+                    <span>Create Family Account</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a asp-controller="Account" asp-action="Login" asp-route-tab="member" class="btn btn-secondary btn-lg" style="gap: 10px;">
+                    <i class="fa-solid fa-user-shield" style="color: var(--emerald-400);"></i>
+                    <span>Member &amp; Admin Login</span>
+                </a>
+            }
         </div>
 
         <div class="trust-pills">
@@ -394,13 +854,13 @@
             </div>
             <div class="trust-pill-item">
                 <i class="fa-solid fa-circle-check" style="color: var(--amber-400);"></i>
-                <span>Instant PDF &amp; CSV Reports</span>
+                <span>Excel, CSV &amp; PDF Backups</span>
             </div>
         </div>
 
         <!-- Interactive 3D Glass Dashboard Mockup -->
-        <div class="mockup-wrapper">
-            <div class="mockup-card">
+        <div class="mockup-wrapper" id="mockupWrapper">
+            <div class="mockup-card" id="mockupCard">
                 <div class="mockup-header-bar">
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <div class="browser-dots">
@@ -410,33 +870,39 @@
                         </div>
                         <span style="font-size: 12px; color: var(--text-dim); font-family: var(--font-mono);">homeledger://workspace/patel-family</span>
                     </div>
-                    <div class="badge badge-emerald">
-                        <i class="fa-solid fa-circle" style="font-size: 7px;"></i>
-                        <span>Live Ledger Active</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="button" class="replay-intro-btn" onclick="replayHeroIntro()" title="Replay 1.35s Entrance Animation">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Replay Intro</span>
+                        </button>
+                        <div class="badge badge-emerald">
+                            <i class="fa-solid fa-circle" style="font-size: 7px;"></i>
+                            <span>Live Ledger Active</span>
+                        </div>
                     </div>
                 </div>
 
-                <div style="padding: 28px;">
-                    <!-- Top Metrics Banner Inside Mockup -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-md); padding: 18px;">
+                <div style="padding: 26px;">
+                    <!-- Top Metrics Banner Inside Mockup (Animated Counters 0 -> Target in 1.25s) -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 22px;">
+                        <div style="background: rgba(16, 185, 129, 0.09); border: 1px solid rgba(16, 185, 129, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Remaining Balance</span>
-                            <h2 style="font-size: 28px; font-weight: 800; color: var(--emerald-400); font-family: var(--font-mono); margin: 0;">₹34,500.00</h2>
+                            <h2 style="font-size: 26px; font-weight: 800; color: var(--emerald-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="34500" data-prefix="₹">₹34,500.00</h2>
                             <small style="color: var(--text-dim); font-size: 11px;">Surplus ready for savings</small>
                         </div>
-                        <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-md); padding: 18px;">
+                        <div style="background: rgba(99, 102, 241, 0.09); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Total Income</span>
-                            <h2 style="font-size: 28px; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); margin: 0;">₹49,500.00</h2>
+                            <h2 style="font-size: 26px; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); margin: 0;" data-hero-counter="49500" data-prefix="₹">₹49,500.00</h2>
                             <small style="color: var(--emerald-400); font-size: 11px;"><i class="fa-solid fa-arrow-up"></i> Salary + Freelance</small>
                         </div>
-                        <div style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.25); border-radius: var(--radius-md); padding: 18px;">
+                        <div style="background: rgba(244, 63, 94, 0.09); border: 1px solid rgba(244, 63, 94, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Household Expenses</span>
-                            <h2 style="font-size: 28px; font-weight: 800; color: #fb7185; font-family: var(--font-mono); margin: 0;">₹15,000.00</h2>
+                            <h2 style="font-size: 26px; font-weight: 800; color: #fb7185; font-family: var(--font-mono); margin: 0;" data-hero-counter="15000" data-prefix="₹">₹15,000.00</h2>
                             <small style="color: var(--text-dim); font-size: 11px;">Groceries, Electricity, School</small>
                         </div>
-                        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); padding: 18px;">
+                        <div style="background: rgba(245, 158, 11, 0.09); border: 1px solid rgba(245, 158, 11, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Udhar (Dene Hai)</span>
-                            <h2 style="font-size: 28px; font-weight: 800; color: var(--amber-400); font-family: var(--font-mono); margin: 0;">₹17,500.00</h2>
+                            <h2 style="font-size: 26px; font-weight: 800; color: var(--amber-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="17500" data-prefix="₹">₹17,500.00</h2>
                             <small style="color: var(--amber-400); font-size: 11px;">To Receive: ₹2,000.00</small>
                         </div>
                     </div>
@@ -448,21 +914,21 @@
                             <span style="font-size: 11px; color: var(--emerald-400);"><i class="fa-solid fa-lock"></i> Admin Vault Encrypted</span>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
+                            <div class="mockup-tx-row mockup-tx-1">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-arrow-up"></i></div>
                                     <span style="font-size: 13.5px; font-weight: 600;">Father's salary (01 Oct)</span>
                                 </div>
                                 <span style="font-family: var(--font-mono); font-weight: 700; color: #10b981;">+₹25,000.00</span>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
+                            <div class="mockup-tx-row mockup-tx-2">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(244, 63, 94, 0.15); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-arrow-down"></i></div>
                                     <span style="font-size: 13.5px; font-weight: 600;">Grocery shopping (02 Oct)</span>
                                 </div>
                                 <span style="font-family: var(--font-mono); font-weight: 700; color: #f43f5e;">-₹2,500.00</span>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
+                            <div class="mockup-tx-row mockup-tx-3">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-hand-holding-dollar"></i></div>
                                     <span style="font-size: 13.5px; font-weight: 600;">Friend ko udhar diya (16 Oct)</span>
@@ -478,14 +944,14 @@
 
     <!-- Section 1: The 4 Core Pillars -->
     <section class="section-container" id="features">
-        <div class="section-header">
+        <div class="section-header reveal-on-scroll">
             <span class="section-tag">Core Architecture</span>
             <h2 class="section-title">Engineered Specifically For Indian Household Dynamics</h2>
             <p class="section-desc">Traditional Western budgeting apps don't understand Indian joint families, shop credit, or informal lending. HomeLedger bridges that gap with four unbreakable pillars.</p>
         </div>
 
         <div class="pillars-grid">
-            <div class="pillar-card">
+            <div class="pillar-card reveal-on-scroll reveal-delay-1">
                 <div class="pillar-icon-box" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald-400);">
                     <i class="fa-solid fa-users-gear"></i>
                 </div>
@@ -495,40 +961,40 @@
                 </p>
             </div>
 
-            <div class="pillar-card" id="udhar">
+            <div class="pillar-card reveal-on-scroll reveal-delay-2" id="udhar">
                 <div class="pillar-icon-box" style="background: rgba(245, 158, 11, 0.15); color: var(--amber-400);">
                     <i class="fa-solid fa-hand-holding-dollar"></i>
                 </div>
                 <h3 style="font-size: 18px; margin-bottom: 10px;">Dedicated Udhar (Credit) Bahi-Khata</h3>
                 <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-                    Stop mixing grocery expenses with money lent to friends or store credit. Our standalone Udhar ledger tracks <em>Lene Hai</em> and <em>Dene Hai</em> so your monthly cash balances never get double-counted.
+                    Stop mixing grocery expenses with money lent to friends or store credit. Our standalone Udhar ledger tracks <em>Lene Hai</em> and <em>Dene Hai</em> with installment repayments so balances stay 100% accurate.
                 </p>
             </div>
 
-            <div class="pillar-card">
+            <div class="pillar-card reveal-on-scroll reveal-delay-3">
                 <div class="pillar-icon-box" style="background: rgba(99, 102, 241, 0.15); color: var(--indigo-400);">
                     <i class="fa-solid fa-chart-pie"></i>
                 </div>
                 <h3 style="font-size: 18px; margin-bottom: 10px;">Visual Analytics &amp; Instant Reports</h3>
                 <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-                    Interactive category doughnut charts, timeline cash flows, and one-click PDF/CSV reports formatted in Indian rupees (₹) for transparent family audits and monthly planning.
+                    Interactive category doughnut charts, timeline cash flows, and instant Excel, CSV, and PDF backups formatted in Indian rupees (₹) for transparent family audits and monthly planning.
                 </p>
             </div>
 
-            <div class="pillar-card" id="security">
+            <div class="pillar-card reveal-on-scroll reveal-delay-4" id="security">
                 <div class="pillar-icon-box" style="background: rgba(14, 165, 233, 0.15); color: var(--cyan-400);">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
                 <h3 style="font-size: 18px; margin-bottom: 10px;">Bank-Grade Privacy &amp; Local Storage</h3>
                 <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-                    Zero bank logins, zero third-party data tracking, BCrypt cryptographic password hashing, and local database resilience that guarantees your family's financial numbers stay yours alone.
+                    Zero bank logins, zero third-party data tracking, BCrypt cryptographic password hashing, and local MySQL database resilience that guarantees your family's financial numbers stay yours alone.
                 </p>
             </div>
         </div>
     </section>
 
     <!-- Section 2: Real Family Scenarios (Interactive Tabs) -->
-    <section class="section-container" id="scenarios" style="background: rgba(255, 255, 255, 0.015); border-radius: var(--radius-xl); border: 1px solid var(--border-subtle);">
+    <section class="section-container reveal-on-scroll" id="scenarios" style="background: var(--bg-glass-subtle); border-radius: var(--radius-xl); border: 1px solid var(--border-subtle);">
         <div class="section-header">
             <span class="section-tag">Real-World Case Studies</span>
             <h2 class="section-title">Tested Across October 2026 Household Audits</h2>
@@ -549,18 +1015,18 @@
 
         <!-- Scenario 1: Patel's Family -->
         <div id="scenario-patel" class="scenario-content">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-                <div class="glass-card" style="padding: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                <div class="glass-card" style="padding: 22px;">
                     <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Total Income</span>
                     <h3 style="font-size: 26px; color: var(--emerald-400); font-family: var(--font-mono); margin: 6px 0;">₹49,500.00</h3>
                     <small style="color: var(--text-muted);">Father's salary (₹25k) + Mother (₹8k) + Freelance (₹15k)</small>
                 </div>
-                <div class="glass-card" style="padding: 20px;">
+                <div class="glass-card" style="padding: 22px;">
                     <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Paid Expenses</span>
                     <h3 style="font-size: 26px; color: #f43f5e; font-family: var(--font-mono); margin: 6px 0;">₹15,000.00</h3>
                     <small style="color: var(--text-muted);">Groceries, electricity, school fees, transport, medical</small>
                 </div>
-                <div class="glass-card" style="padding: 20px;">
+                <div class="glass-card" style="padding: 22px;">
                     <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Closing Udhar Position</span>
                     <h3 style="font-size: 26px; color: var(--amber-400); font-family: var(--font-mono); margin: 6px 0;">₹17,500 <span style="font-size: 14px; font-weight: 500; color: var(--text-dim);">dene baki</span></h3>
                     <small style="color: var(--text-muted);">Receivable: ₹2,000 from friends</small>
@@ -570,18 +1036,18 @@
 
         <!-- Scenario 2: Rana's Family -->
         <div id="scenario-rana" class="scenario-content" style="display: none;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-                <div class="glass-card" style="padding: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                <div class="glass-card" style="padding: 22px;">
                     <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Total Income</span>
                     <h3 style="font-size: 26px; color: var(--emerald-400); font-family: var(--font-mono); margin: 6px 0;">₹55,000.00</h3>
                     <small style="color: var(--text-muted);">Father (₹30k) + Mother (₹10k) + Extra work (₹15k)</small>
                 </div>
-                <div class="glass-card" style="padding: 20px;">
+                <div class="glass-card" style="padding: 22px;">
                     <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Paid Expenses</span>
                     <h3 style="font-size: 26px; color: #f43f5e; font-family: var(--font-mono); margin: 6px 0;">₹13,500.00</h3>
                     <small style="color: var(--text-muted);">Electricity, transport, education, medical</small>
                 </div>
-                <div class="glass-card" style="padding: 20px;">
+                <div class="glass-card" style="padding: 22px;">
                     <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Closing Udhar Position</span>
                     <h3 style="font-size: 26px; color: var(--amber-400); font-family: var(--font-mono); margin: 6px 0;">₹25,200 <span style="font-size: 14px; font-weight: 500; color: var(--text-dim);">dene baki</span></h3>
                     <small style="color: var(--text-muted);">Receivable: ₹4,000 lent to relative</small>
@@ -591,18 +1057,18 @@
 
         <!-- Scenario 3: Rathod's Family -->
         <div id="scenario-rathod" class="scenario-content" style="display: none;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-                <div class="glass-card" style="padding: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                <div class="glass-card" style="padding: 22px;">
                     <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Total Income</span>
                     <h3 style="font-size: 26px; color: var(--emerald-400); font-family: var(--font-mono); margin: 6px 0;">₹42,000.00</h3>
                     <small style="color: var(--text-muted);">Father (₹22k) + Mother (₹7k) + Side work (₹13k)</small>
                 </div>
-                <div class="glass-card" style="padding: 20px;">
+                <div class="glass-card" style="padding: 22px;">
                     <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Paid Expenses</span>
                     <h3 style="font-size: 26px; color: #f43f5e; font-family: var(--font-mono); margin: 6px 0;">₹10,000.00</h3>
                     <small style="color: var(--text-muted);">Grocery shopping, education, medical, bills</small>
                 </div>
-                <div class="glass-card" style="padding: 20px;">
+                <div class="glass-card" style="padding: 22px;">
                     <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Closing Udhar Position</span>
                     <h3 style="font-size: 26px; color: var(--amber-400); font-family: var(--font-mono); margin: 6px 0;">₹18,600 <span style="font-size: 14px; font-weight: 500; color: var(--text-dim);">dene baki</span></h3>
                     <small style="color: var(--text-muted);">Receivable: ₹4,000 neighbour lending</small>
@@ -612,7 +1078,7 @@
     </section>
 
     <!-- Section 3: Feature Comparison -->
-    <section class="section-container" id="comparison">
+    <section class="section-container reveal-on-scroll" id="comparison">
         <div class="section-header">
             <span class="section-tag">Transparent Comparison</span>
             <h2 class="section-title">Why HomeLedger Outclasses Other Alternatives</h2>
@@ -649,10 +1115,10 @@
                         <td style="color: #f43f5e;"><i class="fa-solid fa-circle-xmark"></i> Manual Charting</td>
                     </tr>
                     <tr>
-                        <td>Private Self-Hosted &amp; Zero Ad Tracking</td>
-                        <td style="color: var(--emerald-400); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> 100% Private Database</td>
-                        <td style="color: #f43f5e;"><i class="fa-solid fa-circle-xmark"></i> Cloud Third-Party Ads</td>
-                        <td style="color: var(--emerald-400);"><i class="fa-solid fa-circle-check"></i> Offline Only</td>
+                        <td>Multi-Format Backups (Excel, CSV, PDF)</td>
+                        <td style="color: var(--emerald-400); font-weight: 700;"><i class="fa-solid fa-circle-check"></i> Lossless Export &amp; Import</td>
+                        <td style="color: #f43f5e;"><i class="fa-solid fa-circle-xmark"></i> Locked to Cloud</td>
+                        <td style="color: var(--amber-400);"><i class="fa-solid fa-triangle-exclamation"></i> Manual Versioning</td>
                     </tr>
                 </tbody>
             </table>
@@ -660,50 +1126,189 @@
     </section>
 
     <!-- Section 4: High-Impact Call to Action Banner -->
-    <section class="section-container" style="padding-top: 20px;">
+    <section class="section-container reveal-on-scroll" style="padding-top: 10px;">
         <div class="cta-banner">
-            <h2 style="font-size: clamp(30px, 4vw, 44px); font-weight: 800; margin-bottom: 16px;">
+            <h2 style="font-size: clamp(28px, 4vw, 42px); font-weight: 800; margin-bottom: 16px;">
                 Bring Financial Clarity to Your Family Today.
             </h2>
-            <p style="font-size: 17px; color: var(--text-secondary); max-width: 600px; margin: 0 auto 32px; line-height: 1.6;">
-                Join hundreds of households tracking income, smart budgets, and Udhar with complete role protection. Setup takes less than 60 seconds.
+            <p style="font-size: 16.5px; color: var(--text-secondary); max-width: 600px; margin: 0 auto 30px; line-height: 1.6;">
+                Manage income, smart budgets, savings goals, and Udhar with complete role protection. Setup takes less than 60 seconds.
             </p>
             <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">
-                    <i class="fa-solid fa-bolt"></i>
-                    <span>Create Your Family Vault</span>
-                </a>
-                <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-lg">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                    <span>Sign In to Existing Account</span>
-                </a>
+                @if (isLoggedIn)
+                {
+                    <a asp-controller="Home" asp-action="@dashboardAction" class="btn btn-primary btn-lg btn-shine">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <span>Return to Active Workspace</span>
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg btn-shine">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Create Your Family Vault</span>
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-lg">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <span>Sign In to Existing Account</span>
+                    </a>
+                }
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Clean Structured Agency Footer -->
     <footer class="landing-footer">
-        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; gap: 20px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div class="brand-icon-box" style="width: 28px; height: 28px; font-size: 13px;">
-                    <i class="fa-solid fa-vault"></i>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                    <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 14px;">
+                        <i class="fa-solid fa-vault"></i>
+                    </div>
+                    <span style="font-size: 18px; font-weight: 800; color: var(--text-primary);">Home<span style="color: var(--emerald-400);">Ledger</span></span>
                 </div>
-                <span style="font-weight: 700; color: var(--text-primary);">HomeLedger</span>
-                <span>— Secure Family Wealth OS</span>
+                <p style="line-height: 1.6; max-width: 340px;">
+                    Modern Family Wealth &amp; Shared Expense Intelligence built with role-based isolation, Udhar Bahi-Khata, and safe multi-format data vaults.
+                </p>
             </div>
-            <div>
-                <span class="badge badge-emerald" style="text-transform: none; font-size: 11px;">
-                    <i class="fa-solid fa-circle-check"></i> System Online &amp; Database Connected
-                </span>
+            <div class="footer-col">
+                <h4>Architecture</h4>
+                <ul>
+                    <li><a href="#features">Core Pillars</a></li>
+                    <li><a href="#udhar">Udhar Bahi-Khata</a></li>
+                    <li><a href="#scenarios">Household Scenarios</a></li>
+                    <li><a href="#comparison">Platform Comparison</a></li>
+                </ul>
             </div>
-            <div>
-                <p style="margin: 0;">&copy; @DateTime.Now.Year HomeLedger. Engineered for Modern Households.</p>
+            <div class="footer-col">
+                <h4>Access Portals</h4>
+                <ul>
+                    <li><a asp-controller="Account" asp-action="Login">Admin Head Sign In</a></li>
+                    <li><a asp-controller="Account" asp-action="Login" asp-route-tab="member">Member Portal Login</a></li>
+                    <li><a asp-controller="Account" asp-action="Register">Create Family Account</a></li>
+                    <li><a asp-controller="Account" asp-action="ForgotPassword">Reset Password</a></li>
+                </ul>
             </div>
+            <div class="footer-col">
+                <h4>System Status</h4>
+                <div class="badge badge-emerald" style="text-transform: none; font-size: 11.5px; margin-bottom: 10px;">
+                    <i class="fa-solid fa-circle-check"></i> Online &amp; DB Connected
+                </div>
+                <p style="font-size: 12px; color: var(--text-dim);">
+                    100% Local MySQL &amp; BCrypt Encrypted Authentication.
+                </p>
+            </div>
+        </div>
+
+        <div style="max-width: 1200px; margin: 0 auto; padding-top: 22px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 12.5px; color: var(--text-dim);">
+            <span>&copy; @DateTime.Now.Year HomeLedger. Engineered for Modern Households.</span>
+            <span>ASP.NET Core MVC &bull; Balanced Slate Design System</span>
         </div>
     </footer>
 
-    <!-- Interactive Script for Scenario Tabs -->
+    <!-- Shared App Script + Enhanced Landing Motion Engine -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
+        // 1. Live Counter Engine (0 -> target over 1250ms, matching 1.0s-1.35s hero reveal)
+        function runHeroCounters() {
+            const counters = document.querySelectorAll('[data-hero-counter]');
+            const duration = 1250;
+            const startTime = performance.now();
+
+            function tick(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+
+                counters.forEach((el) => {
+                    const target = parseFloat(el.getAttribute('data-hero-counter') || '0');
+                    const prefix = el.getAttribute('data-prefix') || '';
+                    const val = target * easeOut;
+                    el.textContent = prefix + val.toLocaleString('en-IN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                });
+
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+
+        // Run hero counters right after page load (syncs cleanly within the 1.35s window)
+        document.addEventListener('DOMContentLoaded', () => {
+            runHeroCounters();
+        });
+
+        // 2. One-Click Replay of the 1.35s Entrance Animation
+        function replayHeroIntro() {
+            const card = document.getElementById('mockupCard');
+            if (card) card.style.transform = '';
+            document.body.classList.add('replay-reset');
+            void document.body.offsetWidth; // Force CSS reflow
+            document.body.classList.remove('replay-reset');
+            runHeroCounters();
+        }
+
+        // 3. Scroll Progress Bar, Header Elevation & Active Section Indicator
+        const landingHeader = document.getElementById('landingHeader');
+        const scrollProgress = document.getElementById('scrollProgress');
+        const navLinks = document.querySelectorAll('#landingNavLinks a[data-section]');
+        const trackedSections = Array.from(navLinks)
+            .map(a => document.getElementById(a.getAttribute('data-section')))
+            .filter(Boolean);
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            if (scrollProgress && maxScroll > 0) {
+                scrollProgress.style.transform = `scaleX(${Math.min(scrollY / maxScroll, 1)})`;
+            }
+            if (landingHeader) {
+                landingHeader.classList.toggle('is-scrolled', scrollY > 24);
+            }
+
+            // Active menu highlight
+            let activeId = '';
+            trackedSections.forEach(sec => {
+                const rect = sec.getBoundingClientRect();
+                if (rect.top <= 200) activeId = sec.id;
+            });
+            navLinks.forEach(link => {
+                link.classList.toggle('active-link', link.getAttribute('data-section') === activeId);
+            });
+        }, { passive: true });
+
+        // 4. Subtle 3D Mouse Tilt on Mockup Card (Desktop Only)
+        const mockupWrapper = document.getElementById('mockupWrapper');
+        const mockupCard = document.getElementById('mockupCard');
+        if (mockupWrapper && mockupCard && window.matchMedia('(pointer: fine)').matches) {
+            mockupWrapper.addEventListener('mousemove', (e) => {
+                const rect = mockupWrapper.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                mockupCard.style.transform = `rotateX(${(-y * 4).toFixed(2)}deg) rotateY(${(x * 4.5).toFixed(2)}deg)`;
+            });
+            mockupWrapper.addEventListener('mouseleave', () => {
+                mockupCard.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+        }
+
+        // 5. Mobile Navigation Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNavDrawer = document.getElementById('mobileNavDrawer');
+        if (mobileMenuBtn && mobileNavDrawer) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileNavDrawer.classList.toggle('open');
+            });
+        }
+        function closeMobileNav() {
+            if (mobileNavDrawer) mobileNavDrawer.classList.remove('open');
+        }
+
+        // 6. Scenario Tab Switcher
         function switchScenario(key, btn) {
             document.querySelectorAll('.scenario-content').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.scenario-tab-btn').forEach(el => el.classList.remove('active'));
