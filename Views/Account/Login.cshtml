@@ -42,16 +42,16 @@
             position: absolute;
             border-radius: 50%;
             filter: blur(85px);
-            opacity: 0.3;
+            opacity: 0.32;
             will-change: transform;
             transition: background 0.6s ease;
         }
 
         .login-orb-1 {
-            width: 480px;
-            height: 480px;
-            top: -120px;
-            left: -80px;
+            width: 460px;
+            height: 460px;
+            top: -110px;
+            left: 10%;
             background: radial-gradient(circle, rgba(16, 185, 129, 0.6), transparent 70%);
             animation: loginOrbFloatA 14s ease-in-out infinite alternate;
         }
@@ -59,8 +59,8 @@
         .login-orb-2 {
             width: 440px;
             height: 440px;
-            bottom: -120px;
-            right: -60px;
+            bottom: -110px;
+            right: 10%;
             background: radial-gradient(circle, rgba(99, 102, 241, 0.55), transparent 70%);
             animation: loginOrbFloatB 17s ease-in-out infinite alternate;
         }
@@ -68,8 +68,8 @@
         .login-orb-3 {
             width: 300px;
             height: 300px;
-            top: 40%;
-            left: 42%;
+            top: 42%;
+            left: 50%;
             background: radial-gradient(circle, rgba(56, 189, 248, 0.32), transparent 70%);
             animation: loginOrbFloatA 20s ease-in-out infinite alternate-reverse;
         }
@@ -86,7 +86,7 @@
             opacity: 0.18;
         }
 
-        /* Top Utility Header */
+        /* Minimal Top Bar */
         .login-topbar {
             position: relative;
             z-index: 10;
@@ -97,118 +97,23 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
         }
 
-        /* Split-Stage Main Container */
-        .login-stage {
+        /* Centered Focused Login Stage */
+        .login-center-stage {
             position: relative;
             z-index: 2;
             flex: 1;
-            max-width: 1120px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 28px 24px 40px;
-            display: grid;
-            grid-template-columns: 1.05fr 1fr;
-            gap: 48px;
-            align-items: center;
-            animation: loginStageReveal 0.62s cubic-bezier(0.16, 1, 0.3, 1) @(hasFlash ? "0s" : "1.38s") both;
-        }
-
-        /* Left Dynamic Showcase Panel */
-        .login-showcase {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .showcase-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            width: fit-content;
-            padding: 6px 14px;
-            border-radius: var(--radius-full);
-            background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: var(--emerald-400);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.4px;
-            transition: all 0.35s ease;
-        }
-
-        body.member-mode-bg .showcase-pill {
-            background: rgba(99, 102, 241, 0.14);
-            border-color: rgba(129, 140, 248, 0.38);
-            color: var(--indigo-400);
-        }
-
-        .showcase-title {
-            font-size: clamp(30px, 3.6vw, 44px);
-            font-weight: 800;
-            line-height: 1.15;
-            letter-spacing: -0.03em;
-            margin: 0;
-        }
-
-        .showcase-desc {
-            font-size: 15.5px;
-            color: var(--text-muted);
-            line-height: 1.65;
-            max-width: 470px;
-            margin: 0;
-        }
-
-        /* Floating Mini Live Preview Widget */
-        .showcase-widget {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-card);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            max-width: 460px;
-            animation: floatSlow 6s ease-in-out infinite;
-        }
-
-        .showcase-feature-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: var(--radius-md);
-            background: var(--bg-glass-subtle);
-            border: 1px solid var(--border-subtle);
-            transition: transform 0.25s ease, border-color 0.25s ease;
-        }
-
-        .showcase-feature-row:hover {
-            transform: translateX(6px);
-            border-color: rgba(16, 185, 129, 0.35);
-        }
-
-        .showcase-feature-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
-            flex-shrink: 0;
+            padding: 20px 20px 40px;
+            animation: loginStageReveal 0.62s cubic-bezier(0.16, 1, 0.3, 1) @(hasFlash ? "0s" : "1.38s") both;
         }
 
-        /* Right Auth Card with Animated Border Glow */
         .auth-wrapper {
             width: 100%;
-            max-width: 465px;
-            justify-self: center;
+            max-width: 455px;
         }
 
         .auth-card {
@@ -219,13 +124,13 @@
             border: 1px solid var(--border-card);
             border-radius: var(--radius-xl);
             padding: 36px 32px;
-            box-shadow: var(--shadow-xl), 0 0 40px rgba(16, 185, 129, 0.08);
+            box-shadow: var(--shadow-xl), 0 0 42px rgba(16, 185, 129, 0.1);
             overflow: hidden;
-            transition: box-shadow 0.4s ease;
+            transition: box-shadow 0.4s ease, transform 0.3s ease;
         }
 
         body.member-mode-bg .auth-card {
-            box-shadow: var(--shadow-xl), 0 0 44px rgba(99, 102, 241, 0.14);
+            box-shadow: var(--shadow-xl), 0 0 44px rgba(99, 102, 241, 0.16);
         }
 
         .auth-card-topline {
@@ -344,7 +249,6 @@
             padding-right: 42px;
         }
 
-        /* Quick Fill Interactive Demo Pills */
         .demo-fill-row {
             margin-top: 20px;
             padding: 12px 14px;
@@ -379,7 +283,6 @@
             color: var(--indigo-400);
         }
 
-        /* Form Crossfade */
         .auth-form-anim {
             animation: formFadeSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -420,7 +323,7 @@
         }
 
         @@keyframes loginStageReveal {
-            from { opacity: 0; transform: translateY(20px) scale(0.985); }
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
@@ -428,30 +331,19 @@
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        @@media (max-width: 960px) {
-            .login-stage {
-                grid-template-columns: 1fr;
-                gap: 24px;
-                padding-top: 18px;
-            }
-            .login-showcase {
-                display: none;
-            }
-        }
     </style>
 </head>
 <body>
     @await Html.PartialAsync("_LoginIntroOverlay")
 
-    <!-- Animated Background Canvas -->
+    <!-- Animated Ambient Canvas -->
     <div class="login-bg-canvas" aria-hidden="true">
         <div class="login-orb login-orb-1"></div>
         <div class="login-orb login-orb-2"></div>
         <div class="login-orb login-orb-3"></div>
     </div>
 
-    <!-- Top Action Bar -->
+    <!-- Minimal Top Bar -->
     <header class="login-topbar">
         <a asp-controller="Home" asp-action="Landing" class="brand-logo">
             <div class="brand-icon-box">
@@ -463,111 +355,20 @@
             </div>
         </a>
 
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <button type="button" onclick="replayLoginVaultIntro()" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full); gap: 6px;" title="Replay 2s Login Animation">
-                <i class="fa-solid fa-rotate-right" style="color: var(--indigo-400);"></i>
-                <span class="d-none d-sm-inline">Replay 2s Intro</span>
-            </button>
-            <button class="nav-icon-btn" id="themeToggle" title="Toggle Theme" aria-label="Toggle theme">
-                <i class="fa-solid fa-sun"></i>
-            </button>
-        </div>
+        <button class="nav-icon-btn" id="themeToggle" title="Toggle Theme" aria-label="Toggle theme">
+            <i class="fa-solid fa-sun"></i>
+        </button>
     </header>
 
-    <!-- Interactive Split-Stage Workspace -->
-    <main class="login-stage">
-        <!-- Left Storytelling & Live Feature Preview -->
-        <section class="login-showcase">
-            <div class="showcase-pill" id="showcaseBadge">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span id="showcaseBadgeText">FAMILY HEAD ADMIN PORTAL</span>
-            </div>
-
-            <h1 class="showcase-title" id="showcaseTitle">
-                Command Your Household <span class="gradient-text-emerald">Wealth &amp; Ledger.</span>
-            </h1>
-
-            <p class="showcase-desc" id="showcaseDesc">
-                Sign in with your Family ID to manage shared budgets, reconcile date-wise Udhar repayments, monitor savings milestones, and export lossless Excel, CSV, or PDF vaults.
-            </p>
-
-            <!-- Floating Interactive Highlights Card -->
-            <div class="showcase-widget">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim);">Workspace Capabilities</span>
-                    <span class="badge badge-emerald" style="font-size: 10px;"><i class="fa-solid fa-lock"></i> BCrypt Secured</span>
-                </div>
-
-                <div id="adminFeaturesList" style="display: flex; flex-direction: column; gap: 10px;">
-                    <div class="showcase-feature-row">
-                        <div class="showcase-feature-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald-400);">
-                            <i class="fa-solid fa-crown"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 13.5px; font-weight: 700;">Full Family Budget &amp; Member Keys</div>
-                            <small style="color: var(--text-muted); font-size: 12px;">Create members, reset member PINs, set category limits</small>
-                        </div>
-                    </div>
-                    <div class="showcase-feature-row">
-                        <div class="showcase-feature-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--amber-400);">
-                            <i class="fa-solid fa-hand-holding-dollar"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 13.5px; font-weight: 700;">Smart Udhar Installment Tracking</div>
-                            <small style="color: var(--text-muted); font-size: 12px;">Incremental Lene/Dene settlements with automatic balances</small>
-                        </div>
-                    </div>
-                    <div class="showcase-feature-row">
-                        <div class="showcase-feature-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-400);">
-                            <i class="fa-solid fa-file-shield"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 13.5px; font-weight: 700;">Excel, CSV &amp; PDF Safe Backups</div>
-                            <small style="color: var(--text-muted); font-size: 12px;">Zero-duplicate export &amp; restore anytime</small>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="memberFeaturesList" style="display: none; flex-direction: column; gap: 10px;">
-                    <div class="showcase-feature-row">
-                        <div class="showcase-feature-icon" style="background: rgba(99, 102, 241, 0.16); color: var(--indigo-400);">
-                            <i class="fa-solid fa-user-check"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 13.5px; font-weight: 700;">Personal Income &amp; Expense Space</div>
-                            <small style="color: var(--text-muted); font-size: 12px;">Track your own earnings and household spending cleanly</small>
-                        </div>
-                    </div>
-                    <div class="showcase-feature-row">
-                        <div class="showcase-feature-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-400);">
-                            <i class="fa-solid fa-scale-balanced"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 13.5px; font-weight: 700;">Self-Serve Udhar Settlement</div>
-                            <small style="color: var(--text-muted); font-size: 12px;">Settle or update your own pending Lene/Dene entries directly</small>
-                        </div>
-                    </div>
-                    <div class="showcase-feature-row">
-                        <div class="showcase-feature-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald-400);">
-                            <i class="fa-solid fa-shield-halved"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 13.5px; font-weight: 700;">Strict Admin Boundary Protection</div>
-                            <small style="color: var(--text-muted); font-size: 12px;">Private workspace isolated from family admin keys</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Right Interactive Login Card -->
+    <!-- Pure Centered Login Form -->
+    <main class="login-center-stage">
         <div class="auth-wrapper">
             <div class="auth-card">
                 <div class="auth-card-topline"></div>
 
-                <div style="margin-bottom: 22px;">
-                    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 4px;">Welcome Back</h2>
-                    <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Choose your access portal below</p>
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 4px;">Sign In</h2>
+                    <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Select your account type to continue</p>
                 </div>
 
                 @if (TempData["Error"] != null)
@@ -668,22 +469,22 @@
                 <!-- Interactive Quick-Fill Demo Credentials -->
                 <div class="demo-fill-row">
                     <div style="font-size: 11px; font-weight: 700; color: var(--emerald-400); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px;">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> One-Click Test Fill
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Quick Test Fill
                     </div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button type="button" class="demo-chip-btn" onclick="quickFillDemo('admin')">
                             <i class="fa-solid fa-crown" style="color: var(--emerald-400);"></i>
-                            <span>Fill Admin (Patel's Family)</span>
+                            <span>Admin (Patel's Family)</span>
                         </button>
                         <button type="button" class="demo-chip-btn member" onclick="quickFillDemo('member')">
                             <i class="fa-solid fa-user-check" style="color: var(--indigo-400);"></i>
-                            <span>Fill Member (Mother)</span>
+                            <span>Member (Mother)</span>
                         </button>
                     </div>
                 </div>
 
                 <div style="margin-top: 22px; text-align: center; border-top: 1px solid var(--border-subtle); padding-top: 18px; font-size: 13px; color: var(--text-muted);">
-                    Don't have a family workspace yet?
+                    Don't have a family account?
                     <a asp-action="Register" style="color: var(--emerald-400); font-weight: 700; margin-left: 4px;">Create Free Account</a>
                 </div>
             </div>
@@ -705,12 +506,6 @@
             const adminForm = document.getElementById('adminForm');
             const memberForm = document.getElementById('memberForm');
 
-            const badgeText = document.getElementById('showcaseBadgeText');
-            const titleEl = document.getElementById('showcaseTitle');
-            const descEl = document.getElementById('showcaseDesc');
-            const adminList = document.getElementById('adminFeaturesList');
-            const memberList = document.getElementById('memberFeaturesList');
-
             if (mode === 'admin') {
                 document.body.classList.remove('member-mode-bg');
                 switcher.classList.remove('member-selected');
@@ -718,12 +513,6 @@
                 memberTab.classList.remove('active');
                 adminForm.style.display = 'block';
                 memberForm.style.display = 'none';
-
-                if (badgeText) badgeText.textContent = 'FAMILY HEAD ADMIN PORTAL';
-                if (titleEl) titleEl.innerHTML = 'Command Your Household <span class="gradient-text-emerald">Wealth &amp; Ledger.</span>';
-                if (descEl) descEl.textContent = 'Sign in with your Family ID to manage shared budgets, reconcile date-wise Udhar repayments, monitor savings milestones, and export lossless Excel, CSV, or PDF vaults.';
-                if (adminList) adminList.style.display = 'flex';
-                if (memberList) memberList.style.display = 'none';
             } else {
                 document.body.classList.add('member-mode-bg');
                 switcher.classList.add('member-selected');
@@ -731,12 +520,6 @@
                 memberTab.classList.add('active');
                 adminForm.style.display = 'none';
                 memberForm.style.display = 'block';
-
-                if (badgeText) badgeText.textContent = 'ISOLATED MEMBER ACCESS';
-                if (titleEl) titleEl.innerHTML = 'Track Your Personal <span class="gradient-text-indigo">Family Contributions.</span>';
-                if (descEl) descEl.textContent = 'Access your private household member ledger to log personal incomes, track daily expenses, and settle your own Udhar records independently.';
-                if (adminList) adminList.style.display = 'none';
-                if (memberList) memberList.style.display = 'flex';
             }
         }
 
