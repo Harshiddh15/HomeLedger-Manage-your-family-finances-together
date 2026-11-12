@@ -1,6 +1,18 @@
-@* Pure [HomeLedger] 1.30s Brand Intro Animation Overlay (Home / Landing Only) *@
+@* Pure [HomeLedger] Latest 2.0s Kinetic Spotlight & Split-Shutter Reveal (Home Page Only) *@
 @{
     var alwaysShow = (ViewData["AlwaysShowHomeIntro"] as bool?) ?? false;
+    var brandChars = new[] {
+        new { Char = "H", Accent = false },
+        new { Char = "o", Accent = false },
+        new { Char = "m", Accent = false },
+        new { Char = "e", Accent = false },
+        new { Char = "L", Accent = true },
+        new { Char = "e", Accent = true },
+        new { Char = "d", Accent = true },
+        new { Char = "g", Accent = true },
+        new { Char = "e", Accent = true },
+        new { Char = "r", Accent = true }
+    };
 }
 
 <style>
@@ -11,134 +23,254 @@
         display: none;
         align-items: center;
         justify-content: center;
-        background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.14) 0%, rgba(19, 27, 43, 0.98) 65%);
-        backdrop-filter: blur(22px);
-        -webkit-backdrop-filter: blur(22px);
         cursor: pointer;
         user-select: none;
-    }
-
-    body.light-mode .hl-brand-curtain {
-        background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.12) 0%, rgba(237, 242, 247, 0.98) 65%);
+        overflow: hidden;
+        pointer-events: none;
     }
 
     .hl-brand-curtain.is-playing {
         display: flex;
-        animation: hlCurtainExit 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.88s forwards;
+        pointer-events: auto;
     }
 
+    /* Split Silk Shutters (Top & Bottom Open Smoothly at 1.50s -> 2.00s) */
+    .hl-shutter-top,
+    .hl-shutter-bottom {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 50.5%;
+        background: #111827;
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        will-change: transform;
+    }
+
+    .hl-shutter-top {
+        top: 0;
+        background: radial-gradient(ellipse 80% 120% at 50% 100%, rgba(16, 185, 129, 0.16), #111827 72%);
+        border-bottom: 1px solid rgba(52, 211, 153, 0.14);
+    }
+
+    .hl-shutter-bottom {
+        bottom: 0;
+        background: radial-gradient(ellipse 80% 120% at 50% 0%, rgba(56, 189, 248, 0.12), #111827 72%);
+        border-top: 1px solid rgba(56, 189, 248, 0.12);
+    }
+
+    body.light-mode .hl-shutter-top {
+        background: radial-gradient(ellipse 80% 120% at 50% 100%, rgba(16, 185, 129, 0.14), #edf2f7 72%);
+    }
+
+    body.light-mode .hl-shutter-bottom {
+        background: radial-gradient(ellipse 80% 120% at 50% 0%, rgba(56, 189, 248, 0.12), #edf2f7 72%);
+    }
+
+    .hl-brand-curtain.is-playing .hl-shutter-top {
+        animation: hlShutterOpenTop 0.52s cubic-bezier(0.76, 0, 0.24, 1) 1.48s forwards;
+    }
+
+    .hl-brand-curtain.is-playing .hl-shutter-bottom {
+        animation: hlShutterOpenBottom 0.52s cubic-bezier(0.76, 0, 0.24, 1) 1.48s forwards;
+    }
+
+    /* Ambient Breathing Halo Behind Centerpiece */
+    .hl-aurora-halo {
+        position: absolute;
+        width: 460px;
+        height: 460px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.28) 0%, rgba(56, 189, 248, 0.14) 40%, transparent 72%);
+        filter: blur(45px);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .hl-brand-curtain.is-playing .hl-aurora-halo {
+        animation: hlAuroraBreath 1.85s ease-out 0.05s forwards;
+    }
+
+    /* Stage Lockup */
     .hl-brand-stage {
+        position: relative;
+        z-index: 2;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 18px;
-        position: relative;
+        gap: 20px;
+        perspective: 900px;
+    }
+
+    .hl-brand-curtain.is-playing .hl-brand-stage {
+        animation: hlStageFadeOut 0.42s cubic-bezier(0.16, 1, 0.3, 1) 1.42s forwards;
     }
 
     .hl-brand-lockup {
         display: flex;
         align-items: center;
-        gap: 16px;
-        position: relative;
+        gap: 18px;
     }
 
+    /* Latest Conic Spinning Border Emblem */
     .hl-emblem-wrap {
         position: relative;
-        width: 64px;
-        height: 64px;
+        width: 70px;
+        height: 70px;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    .hl-emblem-pulse {
+    .hl-emblem-ripple,
+    .hl-emblem-ripple-2 {
         position: absolute;
-        inset: -8px;
-        border-radius: 20px;
-        border: 2px solid rgba(16, 185, 129, 0.55);
+        inset: -6px;
+        border-radius: 22px;
+        border: 1.5px solid rgba(52, 211, 153, 0.55);
         opacity: 0;
-        animation: hlEmblemPulse 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.08s forwards;
     }
 
-    .hl-emblem-box {
-        width: 64px;
-        height: 64px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #10b981 0%, #6366f1 100%);
+    .hl-brand-curtain.is-playing .hl-emblem-ripple {
+        animation: hlRippleOut 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.16s forwards;
+    }
+
+    .hl-brand-curtain.is-playing .hl-emblem-ripple-2 {
+        border-color: rgba(56, 189, 248, 0.45);
+        animation: hlRippleOut 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.34s forwards;
+    }
+
+    .hl-emblem-conic {
+        position: relative;
+        width: 70px;
+        height: 70px;
+        padding: 2.5px;
+        border-radius: 20px;
+        background: conic-gradient(from 0deg, #10b981, #38bdf8, #818cf8, #34d399, #10b981);
+        box-shadow: 0 14px 40px rgba(16, 185, 129, 0.42), 0 0 28px rgba(56, 189, 248, 0.25);
+        opacity: 0;
+        transform: rotateY(-28deg) scale(0.6);
+    }
+
+    .hl-brand-curtain.is-playing .hl-emblem-conic {
+        animation: hlEmblem3DSnap 0.62s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s forwards;
+    }
+
+    .hl-emblem-inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 17.5px;
+        background: linear-gradient(135deg, #059669 0%, #0f766e 48%, #4f46e5 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         color: #ffffff;
-        font-size: 28px;
-        box-shadow: 0 12px 34px rgba(16, 185, 129, 0.42);
-        opacity: 0;
-        transform: scale(0.6) rotate(-8deg);
-        animation: hlEmblemSpring 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s forwards;
+        font-size: 30px;
     }
 
-    .hl-wordmark-clip {
+    /* Per-Letter Kinetic Split Wordmark */
+    .hl-wordmark-row {
+        display: inline-flex;
+        align-items: baseline;
         overflow: hidden;
-        padding: 4px 2px;
-    }
-
-    .hl-wordmark {
+        padding: 6px 4px;
         font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
-        font-size: clamp(34px, 5vw, 48px);
+        font-size: clamp(36px, 5.8vw, 56px);
         font-weight: 800;
         letter-spacing: -0.03em;
-        color: var(--text-primary, #f8fafc);
-        white-space: nowrap;
-        opacity: 0;
-        transform: translateX(-28px);
-        animation: hlWordmarkSlide 0.52s cubic-bezier(0.16, 1, 0.3, 1) 0.22s forwards;
+        line-height: 1.08;
     }
 
-    .hl-wordmark span {
+    .hl-char {
+        display: inline-block;
+        color: var(--text-primary, #f8fafc);
+        opacity: 0;
+        filter: blur(8px);
+        transform: translateY(110%) scale(0.9);
+        will-change: transform, opacity, filter;
+    }
+
+    .hl-char.accent {
         background: linear-gradient(135deg, #34d399 0%, #10b981 55%, #38bdf8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
-    .hl-underline-track {
-        width: 220px;
+    .hl-brand-curtain.is-playing .hl-char {
+        animation: hlCharWaveIn 0.56s cubic-bezier(0.16, 1, 0.3, 1) var(--char-delay) forwards;
+    }
+
+    /* Luminous Photon Beam Underline */
+    .hl-photon-track {
+        position: relative;
+        width: clamp(220px, 42vw, 320px);
         height: 3px;
         border-radius: 999px;
-        background: rgba(148, 163, 184, 0.2);
+        background: rgba(148, 163, 184, 0.16);
         overflow: hidden;
     }
 
-    .hl-underline-fill {
+    .hl-photon-fill {
+        position: relative;
         width: 0%;
         height: 100%;
-        background: linear-gradient(90deg, #10b981, #38bdf8, #818cf8);
         border-radius: 999px;
-        animation: hlLineSweep 0.72s cubic-bezier(0.16, 1, 0.3, 1) 0.22s forwards;
+        background: linear-gradient(90deg, #10b981, #38bdf8, #818cf8);
+        box-shadow: 0 0 14px rgba(52, 211, 153, 0.85);
     }
 
-    @@keyframes hlEmblemSpring {
-        from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
-        to { opacity: 1; transform: scale(1) rotate(0deg); }
+    .hl-brand-curtain.is-playing .hl-photon-fill {
+        animation: hlPhotonSweep 0.88s cubic-bezier(0.22, 1, 0.36, 1) 0.48s forwards;
     }
 
-    @@keyframes hlEmblemPulse {
+    /* Keyframes — Total 2.00s Choreography */
+    @@keyframes hlEmblem3DSnap {
+        0% { opacity: 0; transform: rotateY(-32deg) scale(0.55); }
+        100% { opacity: 1; transform: rotateY(0deg) scale(1); }
+    }
+
+    @@keyframes hlRippleOut {
         0% { opacity: 0.85; transform: scale(0.85); }
-        100% { opacity: 0; transform: scale(1.45); }
+        100% { opacity: 0; transform: scale(1.75); }
     }
 
-    @@keyframes hlWordmarkSlide {
-        from { opacity: 0; transform: translateX(-28px); }
-        to { opacity: 1; transform: translateX(0); }
+    @@keyframes hlCharWaveIn {
+        0% {
+            opacity: 0;
+            filter: blur(8px);
+            transform: translateY(110%) scale(0.88);
+        }
+        100% {
+            opacity: 1;
+            filter: blur(0px);
+            transform: translateY(0%) scale(1);
+        }
     }
 
-    @@keyframes hlLineSweep {
-        from { width: 0%; }
-        to { width: 100%; }
+    @@keyframes hlPhotonSweep {
+        0% { width: 0%; }
+        100% { width: 100%; }
     }
 
-    @@keyframes hlCurtainExit {
-        0% { opacity: 1; transform: scale(1); pointer-events: auto; }
-        15% { pointer-events: none; }
-        100% { opacity: 0; transform: scale(1.04); visibility: hidden; pointer-events: none; }
+    @@keyframes hlAuroraBreath {
+        0% { opacity: 0; transform: scale(0.7); }
+        45% { opacity: 0.95; transform: scale(1.1); }
+        100% { opacity: 0.3; transform: scale(1.25); }
+    }
+
+    @@keyframes hlStageFadeOut {
+        0% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(1.06); }
+    }
+
+    @@keyframes hlShutterOpenTop {
+        0% { transform: translateY(0%); }
+        100% { transform: translateY(-102%); visibility: hidden; }
+    }
+
+    @@keyframes hlShutterOpenBottom {
+        0% { transform: translateY(0%); }
+        100% { transform: translateY(102%); visibility: hidden; }
     }
 
     @@media (prefers-reduced-motion: reduce) {
@@ -151,20 +283,32 @@
 </script>
 
 <div id="hlHomeIntroOverlay" class="hl-brand-curtain @(alwaysShow ? "is-playing" : "")" aria-hidden="true">
+    <div class="hl-shutter-top"></div>
+    <div class="hl-shutter-bottom"></div>
+    <div class="hl-aurora-halo"></div>
+
     <div class="hl-brand-stage">
         <div class="hl-brand-lockup">
             <div class="hl-emblem-wrap">
-                <div class="hl-emblem-pulse"></div>
-                <div class="hl-emblem-box">
-                    <i class="fa-solid fa-vault"></i>
+                <div class="hl-emblem-ripple"></div>
+                <div class="hl-emblem-ripple-2"></div>
+                <div class="hl-emblem-conic">
+                    <div class="hl-emblem-inner">
+                        <i class="fa-solid fa-vault"></i>
+                    </div>
                 </div>
             </div>
-            <div class="hl-wordmark-clip">
-                <div class="hl-wordmark">Home<span>Ledger</span></div>
+            <div class="hl-wordmark-row" aria-label="HomeLedger">
+                @for (int i = 0; i < brandChars.Length; i++)
+                {
+                    var item = brandChars[i];
+                    var delayMs = 260 + (i * 42);
+                    <span class="hl-char @(item.Accent ? "accent" : "")" style="--char-delay: @(delayMs)ms;">@item.Char</span>
+                }
             </div>
         </div>
-        <div class="hl-underline-track">
-            <div class="hl-underline-fill"></div>
+        <div class="hl-photon-track">
+            <div class="hl-photon-fill"></div>
         </div>
     </div>
 </div>
@@ -175,6 +319,8 @@
         if (!overlay) return;
 
         var alwaysShow = @(alwaysShow ? "true" : "false");
+        var hideTimer1 = null;
+        var hideTimer2 = null;
 
         if (!alwaysShow) {
             try {
@@ -189,7 +335,6 @@
                     isWorkspaceInternalNav = workspacePaths.some(function (p) { return refPath.indexOf(p) === 0; });
                 }
 
-                // Show [HomeLedger] animation on browser refresh (F5), fresh site open, or entering Home after login
                 if (navType === 'reload' || !ref || !isWorkspaceInternalNav) {
                     overlay.classList.add('is-playing');
                 }
@@ -199,15 +344,23 @@
         }
 
         function dismissHomeIntro() {
+            clearTimeout(hideTimer1);
+            clearTimeout(hideTimer2);
             overlay.style.display = 'none';
             overlay.classList.remove('is-playing');
         }
 
-        if (overlay.classList.contains('is-playing')) {
-            setTimeout(function () {
+        function scheduleHomeDismiss() {
+            clearTimeout(hideTimer1);
+            clearTimeout(hideTimer2);
+            hideTimer1 = setTimeout(function () {
                 overlay.style.pointerEvents = 'none';
-            }, 880);
-            setTimeout(dismissHomeIntro, 1360);
+            }, 1480);
+            hideTimer2 = setTimeout(dismissHomeIntro, 2020);
+        }
+
+        if (overlay.classList.contains('is-playing')) {
+            scheduleHomeDismiss();
             overlay.addEventListener('click', dismissHomeIntro, { once: true });
             document.addEventListener('keydown', function (ev) {
                 if (ev.key === 'Escape') dismissHomeIntro();
@@ -215,13 +368,12 @@
         }
 
         window.replayHomeBrandIntro = function () {
-            overlay.style.display = '';
+            overlay.style.display = 'flex';
             overlay.style.pointerEvents = 'auto';
             overlay.classList.remove('is-playing');
             void overlay.offsetWidth;
             overlay.classList.add('is-playing');
-            setTimeout(function () { overlay.style.pointerEvents = 'none'; }, 880);
-            setTimeout(dismissHomeIntro, 1360);
+            scheduleHomeDismiss();
         };
     })();
 </script>

@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Sign In — HomeLedger";
     Layout = null;
+    var hasFlash = TempData["Error"] != null || TempData["Success"] != null;
 }
 
 <!DOCTYPE html>
@@ -9,58 +10,270 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
-    
-    <!-- Google Typography -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Design System -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <style>
         body {
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px 20px;
+            flex-direction: column;
             background-color: var(--bg-base);
-            background-image: 
-                radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.12), transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.1), transparent 50%);
+            overflow-x: hidden;
+            position: relative;
         }
 
+        /* Animated Floating Orbs & Subtle Grid */
+        .login-bg-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            background-image: radial-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .login-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(85px);
+            opacity: 0.3;
+            will-change: transform;
+            transition: background 0.6s ease;
+        }
+
+        .login-orb-1 {
+            width: 480px;
+            height: 480px;
+            top: -120px;
+            left: -80px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.6), transparent 70%);
+            animation: loginOrbFloatA 14s ease-in-out infinite alternate;
+        }
+
+        .login-orb-2 {
+            width: 440px;
+            height: 440px;
+            bottom: -120px;
+            right: -60px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.55), transparent 70%);
+            animation: loginOrbFloatB 17s ease-in-out infinite alternate;
+        }
+
+        .login-orb-3 {
+            width: 300px;
+            height: 300px;
+            top: 40%;
+            left: 42%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.32), transparent 70%);
+            animation: loginOrbFloatA 20s ease-in-out infinite alternate-reverse;
+        }
+
+        body.member-mode-bg .login-orb-1 {
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.65), transparent 70%);
+        }
+
+        body.member-mode-bg .login-orb-2 {
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.55), transparent 70%);
+        }
+
+        body.light-mode .login-orb {
+            opacity: 0.18;
+        }
+
+        /* Top Utility Header */
+        .login-topbar {
+            position: relative;
+            z-index: 10;
+            max-width: 1180px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 28px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        /* Split-Stage Main Container */
+        .login-stage {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            max-width: 1120px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 28px 24px 40px;
+            display: grid;
+            grid-template-columns: 1.05fr 1fr;
+            gap: 48px;
+            align-items: center;
+            animation: loginStageReveal 0.62s cubic-bezier(0.16, 1, 0.3, 1) @(hasFlash ? "0s" : "1.38s") both;
+        }
+
+        /* Left Dynamic Showcase Panel */
+        .login-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .showcase-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--emerald-400);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            transition: all 0.35s ease;
+        }
+
+        body.member-mode-bg .showcase-pill {
+            background: rgba(99, 102, 241, 0.14);
+            border-color: rgba(129, 140, 248, 0.38);
+            color: var(--indigo-400);
+        }
+
+        .showcase-title {
+            font-size: clamp(30px, 3.6vw, 44px);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin: 0;
+        }
+
+        .showcase-desc {
+            font-size: 15.5px;
+            color: var(--text-muted);
+            line-height: 1.65;
+            max-width: 470px;
+            margin: 0;
+        }
+
+        /* Floating Mini Live Preview Widget */
+        .showcase-widget {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-width: 460px;
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+
+        .showcase-feature-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            background: var(--bg-glass-subtle);
+            border: 1px solid var(--border-subtle);
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+
+        .showcase-feature-row:hover {
+            transform: translateX(6px);
+            border-color: rgba(16, 185, 129, 0.35);
+        }
+
+        .showcase-feature-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        /* Right Auth Card with Animated Border Glow */
         .auth-wrapper {
             width: 100%;
-            max-width: 460px;
-            animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) @(TempData["Error"] != null || TempData["Success"] != null ? "0s" : "0.75s") both;
+            max-width: 465px;
+            justify-self: center;
         }
 
         .auth-card {
+            position: relative;
             background: var(--bg-card);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(26px);
+            -webkit-backdrop-filter: blur(26px);
             border: 1px solid var(--border-card);
             border-radius: var(--radius-xl);
-            padding: 40px 36px;
-            box-shadow: var(--shadow-xl);
+            padding: 36px 32px;
+            box-shadow: var(--shadow-xl), 0 0 40px rgba(16, 185, 129, 0.08);
+            overflow: hidden;
+            transition: box-shadow 0.4s ease;
         }
 
+        body.member-mode-bg .auth-card {
+            box-shadow: var(--shadow-xl), 0 0 44px rgba(99, 102, 241, 0.14);
+        }
+
+        .auth-card-topline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #10b981, #38bdf8, #818cf8, transparent);
+            background-size: 200% 100%;
+            animation: cardTopShimmer 4s linear infinite;
+        }
+
+        /* Spring Sliding Tab Switcher */
         .tab-switcher {
-            display: flex;
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             background: var(--bg-input);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-full);
             padding: 4px;
-            margin-bottom: 28px;
-            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .tab-slider-pill {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.38);
+            transition: transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease, box-shadow 0.3s ease;
+            z-index: 0;
+        }
+
+        .tab-switcher.member-selected .tab-slider-pill {
+            transform: translateX(100%);
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
         }
 
         .tab-btn {
-            flex: 1;
-            padding: 10px 14px;
+            position: relative;
+            z-index: 1;
+            padding: 10px 12px;
             border-radius: var(--radius-full);
             border: none;
             background: transparent;
@@ -69,30 +282,47 @@
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: color 0.25s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 7px;
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #ffffff;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
         }
 
-        .tab-btn.member-active {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            color: #ffffff;
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-        }
-
-        .input-group-custom {
+        /* Icon-Leading Interactive Inputs */
+        .input-icon-field {
             position: relative;
         }
 
-        .input-group-custom .toggle-eye {
+        .input-icon-field .lead-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 14px;
+            pointer-events: none;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .input-icon-field .form-control {
+            padding-left: 42px;
+        }
+
+        .input-icon-field:focus-within .lead-icon {
+            color: var(--emerald-400);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        body.member-mode-bg .input-icon-field:focus-within .lead-icon {
+            color: var(--indigo-400);
+        }
+
+        .input-icon-field .toggle-eye {
             position: absolute;
             right: 14px;
             top: 50%;
@@ -103,187 +333,444 @@
             cursor: pointer;
             font-size: 14px;
             padding: 4px;
-            transition: color var(--transition-fast);
+            transition: color 0.2s ease;
         }
 
-        .input-group-custom .toggle-eye:hover {
+        .input-icon-field .toggle-eye:hover {
             color: var(--text-primary);
+        }
+
+        .input-icon-field.has-eye .form-control {
+            padding-right: 42px;
+        }
+
+        /* Quick Fill Interactive Demo Pills */
+        .demo-fill-row {
+            margin-top: 20px;
+            padding: 12px 14px;
+            background: var(--bg-glass-subtle);
+            border: 1px dashed var(--border-card);
+            border-radius: var(--radius-md);
+        }
+
+        .demo-chip-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 11px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-card);
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .demo-chip-btn:hover {
+            border-color: var(--emerald-400);
+            color: var(--emerald-400);
+            transform: translateY(-1px);
+        }
+
+        .demo-chip-btn.member:hover {
+            border-color: var(--indigo-400);
+            color: var(--indigo-400);
+        }
+
+        /* Form Crossfade */
+        .auth-form-anim {
+            animation: formFadeSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 55%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+            transition: left 0.55s ease;
+        }
+
+        .btn-shine:hover::after {
+            left: 140%;
+        }
+
+        @@keyframes loginOrbFloatA {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(35px, 28px) scale(1.08); }
+        }
+
+        @@keyframes loginOrbFloatB {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-32px, -24px) scale(1.06); }
+        }
+
+        @@keyframes cardTopShimmer {
+            0% { background-position: 200% 0%; }
+            100% { background-position: -200% 0%; }
+        }
+
+        @@keyframes loginStageReveal {
+            from { opacity: 0; transform: translateY(20px) scale(0.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @@keyframes formFadeSlide {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @@media (max-width: 960px) {
+            .login-stage {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding-top: 18px;
+            }
+            .login-showcase {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
     @await Html.PartialAsync("_LoginIntroOverlay")
-    <div class="auth-wrapper">
-        <!-- Brand Header -->
-        <div style="text-align: center; margin-bottom: 28px;">
-            <a asp-controller="Home" asp-action="Landing" style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 12px; text-decoration: none;">
-                <div class="brand-icon-box" style="width: 44px; height: 44px; font-size: 20px;">
-                    <i class="fa-solid fa-vault"></i>
-                </div>
-                <div style="text-align: left;">
-                    <span style="font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">
-                        Home<span style="color: var(--emerald-400);">Ledger</span>
-                    </span>
-                    <small style="display: block; font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px;">
-                        Family Wealth OS
-                    </small>
-                </div>
-            </a>
-            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Sign In to Your Workspace</h2>
-            <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Select your account type to proceed</p>
-        </div>
 
-        <div class="auth-card">
-            <!-- Flash Alert Messages -->
-            @if (TempData["Error"] != null)
-            {
-                <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #fb7185; font-size: 13px; display: flex; align-items: center; gap: 10px;">
-                    <i class="fa-solid fa-circle-exclamation" style="font-size: 16px;"></i>
-                    <span>@TempData["Error"]</span>
-                </div>
-            }
-
-            @if (TempData["Success"] != null)
-            {
-                <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #34d399; font-size: 13px; display: flex; align-items: center; gap: 10px;">
-                    <i class="fa-solid fa-circle-check" style="font-size: 16px;"></i>
-                    <span>@TempData["Success"]</span>
-                </div>
-            }
-
-            <!-- Dual Tab Switcher -->
-            <div class="tab-switcher">
-                <button type="button" class="tab-btn active" id="tabAdmin" onclick="setLoginMode('admin')">
-                    <i class="fa-solid fa-crown" style="font-size: 12px;"></i>
-                    <span>Family Head (Admin)</span>
-                </button>
-                <button type="button" class="tab-btn" id="tabMember" onclick="setLoginMode('member')">
-                    <i class="fa-solid fa-user-check" style="font-size: 12px;"></i>
-                    <span>Family Member</span>
-                </button>
-            </div>
-
-            <!-- 1. ADMIN LOGIN FORM -->
-            <form id="adminForm" asp-action="Login" method="post" autocomplete="on">
-                <div class="form-group">
-                    <label class="form-label" for="adminFamilyId">Family ID *</label>
-                    <input type="text" id="adminFamilyId" name="familyId" class="form-control" placeholder="e.g. Patel's Family" required autofocus />
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="adminPassword">Admin Password *</label>
-                    <div class="input-group-custom">
-                        <input type="password" id="adminPassword" name="password" class="form-control" placeholder="Enter family admin password" required />
-                        <button type="button" class="toggle-eye" onclick="togglePassword('adminPassword', 'eyeAdmin')">
-                            <i class="fa-solid fa-eye" id="eyeAdmin"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                    <a asp-action="ForgotPassword" style="font-size: 12.5px; color: var(--emerald-400); font-weight: 600;">Forgot Password?</a>
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 15px;">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                    <span>Sign In as Family Head</span>
-                </button>
-            </form>
-
-            <!-- 2. MEMBER LOGIN FORM (ISOLATED) -->
-            <form id="memberForm" asp-action="MemberLogin" method="post" autocomplete="on" style="display: none;">
-                <div class="form-group">
-                    <label class="form-label" for="memberFamilyId">Family ID *</label>
-                    <input type="text" id="memberFamilyId" name="familyId" class="form-control" placeholder="e.g. Patel's Family" required />
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="memberNameInput">Your Member Name *</label>
-                    <input type="text" id="memberNameInput" name="memberName" class="form-control" placeholder="e.g. Mother, Son, Rohan" required />
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="memberPassword">Member Password *</label>
-                    <div class="input-group-custom">
-                        <input type="password" id="memberPassword" name="password" class="form-control" placeholder="Enter your member password (e.g. 123)" required />
-                        <button type="button" class="toggle-eye" onclick="togglePassword('memberPassword', 'eyeMember')">
-                            <i class="fa-solid fa-eye" id="eyeMember"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-indigo" style="width: 100%; padding: 13px; font-size: 15px; margin-top: 10px;">
-                    <i class="fa-solid fa-user-shield"></i>
-                    <span>Access Member Portal</span>
-                </button>
-            </form>
-
-            <!-- Quick Evaluation Helper Badge -->
-            <div style="margin-top: 24px; padding: 12px 14px; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); font-size: 12px; color: var(--text-dim); line-height: 1.5;">
-                <span style="color: var(--emerald-400); font-weight: 700; display: block; margin-bottom: 2px;">
-                    <i class="fa-solid fa-lightbulb"></i> Quick Test Credentials:
-                </span>
-                <span><strong>Admin:</strong> <code>Patel's Family</code> / <code>123</code></span> &bull; 
-                <span><strong>Member:</strong> <code>Mother</code> / <code>123</code></span>
-            </div>
-
-            <!-- Footer Links Inside Card -->
-            <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--border-subtle); padding-top: 18px; font-size: 13px; color: var(--text-muted);">
-                Don't have a family workspace yet?
-                <a asp-action="Register" style="color: var(--emerald-400); font-weight: 700; margin-left: 4px;">Register Free</a>
-            </div>
-        </div>
-
-        <div style="text-align: center; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
-            <a asp-controller="Home" asp-action="Landing" style="font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">
-                <i class="fa-solid fa-arrow-left"></i> Back to Home Overview
-            </a>
-            <span style="color: var(--text-dim);">&bull;</span>
-            <button type="button" onclick="replayLoginVaultIntro()" style="background: none; border: none; padding: 0; font-size: 13px; color: var(--indigo-400); cursor: pointer; font-weight: 600;">
-                <i class="fa-solid fa-rotate-right"></i> Replay Login Intro
-            </button>
-        </div>
+    <!-- Animated Background Canvas -->
+    <div class="login-bg-canvas" aria-hidden="true">
+        <div class="login-orb login-orb-1"></div>
+        <div class="login-orb login-orb-2"></div>
+        <div class="login-orb login-orb-3"></div>
     </div>
 
+    <!-- Top Action Bar -->
+    <header class="login-topbar">
+        <a asp-controller="Home" asp-action="Landing" class="brand-logo">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-vault"></i>
+            </div>
+            <div>
+                <span>Home<span style="color: var(--emerald-400);">Ledger</span></span>
+                <small style="display: block; font-size: 10px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px;">Family Wealth OS</small>
+            </div>
+        </a>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button type="button" onclick="replayLoginVaultIntro()" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full); gap: 6px;" title="Replay 2s Login Animation">
+                <i class="fa-solid fa-rotate-right" style="color: var(--indigo-400);"></i>
+                <span class="d-none d-sm-inline">Replay 2s Intro</span>
+            </button>
+            <button class="nav-icon-btn" id="themeToggle" title="Toggle Theme" aria-label="Toggle theme">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Interactive Split-Stage Workspace -->
+    <main class="login-stage">
+        <!-- Left Storytelling & Live Feature Preview -->
+        <section class="login-showcase">
+            <div class="showcase-pill" id="showcaseBadge">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span id="showcaseBadgeText">FAMILY HEAD ADMIN PORTAL</span>
+            </div>
+
+            <h1 class="showcase-title" id="showcaseTitle">
+                Command Your Household <span class="gradient-text-emerald">Wealth &amp; Ledger.</span>
+            </h1>
+
+            <p class="showcase-desc" id="showcaseDesc">
+                Sign in with your Family ID to manage shared budgets, reconcile date-wise Udhar repayments, monitor savings milestones, and export lossless Excel, CSV, or PDF vaults.
+            </p>
+
+            <!-- Floating Interactive Highlights Card -->
+            <div class="showcase-widget">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim);">Workspace Capabilities</span>
+                    <span class="badge badge-emerald" style="font-size: 10px;"><i class="fa-solid fa-lock"></i> BCrypt Secured</span>
+                </div>
+
+                <div id="adminFeaturesList" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="showcase-feature-row">
+                        <div class="showcase-feature-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald-400);">
+                            <i class="fa-solid fa-crown"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 13.5px; font-weight: 700;">Full Family Budget &amp; Member Keys</div>
+                            <small style="color: var(--text-muted); font-size: 12px;">Create members, reset member PINs, set category limits</small>
+                        </div>
+                    </div>
+                    <div class="showcase-feature-row">
+                        <div class="showcase-feature-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--amber-400);">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 13.5px; font-weight: 700;">Smart Udhar Installment Tracking</div>
+                            <small style="color: var(--text-muted); font-size: 12px;">Incremental Lene/Dene settlements with automatic balances</small>
+                        </div>
+                    </div>
+                    <div class="showcase-feature-row">
+                        <div class="showcase-feature-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-400);">
+                            <i class="fa-solid fa-file-shield"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 13.5px; font-weight: 700;">Excel, CSV &amp; PDF Safe Backups</div>
+                            <small style="color: var(--text-muted); font-size: 12px;">Zero-duplicate export &amp; restore anytime</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="memberFeaturesList" style="display: none; flex-direction: column; gap: 10px;">
+                    <div class="showcase-feature-row">
+                        <div class="showcase-feature-icon" style="background: rgba(99, 102, 241, 0.16); color: var(--indigo-400);">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 13.5px; font-weight: 700;">Personal Income &amp; Expense Space</div>
+                            <small style="color: var(--text-muted); font-size: 12px;">Track your own earnings and household spending cleanly</small>
+                        </div>
+                    </div>
+                    <div class="showcase-feature-row">
+                        <div class="showcase-feature-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-400);">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 13.5px; font-weight: 700;">Self-Serve Udhar Settlement</div>
+                            <small style="color: var(--text-muted); font-size: 12px;">Settle or update your own pending Lene/Dene entries directly</small>
+                        </div>
+                    </div>
+                    <div class="showcase-feature-row">
+                        <div class="showcase-feature-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald-400);">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 13.5px; font-weight: 700;">Strict Admin Boundary Protection</div>
+                            <small style="color: var(--text-muted); font-size: 12px;">Private workspace isolated from family admin keys</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Interactive Login Card -->
+        <div class="auth-wrapper">
+            <div class="auth-card">
+                <div class="auth-card-topline"></div>
+
+                <div style="margin-bottom: 22px;">
+                    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 4px;">Welcome Back</h2>
+                    <p style="color: var(--text-muted); font-size: 13.5px; margin: 0;">Choose your access portal below</p>
+                </div>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div style="background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.38); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #fb7185; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-circle-exclamation" style="font-size: 16px;"></i>
+                        <span>@TempData["Error"]</span>
+                    </div>
+                }
+
+                @if (TempData["Success"] != null)
+                {
+                    <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.38); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; color: #34d399; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-circle-check" style="font-size: 16px;"></i>
+                        <span>@TempData["Success"]</span>
+                    </div>
+                }
+
+                <!-- Spring Sliding Dual Tab Switcher -->
+                <div class="tab-switcher" id="tabSwitcher">
+                    <div class="tab-slider-pill"></div>
+                    <button type="button" class="tab-btn active" id="tabAdmin" onclick="setLoginMode('admin')">
+                        <i class="fa-solid fa-crown" style="font-size: 12px;"></i>
+                        <span>Family Head</span>
+                    </button>
+                    <button type="button" class="tab-btn" id="tabMember" onclick="setLoginMode('member')">
+                        <i class="fa-solid fa-user-check" style="font-size: 12px;"></i>
+                        <span>Family Member</span>
+                    </button>
+                </div>
+
+                <!-- 1. ADMIN LOGIN FORM -->
+                <form id="adminForm" asp-action="Login" method="post" autocomplete="on" class="auth-form-anim" onsubmit="showSubmitSpin(this)">
+                    <div class="form-group">
+                        <label class="form-label" for="adminFamilyId">Family ID *</label>
+                        <div class="input-icon-field">
+                            <i class="fa-solid fa-house-user lead-icon"></i>
+                            <input type="text" id="adminFamilyId" name="familyId" class="form-control" placeholder="e.g. Patel's Family" required autofocus />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="adminPassword">Admin Password *</label>
+                        <div class="input-icon-field has-eye">
+                            <i class="fa-solid fa-key lead-icon"></i>
+                            <input type="password" id="adminPassword" name="password" class="form-control" placeholder="Enter family admin password" required />
+                            <button type="button" class="toggle-eye" onclick="togglePassword('adminPassword', 'eyeAdmin')">
+                                <i class="fa-solid fa-eye" id="eyeAdmin"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 18px;">
+                        <a asp-action="ForgotPassword" style="font-size: 12.5px; color: var(--emerald-400); font-weight: 600;">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-shine" style="width: 100%; padding: 13px; font-size: 15px;">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <span>Sign In as Family Head</span>
+                    </button>
+                </form>
+
+                <!-- 2. MEMBER LOGIN FORM -->
+                <form id="memberForm" asp-action="MemberLogin" method="post" autocomplete="on" style="display: none;" class="auth-form-anim" onsubmit="showSubmitSpin(this)">
+                    <div class="form-group">
+                        <label class="form-label" for="memberFamilyId">Family ID *</label>
+                        <div class="input-icon-field">
+                            <i class="fa-solid fa-house-user lead-icon"></i>
+                            <input type="text" id="memberFamilyId" name="familyId" class="form-control" placeholder="e.g. Patel's Family" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="memberNameInput">Member Name *</label>
+                        <div class="input-icon-field">
+                            <i class="fa-solid fa-user lead-icon"></i>
+                            <input type="text" id="memberNameInput" name="memberName" class="form-control" placeholder="e.g. Mother, Son, Rohan" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="memberPassword">Member Password *</label>
+                        <div class="input-icon-field has-eye">
+                            <i class="fa-solid fa-lock lead-icon"></i>
+                            <input type="password" id="memberPassword" name="password" class="form-control" placeholder="Enter member password (e.g. 123)" required />
+                            <button type="button" class="toggle-eye" onclick="togglePassword('memberPassword', 'eyeMember')">
+                                <i class="fa-solid fa-eye" id="eyeMember"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-indigo btn-shine" style="width: 100%; padding: 13px; font-size: 15px; margin-top: 8px;">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>Access Member Portal</span>
+                    </button>
+                </form>
+
+                <!-- Interactive Quick-Fill Demo Credentials -->
+                <div class="demo-fill-row">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--emerald-400); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> One-Click Test Fill
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" class="demo-chip-btn" onclick="quickFillDemo('admin')">
+                            <i class="fa-solid fa-crown" style="color: var(--emerald-400);"></i>
+                            <span>Fill Admin (Patel's Family)</span>
+                        </button>
+                        <button type="button" class="demo-chip-btn member" onclick="quickFillDemo('member')">
+                            <i class="fa-solid fa-user-check" style="color: var(--indigo-400);"></i>
+                            <span>Fill Member (Mother)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 22px; text-align: center; border-top: 1px solid var(--border-subtle); padding-top: 18px; font-size: 13px; color: var(--text-muted);">
+                    Don't have a family workspace yet?
+                    <a asp-action="Register" style="color: var(--emerald-400); font-weight: 700; margin-left: 4px;">Create Free Account</a>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 18px;">
+                <a asp-controller="Home" asp-action="Landing" style="font-size: 13px; color: var(--text-muted); text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Home Overview
+                </a>
+            </div>
+        </div>
+    </main>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <!-- Interactive Tab Script -->
     <script>
         function setLoginMode(mode) {
+            const switcher = document.getElementById('tabSwitcher');
             const adminTab = document.getElementById('tabAdmin');
             const memberTab = document.getElementById('tabMember');
             const adminForm = document.getElementById('adminForm');
             const memberForm = document.getElementById('memberForm');
 
+            const badgeText = document.getElementById('showcaseBadgeText');
+            const titleEl = document.getElementById('showcaseTitle');
+            const descEl = document.getElementById('showcaseDesc');
+            const adminList = document.getElementById('adminFeaturesList');
+            const memberList = document.getElementById('memberFeaturesList');
+
             if (mode === 'admin') {
-                adminTab.className = 'tab-btn active';
-                memberTab.className = 'tab-btn';
+                document.body.classList.remove('member-mode-bg');
+                switcher.classList.remove('member-selected');
+                adminTab.classList.add('active');
+                memberTab.classList.remove('active');
                 adminForm.style.display = 'block';
                 memberForm.style.display = 'none';
+
+                if (badgeText) badgeText.textContent = 'FAMILY HEAD ADMIN PORTAL';
+                if (titleEl) titleEl.innerHTML = 'Command Your Household <span class="gradient-text-emerald">Wealth &amp; Ledger.</span>';
+                if (descEl) descEl.textContent = 'Sign in with your Family ID to manage shared budgets, reconcile date-wise Udhar repayments, monitor savings milestones, and export lossless Excel, CSV, or PDF vaults.';
+                if (adminList) adminList.style.display = 'flex';
+                if (memberList) memberList.style.display = 'none';
             } else {
-                adminTab.className = 'tab-btn';
-                memberTab.className = 'tab-btn member-active';
+                document.body.classList.add('member-mode-bg');
+                switcher.classList.add('member-selected');
+                adminTab.classList.remove('active');
+                memberTab.classList.add('active');
                 adminForm.style.display = 'none';
                 memberForm.style.display = 'block';
+
+                if (badgeText) badgeText.textContent = 'ISOLATED MEMBER ACCESS';
+                if (titleEl) titleEl.innerHTML = 'Track Your Personal <span class="gradient-text-indigo">Family Contributions.</span>';
+                if (descEl) descEl.textContent = 'Access your private household member ledger to log personal incomes, track daily expenses, and settle your own Udhar records independently.';
+                if (adminList) adminList.style.display = 'none';
+                if (memberList) memberList.style.display = 'flex';
             }
         }
 
-        // Auto-select tab if URL has ?tab=member
+        function quickFillDemo(type) {
+            if (type === 'admin') {
+                setLoginMode('admin');
+                const f = document.getElementById('adminFamilyId');
+                const p = document.getElementById('adminPassword');
+                f.value = "Patel's Family";
+                p.value = "123";
+                f.focus();
+            } else {
+                setLoginMode('member');
+                const f = document.getElementById('memberFamilyId');
+                const m = document.getElementById('memberNameInput');
+                const p = document.getElementById('memberPassword');
+                f.value = "Patel's Family";
+                m.value = "Mother";
+                p.value = "123";
+                m.focus();
+            }
+        }
+
+        function showSubmitSpin(form) {
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Signing In...</span>';
+            }
+        }
+
         const params = new URLSearchParams(window.location.search);
         if (params.get('tab') === 'member') {
             setLoginMode('member');
-        }
-
-        function togglePassword(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (!input || !icon) return;
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fa-solid fa-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'fa-solid fa-eye';
-            }
         }
     </script>
 </body>

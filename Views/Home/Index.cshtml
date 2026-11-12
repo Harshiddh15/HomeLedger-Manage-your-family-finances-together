@@ -229,7 +229,7 @@
             margin-bottom: 24px;
             letter-spacing: 0.25px;
             opacity: 0;
-            animation: heroPopUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.72s forwards;
+            animation: heroPopUp 0.42s cubic-bezier(0.16, 1, 0.3, 1) 1.44s forwards;
         }
 
         body.light-mode .hero-badge {
@@ -258,14 +258,14 @@
             display: block;
             opacity: 0;
             transform: translateY(105%);
-            animation: maskLineRise 0.52s cubic-bezier(0.16, 1, 0.3, 1) 0.78s forwards;
+            animation: maskLineRise 0.46s cubic-bezier(0.16, 1, 0.3, 1) 1.48s forwards;
         }
 
         .reveal-line-2 {
             display: block;
             opacity: 0;
             transform: translateY(105%);
-            animation: maskLineRise 0.54s cubic-bezier(0.16, 1, 0.3, 1) 0.88s forwards;
+            animation: maskLineRise 0.48s cubic-bezier(0.16, 1, 0.3, 1) 1.56s forwards;
         }
 
         .hero-subtitle {
@@ -276,7 +276,7 @@
             line-height: 1.65;
             opacity: 0;
             transform: translateY(20px);
-            animation: heroGlideUp 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.96s forwards;
+            animation: heroGlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) 1.64s forwards;
         }
 
         .hero-cta-group {
@@ -288,7 +288,7 @@
             margin-bottom: 38px;
             opacity: 0;
             transform: translateY(18px) scale(0.97);
-            animation: heroPopUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 1.04s forwards;
+            animation: heroPopUp 0.42s cubic-bezier(0.16, 1, 0.3, 1) 1.72s forwards;
         }
 
         /* Magnetic Shine Micro-Interaction on Primary CTA */
@@ -322,7 +322,7 @@
             color: var(--text-muted);
             opacity: 0;
             transform: translateY(14px);
-            animation: heroGlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 1.08s forwards;
+            animation: heroGlideUp 0.42s cubic-bezier(0.16, 1, 0.3, 1) 1.78s forwards;
         }
 
         .trust-pill-item {
@@ -331,7 +331,7 @@
             gap: 8px;
         }
 
-        /* 3D Interactive Glass Dashboard Mockup (Unfolds ~0.92s -> 1.48s) */
+        /* 3D Interactive Glass Dashboard Mockup (Unfolds ~1.58s -> 2.10s) */
         .mockup-wrapper {
             position: relative;
             max-width: 1040px;
@@ -339,7 +339,7 @@
             perspective: 1400px;
             opacity: 0;
             transform: perspective(1200px) rotateX(10deg) translateY(38px) scale(0.96);
-            animation: mockupUnfold 0.56s cubic-bezier(0.16, 1, 0.3, 1) 0.92s forwards;
+            animation: mockupUnfold 0.52s cubic-bezier(0.16, 1, 0.3, 1) 1.58s forwards;
             will-change: transform, opacity;
         }
 
@@ -396,9 +396,9 @@
             background: rgba(16, 185, 129, 0.06);
         }
 
-        .mockup-tx-1 { animation: txSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.80s forwards; }
-        .mockup-tx-2 { animation: txSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.94s forwards; }
-        .mockup-tx-3 { animation: txSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) 1.08s forwards; }
+        .mockup-tx-1 { animation: txSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 1.70s forwards; }
+        .mockup-tx-2 { animation: txSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 1.80s forwards; }
+        .mockup-tx-3 { animation: txSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 1.90s forwards; }
 
         .replay-intro-btn {
             display: inline-flex;
@@ -1239,12 +1239,12 @@
             requestAnimationFrame(tick);
         }
 
-        // Run hero counters right as the [HomeLedger] brand curtain opens (~0.68s -> 1.45s)
+        // Run hero counters right as the [HomeLedger] split-shutter opens (~1.42s)
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(runHeroCounters, 680);
+            setTimeout(runHeroCounters, 1420);
         });
 
-        // 2. One-Click Replay of the [HomeLedger] Curtain + 1.4s Hero Entrance Animation
+        // 2. One-Click Replay of the [HomeLedger] 2.0s Curtain + Hero Reveal
         function replayHeroIntro() {
             const card = document.getElementById('mockupCard');
             if (card) card.style.transform = '';
@@ -1252,7 +1252,7 @@
             document.body.classList.add('replay-reset');
             void document.body.offsetWidth; // Force CSS reflow
             document.body.classList.remove('replay-reset');
-            setTimeout(runHeroCounters, 680);
+            setTimeout(runHeroCounters, 1420);
         }
 
         // 3. Scroll Progress Bar, Header Elevation & Active Section Indicator

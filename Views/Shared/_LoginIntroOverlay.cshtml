@@ -1,4 +1,4 @@
-@* Dedicated Login Security Vault Unlock Intro Animation (Distinct from Home [HomeLedger] Animation — 1.35s) *@
+@* Dedicated Login Security Vault Gate 2.0s Intro Animation (100% Distinct from Home [HomeLedger] Animation) *@
 @{
     var hasFlash = TempData["Error"] != null || TempData["Success"] != null;
 }
@@ -17,26 +17,27 @@
             align-items: center;
             justify-content: center;
             background:
-                radial-gradient(circle at 50% 45%, rgba(99, 102, 241, 0.22) 0%, rgba(16, 22, 38, 0.98) 65%),
-                linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
-                linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px);
-            background-size: 100% 100%, 36px 36px, 36px 36px;
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
+                radial-gradient(circle at 50% 45%, rgba(99, 102, 241, 0.24) 0%, rgba(14, 19, 34, 0.98) 65%),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 34px 34px, 34px 34px;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             cursor: pointer;
             user-select: none;
+            overflow: hidden;
         }
 
         body.light-mode .login-vault-curtain {
             background:
-                radial-gradient(circle at 50% 45%, rgba(99, 102, 241, 0.14) 0%, rgba(235, 241, 248, 0.98) 65%),
-                linear-gradient(90deg, rgba(99, 102, 241, 0.06) 1px, transparent 1px),
-                linear-gradient(rgba(99, 102, 241, 0.06) 1px, transparent 1px);
-            background-size: 100% 100%, 36px 36px, 36px 36px;
+                radial-gradient(circle at 50% 45%, rgba(99, 102, 241, 0.16) 0%, rgba(235, 241, 248, 0.98) 65%),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.07) 1px, transparent 1px),
+                linear-gradient(rgba(99, 102, 241, 0.07) 1px, transparent 1px);
+            background-size: 100% 100%, 34px 34px, 34px 34px;
         }
 
         .login-vault-curtain.is-playing {
-            animation: loginCurtainIris 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.90s forwards;
+            animation: loginPortalZoomOut 0.52s cubic-bezier(0.16, 1, 0.3, 1) 1.48s forwards;
         }
 
         .login-vault-stage {
@@ -45,12 +46,14 @@
             align-items: center;
             text-align: center;
             gap: 18px;
+            position: relative;
         }
 
+        /* Concentric Security Orbital System */
         .vault-orbital-wrap {
             position: relative;
-            width: 96px;
-            height: 96px;
+            width: 118px;
+            height: 118px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -62,35 +65,57 @@
             border-radius: 50%;
             border: 2px dashed rgba(129, 140, 248, 0.55);
             opacity: 0;
-            animation: vaultRingSpin 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
-        .vault-ring-inner {
+        .login-vault-curtain.is-playing .vault-ring-outer {
+            animation: vaultRingSpin 1.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .vault-ring-mid {
             position: absolute;
-            inset: 9px;
+            inset: 10px;
             border-radius: 50%;
             border: 2px solid transparent;
             border-top-color: #38bdf8;
-            border-right-color: #818cf8;
+            border-left-color: #818cf8;
             opacity: 0;
-            animation: vaultRingCounterSpin 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+        }
+
+        .login-vault-curtain.is-playing .vault-ring-mid {
+            animation: vaultRingCounterSpin 1.35s cubic-bezier(0.22, 1, 0.36, 1) 0.06s forwards;
+        }
+
+        .vault-unlock-burst {
+            position: absolute;
+            inset: 16px;
+            border-radius: 50%;
+            border: 2px solid #34d399;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .login-vault-curtain.is-playing .vault-unlock-burst {
+            animation: vaultBurstWave 0.65s cubic-bezier(0.16, 1, 0.3, 1) 1.02s forwards;
         }
 
         .vault-shield-core {
-            width: 58px;
-            height: 58px;
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.28), rgba(56, 189, 248, 0.22));
-            border: 1px solid rgba(129, 140, 248, 0.5);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.32), rgba(56, 189, 248, 0.24));
+            border: 1.5px solid rgba(129, 140, 248, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 28px rgba(99, 102, 241, 0.35);
+            box-shadow: 0 0 36px rgba(99, 102, 241, 0.42);
             opacity: 0;
-            transform: scale(0.7);
-            animation: vaultCorePop 0.48s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s forwards;
+            transform: scale(0.65);
+        }
+
+        .login-vault-curtain.is-playing .vault-shield-core {
+            animation: vaultCorePop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s forwards;
         }
 
         .vault-scan-beam {
@@ -99,49 +124,83 @@
             right: 0;
             height: 3px;
             background: linear-gradient(90deg, transparent, #38bdf8, #ffffff, #38bdf8, transparent);
-            box-shadow: 0 0 12px #38bdf8;
-            top: -10%;
-            animation: vaultLaserScan 0.68s ease-in-out 0.18s forwards;
+            box-shadow: 0 0 14px #38bdf8;
+            top: -15%;
+        }
+
+        .login-vault-curtain.is-playing .vault-scan-beam {
+            animation: vaultLaserScan 0.9s ease-in-out 0.2s forwards;
         }
 
         .vault-lock-icon {
-            font-size: 23px;
-            color: #a5b4fc;
-            transition: color 0.2s ease, transform 0.2s ease;
+            font-size: 26px;
+            color: #c7d2fe;
+            transition: color 0.25s ease, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .vault-lock-icon.is-unlocked {
             color: #34d399;
-            transform: scale(1.1);
+            transform: scale(1.16) rotate(-6deg);
+            filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.7));
+        }
+
+        /* Biometric Signal Wave Equalizer */
+        .vault-wave-bars {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            height: 22px;
+        }
+
+        .vault-wave-bar {
+            width: 4px;
+            height: 6px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #38bdf8, #818cf8);
+            opacity: 0.8;
+        }
+
+        .login-vault-curtain.is-playing .vault-wave-bar {
+            animation: vaultEqualizer 0.65s ease-in-out infinite alternate;
         }
 
         .login-title-reveal {
             font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
-            font-size: clamp(22px, 3.6vw, 30px);
+            font-size: clamp(24px, 3.8vw, 34px);
             font-weight: 800;
             text-transform: uppercase;
             color: var(--text-primary, #f8fafc);
             opacity: 0;
-            letter-spacing: 0.4em;
-            animation: loginTitleCondense 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.16s forwards;
+            letter-spacing: 0.44em;
+        }
+
+        .login-vault-curtain.is-playing .login-title-reveal {
+            animation: loginTitleCondense 0.78s cubic-bezier(0.16, 1, 0.3, 1) 0.18s forwards;
         }
 
         .login-title-reveal span {
-            color: #818cf8;
+            background: linear-gradient(135deg, #818cf8 0%, #38bdf8 60%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .login-sub-reveal {
             font-family: var(--font-mono, 'JetBrains Mono', monospace);
             font-size: 12px;
             color: #38bdf8;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.1em;
             opacity: 0;
             transform: translateY(8px);
-            animation: loginSubFade 0.45s ease 0.38s forwards;
+            margin-top: 4px;
+        }
+
+        .login-vault-curtain.is-playing .login-sub-reveal {
+            animation: loginSubFade 0.5s ease 0.42s forwards;
         }
 
         .vault-auth-bar {
-            width: 190px;
+            width: 230px;
             height: 4px;
             border-radius: 999px;
             background: rgba(148, 163, 184, 0.18);
@@ -153,36 +212,51 @@
             height: 100%;
             border-radius: 999px;
             background: linear-gradient(90deg, #6366f1, #38bdf8, #10b981);
-            animation: vaultBarFill 0.78s cubic-bezier(0.16, 1, 0.3, 1) 0.12s forwards;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.65);
+        }
+
+        .login-vault-curtain.is-playing .vault-auth-fill {
+            animation: vaultBarFill 1.25s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
         }
 
         @@keyframes vaultRingSpin {
-            0% { opacity: 0; transform: scale(0.75) rotate(-90deg); }
-            30% { opacity: 1; }
-            100% { opacity: 1; transform: scale(1) rotate(90deg); }
+            0% { opacity: 0; transform: scale(0.7) rotate(-140deg); }
+            25% { opacity: 1; }
+            100% { opacity: 1; transform: scale(1) rotate(140deg); }
         }
 
         @@keyframes vaultRingCounterSpin {
-            0% { opacity: 0; transform: rotate(120deg); }
-            30% { opacity: 1; }
-            100% { opacity: 1; transform: rotate(-60deg); }
+            0% { opacity: 0; transform: rotate(180deg); }
+            25% { opacity: 1; }
+            100% { opacity: 1; transform: rotate(-120deg); }
+        }
+
+        @@keyframes vaultBurstWave {
+            0% { opacity: 0.9; transform: scale(0.9); }
+            100% { opacity: 0; transform: scale(1.9); }
         }
 
         @@keyframes vaultCorePop {
-            from { opacity: 0; transform: scale(0.7); }
+            from { opacity: 0; transform: scale(0.65); }
             to { opacity: 1; transform: scale(1); }
         }
 
         @@keyframes vaultLaserScan {
             0% { top: -15%; opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { top: 115%; opacity: 0; }
+            15% { opacity: 1; }
+            50% { top: 112%; opacity: 1; }
+            85% { top: -15%; opacity: 1; }
+            100% { top: 112%; opacity: 0; }
+        }
+
+        @@keyframes vaultEqualizer {
+            0% { height: 5px; opacity: 0.45; }
+            100% { height: 22px; opacity: 1; }
         }
 
         @@keyframes loginTitleCondense {
-            0% { opacity: 0; letter-spacing: 0.42em; transform: translateY(10px); }
-            100% { opacity: 1; letter-spacing: 0.14em; transform: translateY(0); }
+            0% { opacity: 0; letter-spacing: 0.44em; transform: translateY(12px); filter: blur(6px); }
+            100% { opacity: 1; letter-spacing: 0.14em; transform: translateY(0); filter: blur(0px); }
         }
 
         @@keyframes loginSubFade {
@@ -195,10 +269,10 @@
             to { width: 100%; }
         }
 
-        @@keyframes loginCurtainIris {
-            0% { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+        @@keyframes loginPortalZoomOut {
+            0% { opacity: 1; transform: scale(1); filter: blur(0px); pointer-events: auto; }
             15% { pointer-events: none; }
-            100% { opacity: 0; transform: scale(0.96) translateY(-12px); visibility: hidden; pointer-events: none; }
+            100% { opacity: 0; transform: scale(1.08); filter: blur(10px); visibility: hidden; pointer-events: none; }
         }
 
         @@media (prefers-reduced-motion: reduce) {
@@ -210,16 +284,29 @@
         <div class="login-vault-stage">
             <div class="vault-orbital-wrap">
                 <div class="vault-ring-outer"></div>
-                <div class="vault-ring-inner"></div>
+                <div class="vault-ring-mid"></div>
+                <div class="vault-unlock-burst"></div>
                 <div class="vault-shield-core">
                     <div class="vault-scan-beam"></div>
                     <i id="vaultLockGlyph" class="fa-solid fa-lock vault-lock-icon"></i>
                 </div>
             </div>
+
+            <div class="vault-wave-bars">
+                <span class="vault-wave-bar" style="animation-delay: 0ms;"></span>
+                <span class="vault-wave-bar" style="animation-delay: 90ms;"></span>
+                <span class="vault-wave-bar" style="animation-delay: 180ms;"></span>
+                <span class="vault-wave-bar" style="animation-delay: 60ms;"></span>
+                <span class="vault-wave-bar" style="animation-delay: 150ms;"></span>
+                <span class="vault-wave-bar" style="animation-delay: 240ms;"></span>
+                <span class="vault-wave-bar" style="animation-delay: 120ms;"></span>
+            </div>
+
             <div>
                 <div class="login-title-reveal">Secure <span>Login</span></div>
-                <div class="login-sub-reveal" id="loginStatusText">INITIALIZING ACCESS PORTAL...</div>
+                <div class="login-sub-reveal" id="loginStatusText">VERIFYING ACCESS GATEWAY...</div>
             </div>
+
             <div class="vault-auth-bar">
                 <div class="vault-auth-fill"></div>
             </div>
@@ -233,28 +320,33 @@
             var statusEl = document.getElementById('loginStatusText');
             if (!overlay) return;
 
+            var t1 = null, t2 = null, t3 = null;
+
             function startUnlockSequence() {
-                if (glyph) {
-                    glyph.className = 'fa-solid fa-lock vault-lock-icon';
-                }
+                clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+                if (glyph) glyph.className = 'fa-solid fa-lock vault-lock-icon';
                 if (statusEl) {
-                    statusEl.textContent = 'INITIALIZING ACCESS PORTAL...';
+                    statusEl.textContent = 'VERIFYING ACCESS GATEWAY...';
+                    statusEl.style.color = '#38bdf8';
                 }
-                setTimeout(function () {
-                    if (glyph) {
-                        glyph.className = 'fa-solid fa-unlock-keyhole vault-lock-icon is-unlocked';
-                    }
+
+                t1 = setTimeout(function () {
+                    if (glyph) glyph.className = 'fa-solid fa-unlock-keyhole vault-lock-icon is-unlocked';
                     if (statusEl) {
-                        statusEl.textContent = 'PORTAL READY — VERIFY IDENTITY';
+                        statusEl.textContent = 'VAULT UNLOCKED — ENTER CREDENTIALS';
+                        statusEl.style.color = '#34d399';
                     }
-                }, 560);
-                setTimeout(function () {
+                }, 1020);
+
+                t2 = setTimeout(function () {
                     overlay.style.pointerEvents = 'none';
-                }, 900);
-                setTimeout(dismissLoginIntro, 1380);
+                }, 1480);
+
+                t3 = setTimeout(dismissLoginIntro, 2020);
             }
 
             function dismissLoginIntro() {
+                clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
                 overlay.style.display = 'none';
                 overlay.classList.remove('is-playing');
             }
