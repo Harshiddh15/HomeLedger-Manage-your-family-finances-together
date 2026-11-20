@@ -555,36 +555,566 @@
             transform: scale(1.08) rotate(-3deg);
         }
 
-        .scenario-tabs {
+        /* ========================================================
+           INTERACTIVE HOUSEHOLD WORKSPACE & AUDIT LAB STYLING
+           ======================================================== */
+        .mockup-header-actions {
             display: flex;
-            justify-content: center;
+            align-items: center;
             gap: 10px;
-            margin-bottom: 34px;
             flex-wrap: wrap;
         }
 
-        .scenario-tab-btn {
-            padding: 10px 22px;
-            border-radius: var(--radius-full);
-            background: var(--bg-glass-subtle);
+        .mockup-profile-chips {
+            display: inline-flex;
+            align-items: center;
+            background: var(--bg-surface-elevated);
             border: 1px solid var(--border-card);
-            color: var(--text-muted);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.22s ease;
+            border-radius: var(--radius-full);
+            padding: 2px 4px;
+            gap: 2px;
         }
 
-        .scenario-tab-btn:hover {
-            border-color: rgba(16, 185, 129, 0.4);
+        .mockup-chip-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-dim);
+            padding: 0 4px 0 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mockup-chip-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mockup-chip-btn:hover {
             color: var(--text-primary);
         }
 
-        .scenario-tab-btn.active {
+        .mockup-chip-btn.active {
             background: var(--emerald-500);
             color: #ffffff;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+        }
+
+        /* 3-Column Family Persona Selector Deck */
+        .family-persona-deck {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+
+        @@media (max-width: 980px) {
+            .family-persona-deck {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .persona-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .persona-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.4);
+        }
+
+        .persona-card.active {
             border-color: var(--emerald-500);
-            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+            box-shadow: 0 10px 32px -4px rgba(16, 185, 129, 0.25);
+            background: linear-gradient(180deg, var(--bg-card) 0%, rgba(16, 185, 129, 0.06) 100%);
+        }
+
+        .persona-card.active .persona-active-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3.5px;
+            background: linear-gradient(90deg, #10b981, #38bdf8);
+        }
+
+        .persona-top-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .persona-avatar-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            flex-shrink: 0;
+        }
+
+        .persona-header-title {
+            flex: 1;
+        }
+
+        .persona-header-title h4 {
+            font-size: 17px;
+            font-weight: 700;
+            margin: 0 0 2px 0;
+            color: var(--text-primary);
+        }
+
+        .persona-sub {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .persona-mini-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 8px 10px;
+            gap: 6px;
+        }
+
+        .persona-mini-stats span {
+            color: var(--text-dim);
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .persona-mini-stats strong {
+            font-size: 12.5px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        /* Master Audit Matrix Shell */
+        .audit-matrix-shell {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            box-shadow: var(--shadow-xl);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            position: relative;
+        }
+
+        @@media (max-width: 768px) {
+            .audit-matrix-shell {
+                padding: 20px 16px;
+            }
+        }
+
+        .audit-matrix-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 24px;
+        }
+
+        .audit-matrix-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .audit-matrix-title h3 {
+            font-size: 21px;
+            font-weight: 800;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .audit-status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 4-Stage Cashflow Journey Grid */
+        .audit-flow-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        @@media (max-width: 1100px) {
+            .audit-flow-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @@media (max-width: 620px) {
+            .audit-flow-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .audit-flow-col {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .audit-flow-col:hover {
+            border-color: var(--border-card);
+            transform: translateY(-2px);
+        }
+
+        .audit-col-step {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .audit-col-amount {
+            font-size: 23px;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            margin: 0 0 4px 0;
+        }
+
+        .audit-col-sub {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            line-height: 1.4;
+        }
+
+        .audit-bar-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .audit-bar-row {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 11.5px;
+        }
+
+        .audit-bar-header {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+        }
+
+        .audit-bar-track {
+            height: 4px;
+            background: var(--bg-surface-elevated);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .audit-bar-fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            transition: width 0.4s ease;
+        }
+
+        /* Udhar Incremental Repayment Visual Box */
+        .udhar-flow-box {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px dashed rgba(245, 158, 11, 0.35);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .udhar-flow-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--amber-400);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .udhar-step-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11.5px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .udhar-step-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            color: var(--amber-400);
+        }
+
+        /* Month-End Passbook Activity Feed */
+        .audit-passbook-wrapper {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .passbook-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .passbook-header h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .passbook-table-container {
+            overflow-x: auto;
+        }
+
+        .passbook-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .passbook-table th {
+            text-align: left;
+            padding: 9px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .passbook-table td {
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        .passbook-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .passbook-member-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            font-weight: 600;
+        }
+
+        /* Before vs After Impact Box */
+        .before-after-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        @@media (max-width: 800px) {
+            .before-after-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .before-card {
+            background: rgba(244, 63, 94, 0.05);
+            border: 1px solid rgba(244, 63, 94, 0.22);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+        }
+
+        .after-card {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.28);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+        }
+
+        .before-card-header {
+            color: #fb7185;
+            font-size: 13.5px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .after-card-header {
+            color: var(--emerald-400);
+            font-size: 13.5px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ba-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            padding: 0;
+            margin: 0;
+        }
+
+        .ba-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.45;
+        }
+
+        /* Interactive Simulator Card */
+        .sim-calculator-card {
+            margin-top: 36px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.09) 0%, rgba(99, 102, 241, 0.09) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.32);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+        }
+
+        .sim-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: center;
+        }
+
+        @@media (max-width: 860px) {
+            .sim-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sim-slider-group {
+            margin-bottom: 18px;
+        }
+
+        .sim-slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .sim-range-input {
+            width: 100%;
+            height: 6px;
+            border-radius: var(--radius-full);
+            accent-color: var(--emerald-500);
+            cursor: pointer;
+            outline: none;
+        }
+
+        .sim-results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @@media (max-width: 500px) {
+            .sim-results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sim-stat-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 14px;
+        }
+
+        .sim-stat-title {
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-dim);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .sim-stat-val {
+            font-size: 20px;
+            font-weight: 800;
+            font-family: var(--font-mono);
         }
 
         .comparison-table {
@@ -925,11 +1455,19 @@
                             <span class="browser-dot" style="background: #f59e0b;"></span>
                             <span class="browser-dot" style="background: #10b981;"></span>
                         </div>
-                        <span style="font-size: 12px; color: var(--text-dim); font-family: var(--font-mono);">homeledger://workspace/patel-family</span>
+                        <span id="mockupUrlText" style="font-size: 12px; color: var(--text-dim); font-family: var(--font-mono);">homeledger://workspace/patel-family</span>
                     </div>
-                    <div class="badge badge-emerald">
-                        <span class="live-pulse-dot"></span>
-                        <span>Live Ledger Active</span>
+                    <div class="mockup-header-actions">
+                        <div class="mockup-profile-chips">
+                            <span class="mockup-chip-label"><i class="fa-solid fa-users"></i> Profile:</span>
+                            <button type="button" class="mockup-chip-btn active" onclick="switchMockupFamily('patel', this)">Patel</button>
+                            <button type="button" class="mockup-chip-btn" onclick="switchMockupFamily('rana', this)">Rana</button>
+                            <button type="button" class="mockup-chip-btn" onclick="switchMockupFamily('rathod', this)">Rathod</button>
+                        </div>
+                        <div class="badge badge-emerald">
+                            <span class="live-pulse-dot"></span>
+                            <span id="mockupLiveBadgeText">Live Ledger Active</span>
+                        </div>
                     </div>
                 </div>
 
@@ -938,53 +1476,65 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 22px;">
                         <div style="background: rgba(16, 185, 129, 0.09); border: 1px solid rgba(16, 185, 129, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Remaining Balance</span>
-                            <h2 style="font-size: 26px; font-weight: 800; color: var(--emerald-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="34500" data-prefix="₹">₹34,500.00</h2>
-                            <small style="color: var(--text-dim); font-size: 11px;">Surplus ready for savings</small>
+                            <h2 id="mockupRemainingVal" style="font-size: 26px; font-weight: 800; color: var(--emerald-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="34500" data-prefix="₹">₹34,500.00</h2>
+                            <small id="mockupRemainingSub" style="color: var(--text-dim); font-size: 11px;">Surplus ready for savings</small>
                         </div>
                         <div style="background: rgba(99, 102, 241, 0.09); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Total Income</span>
-                            <h2 style="font-size: 26px; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); margin: 0;" data-hero-counter="49500" data-prefix="₹">₹49,500.00</h2>
-                            <small style="color: var(--emerald-400); font-size: 11px;"><i class="fa-solid fa-arrow-up"></i> Salary + Freelance</small>
+                            <h2 id="mockupIncomeVal" style="font-size: 26px; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); margin: 0;" data-hero-counter="49500" data-prefix="₹">₹49,500.00</h2>
+                            <small id="mockupIncomeSub" style="color: var(--emerald-400); font-size: 11px;"><i class="fa-solid fa-arrow-up"></i> Salary + Freelance</small>
                         </div>
                         <div style="background: rgba(244, 63, 94, 0.09); border: 1px solid rgba(244, 63, 94, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Household Expenses</span>
-                            <h2 style="font-size: 26px; font-weight: 800; color: #fb7185; font-family: var(--font-mono); margin: 0;" data-hero-counter="15000" data-prefix="₹">₹15,000.00</h2>
-                            <small style="color: var(--text-dim); font-size: 11px;">Groceries, Electricity, School</small>
+                            <h2 id="mockupExpensesVal" style="font-size: 26px; font-weight: 800; color: #fb7185; font-family: var(--font-mono); margin: 0;" data-hero-counter="15000" data-prefix="₹">₹15,000.00</h2>
+                            <small id="mockupExpensesSub" style="color: var(--text-dim); font-size: 11px;">Groceries, Electricity, School</small>
                         </div>
                         <div style="background: rgba(245, 158, 11, 0.09); border: 1px solid rgba(245, 158, 11, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Udhar (Dene Hai)</span>
-                            <h2 style="font-size: 26px; font-weight: 800; color: var(--amber-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="17500" data-prefix="₹">₹17,500.00</h2>
-                            <small style="color: var(--amber-400); font-size: 11px;">To Receive: ₹2,000.00</small>
+                            <h2 id="mockupUdharVal" style="font-size: 26px; font-weight: 800; color: var(--amber-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="17500" data-prefix="₹">₹17,500.00</h2>
+                            <small id="mockupUdharSub" style="color: var(--amber-400); font-size: 11px;">To Receive: ₹2,000.00</small>
                         </div>
                     </div>
 
                     <!-- Live Sample Activity Stream Inside Mockup -->
                     <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted);">Recent Household Transactions</span>
-                            <span style="font-size: 11px; color: var(--emerald-400);"><i class="fa-solid fa-lock"></i> Admin Vault Encrypted</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                            <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted);"><i class="fa-solid fa-receipt" style="color: var(--emerald-400); margin-right: 6px;"></i> Recent Household Transactions</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="badge badge-emerald" style="font-size: 10px;"><i class="fa-solid fa-calculator"></i> Auto-Deducted Balance</span>
+                                <span style="font-size: 11px; color: var(--emerald-400);"><i class="fa-solid fa-lock"></i> Admin Vault Encrypted</span>
+                            </div>
                         </div>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div id="mockupTxContainer" style="display: flex; flex-direction: column; gap: 8px;">
                             <div class="mockup-tx-row mockup-tx-1">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-arrow-up"></i></div>
-                                    <span style="font-size: 13.5px; font-weight: 600;">Father's salary (01 Oct)</span>
+                                    <div>
+                                        <span style="font-size: 13.5px; font-weight: 600; display: block;">Father's salary deposit (01 Oct)</span>
+                                        <small style="font-size: 11px; color: var(--text-dim);"><i class="fa-solid fa-user-shield"></i> Father (Admin) &bull; Bank Credit</small>
+                                    </div>
                                 </div>
                                 <span style="font-family: var(--font-mono); font-weight: 700; color: #10b981;">+₹25,000.00</span>
                             </div>
                             <div class="mockup-tx-row mockup-tx-2">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(244, 63, 94, 0.15); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-arrow-down"></i></div>
-                                    <span style="font-size: 13.5px; font-weight: 600;">Grocery shopping (02 Oct)</span>
+                                    <div>
+                                        <span style="font-size: 13.5px; font-weight: 600; display: block;">Grocery shopping (02 Oct)</span>
+                                        <small style="font-size: 11px; color: var(--text-dim);"><i class="fa-solid fa-user"></i> Mother &bull; Household Cash</small>
+                                    </div>
                                 </div>
                                 <span style="font-family: var(--font-mono); font-weight: 700; color: #f43f5e;">-₹2,500.00</span>
                             </div>
                             <div class="mockup-tx-row mockup-tx-3">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                                    <span style="font-size: 13.5px; font-weight: 600;">Friend ko udhar diya (16 Oct)</span>
+                                    <div>
+                                        <span style="font-size: 13.5px; font-weight: 600; display: block;">Sharma Kirana Repayment (05 Oct)</span>
+                                        <small style="font-size: 11px; color: var(--amber-400);"><i class="fa-solid fa-calculator"></i> Installment paid: ₹2,500 auto-cut from Udhar</small>
+                                    </div>
                                 </div>
-                                <span style="font-family: var(--font-mono); font-weight: 700; color: #f59e0b;">₹3,500.00 (Lene Hai)</span>
+                                <span style="font-family: var(--font-mono); font-weight: 700; color: #f59e0b;">-₹2,500.00 (Bal: ₹18k)</span>
                             </div>
                         </div>
                     </div>
@@ -993,7 +1543,7 @@
                     <div style="margin-top: 14px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
                         <div>
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-dim); display: block;">Monthly Surplus Velocity</span>
-                            <strong style="font-size: 15px; color: var(--emerald-400); font-family: var(--font-mono);">+18.4% vs last month</strong>
+                            <strong id="mockupVelocityText" style="font-size: 15px; color: var(--emerald-400); font-family: var(--font-mono);">+18.4% vs last month</strong>
                         </div>
                         <svg width="260" height="44" viewBox="0 0 260 44" fill="none" style="max-width: 100%; overflow: visible;">
                             <defs>
@@ -1003,8 +1553,8 @@
                                     <stop offset="100%" stop-color="#10b981" />
                                 </linearGradient>
                             </defs>
-                            <path class="sparkline-draw" d="M4 34 C 36 32, 52 20, 82 24 C 110 28, 128 12, 160 15 C 192 18, 218 6, 254 8" stroke="url(#sparkGrad)" stroke-width="2.6" stroke-linecap="round" />
-                            <circle cx="254" cy="8" r="4" fill="#10b981" />
+                            <path id="mockupSparklinePath" class="sparkline-draw" d="M4 34 C 36 32, 52 20, 82 24 C 110 28, 128 12, 160 15 C 192 18, 218 6, 254 8" stroke="url(#sparkGrad)" stroke-width="2.6" stroke-linecap="round" />
+                            <circle id="mockupSparklineDot" cx="254" cy="8" r="4" fill="#10b981" />
                         </svg>
                     </div>
                 </div>
@@ -1064,85 +1614,310 @@
         </div>
     </section>
 
-    <!-- Section 2: Real Family Scenarios (Interactive Tabs) -->
-    <section class="section-container reveal-on-scroll" id="scenarios" style="background: var(--bg-glass-subtle); border-radius: var(--radius-xl); border: 1px solid var(--border-subtle);">
+    <!-- Section 2: Real Family Scenarios (Interactive Household Financial Intelligence Lab) -->
+    <section class="section-container reveal-on-scroll" id="scenarios">
         <div class="section-header">
-            <span class="section-tag">Real-World Case Studies</span>
+            <span class="section-tag"><i class="fa-solid fa-sparkles"></i> Real-World Household Case Studies</span>
             <h2 class="section-title">Tested Across October 2026 Household Audits</h2>
-            <p class="section-desc">See how real households successfully managed salary, tuition, credit purchases, and repayments on HomeLedger.</p>
+            <p class="section-desc">Experience how real Indian families replaced missing diary pages and WhatsApp confusion with role isolation, smart Udhar auto-deduction, and lossless data vaults.</p>
         </div>
 
-        <div class="scenario-tabs">
-            <button class="scenario-tab-btn active" onclick="switchScenario('patel', this)">
-                <i class="fa-solid fa-house-chimney"></i> Patel's Family
-            </button>
-            <button class="scenario-tab-btn" onclick="switchScenario('rana', this)">
-                <i class="fa-solid fa-house-chimney"></i> Rana's Family
-            </button>
-            <button class="scenario-tab-btn" onclick="switchScenario('rathod', this)">
-                <i class="fa-solid fa-house-chimney"></i> Rathod's Family
-            </button>
+        <!-- 1. Interactive 3-Column Family Persona Deck -->
+        <div class="family-persona-deck">
+            <div class="persona-card active" id="personaCard-patel" onclick="selectFamilyAudit('patel', this)">
+                <div class="persona-top-row">
+                    <div class="persona-avatar-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                        <i class="fa-solid fa-people-roof"></i>
+                    </div>
+                    <div class="persona-header-title">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <h4>The Patel Family</h4>
+                            <span class="badge badge-emerald" style="font-size: 10px;">4 Members</span>
+                        </div>
+                        <p class="persona-sub">Joint Salaried &amp; Freelance Household</p>
+                    </div>
+                </div>
+                <div class="persona-mini-stats">
+                    <div>
+                        <span>Inflow</span>
+                        <strong>₹49,500</strong>
+                    </div>
+                    <div>
+                        <span>Net Surplus</span>
+                        <strong style="color: var(--emerald-400);">₹34,500</strong>
+                    </div>
+                    <div>
+                        <span>Udhar</span>
+                        <strong style="color: var(--amber-400);">₹17,500</strong>
+                    </div>
+                </div>
+                <div class="persona-active-indicator"></div>
+            </div>
+
+            <div class="persona-card" id="personaCard-rana" onclick="selectFamilyAudit('rana', this)">
+                <div class="persona-top-row">
+                    <div class="persona-avatar-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
+                        <i class="fa-solid fa-shop"></i>
+                    </div>
+                    <div class="persona-header-title">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <h4>The Rana Family</h4>
+                            <span class="badge badge-cyan" style="font-size: 10px;">3 Members</span>
+                        </div>
+                        <p class="persona-sub">Retail Wholesale &amp; Digital Gigs</p>
+                    </div>
+                </div>
+                <div class="persona-mini-stats">
+                    <div>
+                        <span>Inflow</span>
+                        <strong>₹55,000</strong>
+                    </div>
+                    <div>
+                        <span>Net Surplus</span>
+                        <strong style="color: var(--emerald-400);">₹41,500</strong>
+                    </div>
+                    <div>
+                        <span>Udhar</span>
+                        <strong style="color: var(--amber-400);">₹25,200</strong>
+                    </div>
+                </div>
+                <div class="persona-active-indicator"></div>
+            </div>
+
+            <div class="persona-card" id="personaCard-rathod" onclick="selectFamilyAudit('rathod', this)">
+                <div class="persona-top-row">
+                    <div class="persona-avatar-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div class="persona-header-title">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <h4>The Rathod Family</h4>
+                            <span class="badge badge-purple" style="font-size: 10px;">3 Members</span>
+                        </div>
+                        <p class="persona-sub">Fixed Budget &amp; Fast Debt-Clearance</p>
+                    </div>
+                </div>
+                <div class="persona-mini-stats">
+                    <div>
+                        <span>Inflow</span>
+                        <strong>₹42,000</strong>
+                    </div>
+                    <div>
+                        <span>Net Surplus</span>
+                        <strong style="color: var(--emerald-400);">₹32,000</strong>
+                    </div>
+                    <div>
+                        <span>Udhar</span>
+                        <strong style="color: var(--amber-400);">₹18,600</strong>
+                    </div>
+                </div>
+                <div class="persona-active-indicator"></div>
+            </div>
         </div>
 
-        <!-- Scenario 1: Patel's Family -->
-        <div id="scenario-patel" class="scenario-content">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
-                <div class="glass-card" style="padding: 22px;">
-                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Total Income</span>
-                    <h3 style="font-size: 26px; color: var(--emerald-400); font-family: var(--font-mono); margin: 6px 0;">₹49,500.00</h3>
-                    <small style="color: var(--text-muted);">Father's salary (₹25k) + Mother (₹8k) + Freelance (₹15k)</small>
+        <!-- 2. Master Interactive Household Financial Journey Matrix -->
+        <div class="audit-matrix-shell" id="auditMatrixContainer">
+            <div class="audit-matrix-header">
+                <div class="audit-matrix-title">
+                    <h3 id="auditFamilyTitle">The Patel Family &mdash; Financial OS Audit</h3>
+                    <span class="audit-status-badge badge-emerald" id="auditFamilyBadge"><i class="fa-solid fa-circle-check"></i> October 2026 Verified Household Audit</span>
                 </div>
-                <div class="glass-card" style="padding: 22px;">
-                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Paid Expenses</span>
-                    <h3 style="font-size: 26px; color: #f43f5e; font-family: var(--font-mono); margin: 6px 0;">₹15,000.00</h3>
-                    <small style="color: var(--text-muted);">Groceries, electricity, school fees, transport, medical</small>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge badge-indigo" style="font-size: 11px;"><i class="fa-solid fa-shield-halved"></i> Role-Isolated Multi-User Vault</span>
                 </div>
-                <div class="glass-card" style="padding: 22px;">
-                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Closing Udhar Position</span>
-                    <h3 style="font-size: 26px; color: var(--amber-400); font-family: var(--font-mono); margin: 6px 0;">₹17,500 <span style="font-size: 14px; font-weight: 500; color: var(--text-dim);">dene baki</span></h3>
-                    <small style="color: var(--text-muted);">Receivable: ₹2,000 from friends</small>
+            </div>
+
+            <!-- 4-Stage Cashflow Journey Grid -->
+            <div class="audit-flow-grid">
+                <!-- Stage 1: Monthly Inflow Streams -->
+                <div class="audit-flow-col">
+                    <div>
+                        <div class="audit-col-step">
+                            <span>Stage 1 &bull; Inflow</span>
+                            <i class="fa-solid fa-arrow-down-long" style="color: var(--emerald-400);"></i>
+                        </div>
+                        <h4 class="audit-col-amount" id="auditInflowVal" style="color: var(--emerald-400);">₹49,500.00</h4>
+                        <p class="audit-col-sub" id="auditInflowSub">Father's salary (₹25k) + Mother (₹8k) + Freelance (₹16.5k)</p>
+                    </div>
+                    <div>
+                        <span style="font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">Member Contributions</span>
+                        <div class="audit-bar-group" id="auditInflowBars">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 2: Household Operating Spends -->
+                <div class="audit-flow-col">
+                    <div>
+                        <div class="audit-col-step">
+                            <span>Stage 2 &bull; Household Expenses</span>
+                            <i class="fa-solid fa-cart-shopping" style="color: #fb7185;"></i>
+                        </div>
+                        <h4 class="audit-col-amount" id="auditExpensesVal" style="color: #fb7185;">₹15,000.00</h4>
+                        <p class="audit-col-sub" id="auditExpensesSub">Groceries, electricity, school fees, transport, medical</p>
+                    </div>
+                    <div>
+                        <span style="font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">Expense Categories</span>
+                        <div class="audit-bar-group" id="auditExpenseBars">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 3: Dedicated Udhar Bahi-Khata Engine -->
+                <div class="audit-flow-col">
+                    <div>
+                        <div class="audit-col-step">
+                            <span>Stage 3 &bull; Smart Udhar</span>
+                            <i class="fa-solid fa-hand-holding-dollar" style="color: var(--amber-400);"></i>
+                        </div>
+                        <h4 class="audit-col-amount" id="auditUdharVal" style="color: var(--amber-400);">₹17,500 <span style="font-size: 13px; font-weight: 500; color: var(--text-dim);">dene baki</span></h4>
+                        <p class="audit-col-sub" id="auditUdharSub">Kirana store credit &bull; Receivable: ₹2,000 from friends</p>
+                    </div>
+                    <div class="udhar-flow-box">
+                        <div class="udhar-flow-title">
+                            <i class="fa-solid fa-calculator"></i>
+                            <span>Auto-Deducted Repayment Flow</span>
+                        </div>
+                        <div id="auditUdharSteps">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 4: Net Family Wealth Velocity -->
+                <div class="audit-flow-col" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.28);">
+                    <div>
+                        <div class="audit-col-step">
+                            <span style="color: var(--emerald-400);">Stage 4 &bull; Wealth Surplus</span>
+                            <i class="fa-solid fa-vault" style="color: var(--emerald-400);"></i>
+                        </div>
+                        <h4 class="audit-col-amount" id="auditSurplusVal" style="color: var(--emerald-400);">₹34,500.00</h4>
+                        <p class="audit-col-sub" id="auditSurplusSub">Clean monthly surplus ready for savings &amp; investments</p>
+                    </div>
+                    <div>
+                        <span style="font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">Family Wealth Allocation</span>
+                        <div class="audit-bar-group" id="auditWealthBars">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-World Impact: Before vs After HomeLedger -->
+            <div class="before-after-grid">
+                <div class="before-card">
+                    <div class="before-card-header">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                        <span>Without HomeLedger (Paper Diaries &amp; WhatsApp Notes)</span>
+                    </div>
+                    <ul class="ba-list" id="auditBeforeList">
+                        <!-- Populated via JS -->
+                    </ul>
+                </div>
+
+                <div class="after-card">
+                    <div class="after-card-header">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>With HomeLedger (Automated Multi-User Family Vault)</span>
+                    </div>
+                    <ul class="ba-list" id="auditAfterList">
+                        <!-- Populated via JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Live Month-End Passbook Activity Feed -->
+            <div class="audit-passbook-wrapper">
+                <div class="passbook-header">
+                    <h4>
+                        <i class="fa-solid fa-receipt" style="color: var(--emerald-400);"></i>
+                        <span>Sample October 2026 Household Passbook Entries</span>
+                    </h4>
+                    <span style="font-size: 11.5px; color: var(--text-dim);"><i class="fa-solid fa-clock-rotate-left"></i> Real chronological audit stream</span>
+                </div>
+                <div class="passbook-table-container">
+                    <table class="passbook-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 14%;">Date</th>
+                                <th style="width: 20%;">Family Member</th>
+                                <th style="width: 36%;">Transaction Description</th>
+                                <th style="width: 15%;">Amount (₹)</th>
+                                <th style="width: 15%;">Ledger Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditPassbookRows">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- Scenario 2: Rana's Family -->
-        <div id="scenario-rana" class="scenario-content" style="display: none;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
-                <div class="glass-card" style="padding: 22px;">
-                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Total Income</span>
-                    <h3 style="font-size: 26px; color: var(--emerald-400); font-family: var(--font-mono); margin: 6px 0;">₹55,000.00</h3>
-                    <small style="color: var(--text-muted);">Father (₹30k) + Mother (₹10k) + Extra work (₹15k)</small>
-                </div>
-                <div class="glass-card" style="padding: 22px;">
-                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Paid Expenses</span>
-                    <h3 style="font-size: 26px; color: #f43f5e; font-family: var(--font-mono); margin: 6px 0;">₹13,500.00</h3>
-                    <small style="color: var(--text-muted);">Electricity, transport, education, medical</small>
-                </div>
-                <div class="glass-card" style="padding: 22px;">
-                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Closing Udhar Position</span>
-                    <h3 style="font-size: 26px; color: var(--amber-400); font-family: var(--font-mono); margin: 6px 0;">₹25,200 <span style="font-size: 14px; font-weight: 500; color: var(--text-dim);">dene baki</span></h3>
-                    <small style="color: var(--text-muted);">Receivable: ₹4,000 lent to relative</small>
-                </div>
-            </div>
-        </div>
+        <!-- 3. Interactive "Simulate Your Family Finances" Live Mini-Calculator -->
+        <div class="sim-calculator-card">
+            <div class="sim-grid">
+                <div>
+                    <div class="badge badge-emerald" style="margin-bottom: 12px; font-size: 11px;">
+                        <i class="fa-solid fa-sliders"></i> Interactive Family Calculator
+                    </div>
+                    <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 10px; color: var(--text-primary);">
+                        Simulate Your Own Household Numbers
+                    </h3>
+                    <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 22px;">
+                        Adjust your family's monthly inflow and household expenses. HomeLedger's financial engine instantly calculates your safe surplus, ideal emergency reserves, and recommended Udhar buffer.
+                    </p>
 
-        <!-- Scenario 3: Rathod's Family -->
-        <div id="scenario-rathod" class="scenario-content" style="display: none;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
-                <div class="glass-card" style="padding: 22px;">
-                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Total Income</span>
-                    <h3 style="font-size: 26px; color: var(--emerald-400); font-family: var(--font-mono); margin: 6px 0;">₹42,000.00</h3>
-                    <small style="color: var(--text-muted);">Father (₹22k) + Mother (₹7k) + Side work (₹13k)</small>
+                    <div class="sim-slider-group">
+                        <div class="sim-slider-label">
+                            <span><i class="fa-solid fa-wallet" style="color: var(--emerald-400); margin-right: 6px;"></i> Total Monthly Family Income:</span>
+                            <strong id="simIncomeLabel" style="color: var(--emerald-400); font-family: var(--font-mono);">₹50,000</strong>
+                        </div>
+                        <input type="range" class="sim-range-input" id="simIncomeSlider" min="20000" max="250000" step="5000" value="50000" oninput="updateFamilySimulator()">
+                    </div>
+
+                    <div class="sim-slider-group">
+                        <div class="sim-slider-label">
+                            <span><i class="fa-solid fa-cart-shopping" style="color: #fb7185; margin-right: 6px;"></i> Estimated Monthly Household Spends:</span>
+                            <strong id="simExpenseLabel" style="color: #fb7185; font-family: var(--font-mono);">₹20,000</strong>
+                        </div>
+                        <input type="range" class="sim-range-input" id="simExpenseSlider" min="10000" max="200000" step="2500" value="20000" oninput="updateFamilySimulator()">
+                    </div>
                 </div>
-                <div class="glass-card" style="padding: 22px;">
-                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Paid Expenses</span>
-                    <h3 style="font-size: 26px; color: #f43f5e; font-family: var(--font-mono); margin: 6px 0;">₹10,000.00</h3>
-                    <small style="color: var(--text-muted);">Grocery shopping, education, medical, bills</small>
-                </div>
-                <div class="glass-card" style="padding: 22px;">
-                    <span style="font-size: 12px; color: var(--text-dim); text-transform: uppercase;">Closing Udhar Position</span>
-                    <h3 style="font-size: 26px; color: var(--amber-400); font-family: var(--font-mono); margin: 6px 0;">₹18,600 <span style="font-size: 14px; font-weight: 500; color: var(--text-dim);">dene baki</span></h3>
-                    <small style="color: var(--text-muted);">Receivable: ₹4,000 neighbour lending</small>
+
+                <div>
+                    <div class="sim-results-grid">
+                        <div class="sim-stat-box" style="border-color: rgba(16, 185, 129, 0.35);">
+                            <span class="sim-stat-title">Monthly Net Surplus</span>
+                            <div class="sim-stat-val" id="simSurplusVal" style="color: var(--emerald-400);">₹30,000.00</div>
+                            <small style="color: var(--text-dim); font-size: 11px;">Free cash ready to invest</small>
+                        </div>
+                        <div class="sim-stat-box" style="border-color: rgba(245, 158, 11, 0.35);">
+                            <span class="sim-stat-title">Safe Udhar Lending Limit</span>
+                            <div class="sim-stat-val" id="simUdharLimitVal" style="color: var(--amber-400);">₹9,000.00</div>
+                            <small style="color: var(--text-dim); font-size: 11px;">30% of monthly surplus</small>
+                        </div>
+                        <div class="sim-stat-box" style="border-color: rgba(56, 189, 248, 0.35);">
+                            <span class="sim-stat-title">Emergency Buffer Needed</span>
+                            <div class="sim-stat-val" id="simEmergencyVal" style="color: var(--cyan-400);">₹60,000.00</div>
+                            <small style="color: var(--text-dim); font-size: 11px;">3 months living expenses</small>
+                        </div>
+                        <div class="sim-stat-box" style="border-color: rgba(168, 85, 247, 0.35);">
+                            <span class="sim-stat-title">1-Year Wealth Creation</span>
+                            <div class="sim-stat-val" id="simWealthVal" style="color: var(--purple-400);">₹3,60,000.00</div>
+                            <small style="color: var(--text-dim); font-size: 11px;">Annualized family savings</small>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 18px; text-align: center;">
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-shine w-100" style="padding: 12px 20px; font-size: 14px; gap: 8px;">
+                            <i class="fa-solid fa-vault"></i>
+                            <span>Create Your Family Vault With This Budget</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1380,17 +2155,445 @@
             if (mobileNavDrawer) mobileNavDrawer.classList.remove('open');
         }
 
-        // 6. Scenario Tab Switcher
-        function switchScenario(key, btn) {
-            document.querySelectorAll('.scenario-content').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.scenario-tab-btn').forEach(el => el.classList.remove('active'));
-            const target = document.getElementById('scenario-' + key);
-            if (target) {
-                target.style.display = 'block';
-                target.classList.add('animate-fade-in-up');
+        // 6. Master Household Financial Case Studies Dataset & Engine
+        const householdCaseStudies = {
+            patel: {
+                name: "The Patel Family",
+                badge: "October 2026 Verified Household Audit",
+                url: "homeledger://workspace/patel-family",
+                remaining: 34500,
+                income: 49500,
+                incomeSub: "Father's salary (₹25k) + Mother (₹8k) + Freelance (₹16.5k)",
+                expenses: 15000,
+                expensesSub: "Groceries, electricity, school fees, transport, medical",
+                udharVal: "₹17,500",
+                udharSub: "Kirana store credit &bull; Receivable: ₹2,000 from friends",
+                velocity: "+18.4% vs last month",
+                sparklineD: "M4 34 C 36 32, 52 20, 82 24 C 110 28, 128 12, 160 15 C 192 18, 218 6, 254 8",
+                sparklineDotY: 8,
+                inflowBars: [
+                    { label: "Father (Govt/Pvt Salary)", amount: "₹25,000.00", pct: 50.5, color: "#10b981" },
+                    { label: "Son (Freelance Tech & UI)", amount: "₹16,500.00", pct: 33.3, color: "#38bdf8" },
+                    { label: "Mother (Home Tuition Classes)", amount: "₹8,000.00", pct: 16.2, color: "#818cf8" }
+                ],
+                expenseBars: [
+                    { label: "Groceries & Kitchen Ration", amount: "₹6,500.00", pct: 43.3, color: "#fb7185" },
+                    { label: "Electricity, Wifi & Gas", amount: "₹3,500.00", pct: 23.3, color: "#f59e0b" },
+                    { label: "School Fees & Stationery", amount: "₹3,000.00", pct: 20.0, color: "#c084fc" },
+                    { label: "Medical & Health Reserves", amount: "₹2,000.00", pct: 13.4, color: "#38bdf8" }
+                ],
+                udharSteps: [
+                    { title: "Original Kirana Credit", amount: "₹20,500.00", status: "Bahi-Khata Start" },
+                    { title: "Installment #1 Paid (05 Oct)", amount: "-₹2,500.00", status: "Auto-Cut &bull; Bal: ₹18,000" },
+                    { title: "Installment #2 Paid (25 Oct)", amount: "-₹500.00", status: "Auto-Cut &bull; Bal: ₹17,500" }
+                ],
+                wealthBars: [
+                    { label: "Liquid Emergency Fund", amount: "₹15,000.00", pct: 43.5, color: "#10b981" },
+                    { label: "Gold & PPF Monthly SIP", amount: "₹12,000.00", pct: 34.8, color: "#38bdf8" },
+                    { label: "Child Higher Education Vault", amount: "₹7,500.00", pct: 21.7, color: "#818cf8" }
+                ],
+                beforeList: [
+                    "Paper Khata book lost pages: Sharma Kirana store claimed ₹24,000 instead of ₹20,500.",
+                    "Son gave ₹3,500 to a friend in cash; forgot the date and had no proof of lending.",
+                    "Mother had no private way to track tuition income without father scrutinizing small grocery spends.",
+                    "End-of-month panic with an unexplained missing ₹4,000 cash balance in the household."
+                ],
+                afterList: [
+                    "Every rupee of ₹20,500 credit tracked date-wise: paid ₹2,500 then ₹500, leaving exactly ₹17,500 balance.",
+                    "Son logged friend loan under 'Lene Hai'; received ₹1,500 partial return seamlessly recorded.",
+                    "Mother logs tuition income independently; Father oversees overall health without micro-managing.",
+                    "1-Click PDF, Excel & CSV backups generated at month end with 100% loss-free database integrity."
+                ],
+                passbook: [
+                    { date: "01 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-arrow-up", color: "#10b981", desc: "Father's Monthly Salary Deposit", amount: "+₹25,000.00", status: "Salary Vault", statusClass: "badge-emerald" },
+                    { date: "02 Oct 2026", member: "Mother", roleClass: "badge-indigo", icon: "fa-cart-shopping", color: "#f43f5e", desc: "Sharma Kirana - Monthly Ration & Dairy", amount: "-₹2,500.00", status: "Household Cash", statusClass: "badge-secondary" },
+                    { date: "05 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-calculator", color: "#f59e0b", desc: "Sharma Kirana Udhar Repayment (Installment 1)", amount: "-₹2,500.00", status: "Deducted from ₹20.5k", statusClass: "badge-amber" },
+                    { date: "08 Oct 2026", member: "Mother", roleClass: "badge-indigo", icon: "fa-chalkboard-user", color: "#10b981", desc: "Mother's Home Tuition Payout Received", amount: "+₹8,000.00", status: "Direct Inflow", statusClass: "badge-emerald" },
+                    { date: "16 Oct 2026", member: "Son", roleClass: "badge-cyan", icon: "fa-hand-holding-dollar", color: "#38bdf8", desc: "College Friend Udhar Return (Partial)", amount: "+₹1,500.00", status: "Lene Hai Updated", statusClass: "badge-cyan" },
+                    { date: "25 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-calculator", color: "#f59e0b", desc: "Sharma Kirana Udhar Repayment (Installment 2)", amount: "-₹500.00", status: "Remaining: ₹17,500", statusClass: "badge-amber" }
+                ],
+                heroTransactions: [
+                    { title: "Father's salary deposit (01 Oct)", member: "Father (Admin) &bull; Bank Credit", amount: "+₹25,000.00", color: "#10b981", icon: "fa-arrow-up", bg: "rgba(16, 185, 129, 0.15)" },
+                    { title: "Grocery shopping (02 Oct)", member: "Mother &bull; Household Cash", amount: "-₹2,500.00", color: "#f43f5e", icon: "fa-arrow-down", bg: "rgba(244, 63, 94, 0.15)" },
+                    { title: "Sharma Kirana Repayment (05 Oct)", member: "Installment paid: ₹2,500 auto-cut from Udhar", amount: "-₹2,500.00 (Bal: ₹18k)", color: "#f59e0b", icon: "fa-hand-holding-dollar", bg: "rgba(245, 158, 11, 0.15)" }
+                ]
+            },
+            rana: {
+                name: "The Rana Family",
+                badge: "October 2026 Commercial & Household Audit",
+                url: "homeledger://workspace/rana-family",
+                remaining: 41500,
+                income: 55000,
+                incomeSub: "Father Shop (₹30k) + Mother Boutique (₹10k) + Freelance (₹15k)",
+                expenses: 13500,
+                expensesSub: "Shop utilities, store rent, grocery, fuel & transport",
+                udharVal: "₹25,200",
+                udharSub: "Wholesale supplier credit &bull; Receivable: ₹4,000 relative loan",
+                velocity: "+22.8% vs last month",
+                sparklineD: "M4 38 C 40 36, 60 22, 90 28 C 120 32, 140 14, 170 18 C 200 20, 225 4, 254 6",
+                sparklineDotY: 6,
+                inflowBars: [
+                    { label: "Father (Wholesale General Trade)", amount: "₹30,000.00", pct: 54.5, color: "#10b981" },
+                    { label: "Son (Digital Marketing & Content)", amount: "₹15,000.00", pct: 27.3, color: "#38bdf8" },
+                    { label: "Mother (Home Boutique & Tailoring)", amount: "₹10,000.00", pct: 18.2, color: "#c084fc" }
+                ],
+                expenseBars: [
+                    { label: "Commercial Facility Rent & Bills", amount: "₹5,000.00", pct: 37.0, color: "#fb7185" },
+                    { label: "Household Ration & Dairy", amount: "₹4,500.00", pct: 33.3, color: "#f59e0b" },
+                    { label: "Transport, Delivery & Fuel", amount: "₹2,200.00", pct: 16.3, color: "#38bdf8" },
+                    { label: "Healthcare & Emergency Buffer", amount: "₹1,800.00", pct: 13.4, color: "#818cf8" }
+                ],
+                udharSteps: [
+                    { title: "Wholesale Supplier Credit", amount: "₹30,000.00", status: "Supplier Ledger" },
+                    { title: "Paid Supplier Clearance (04 Oct)", amount: "-₹4,800.00", status: "Auto-Cut &bull; Bal: ₹25,200" },
+                    { title: "Current Bahi-Khata Position", amount: "₹25,200.00", status: "Supplier Verified" }
+                ],
+                wealthBars: [
+                    { label: "Wholesale Inventory Buffer", amount: "₹20,000.00", pct: 48.2, color: "#10b981" },
+                    { label: "Fixed Deposit & Sovereign Gold", amount: "₹14,500.00", pct: 34.9, color: "#38bdf8" },
+                    { label: "Household Emergency Fund", amount: "₹7,000.00", pct: 16.9, color: "#818cf8" }
+                ],
+                beforeList: [
+                    "Wholesale supplier bills mixed up with domestic kitchen grocery bills.",
+                    "₹4,000 lent to a relative during festival season was forgotten until an awkward family dinner.",
+                    "Multiple cash drawers and separate UPI accounts made it impossible to know true monthly profits.",
+                    "Tax accounting was a nightmare of scattered, stained paper slips."
+                ],
+                afterList: [
+                    "Strict digital isolation between commercial trade credit (₹25,200) and household grocery expenses.",
+                    "Date-wise reminder tags for ₹4,000 relative loan with automatic receivable position.",
+                    "Instant family net monthly surplus calculated at ₹41,500 with zero guesswork.",
+                    "Lossless Excel & CSV dumps exported directly to family tax accountant in 10 seconds."
+                ],
+                passbook: [
+                    { date: "02 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-shop", color: "#10b981", desc: "Wholesale Store Weekly Clearance Inflow", amount: "+₹30,000.00", status: "Shop Vault", statusClass: "badge-emerald" },
+                    { date: "04 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-calculator", color: "#f59e0b", desc: "Supplier Patel Traders Clearance Installment", amount: "-₹4,800.00", status: "Deducted from ₹30k", statusClass: "badge-amber" },
+                    { date: "09 Oct 2026", member: "Mother", roleClass: "badge-indigo", icon: "fa-vest", color: "#10b981", desc: "Boutique Festival Wedding Orders Received", amount: "+₹10,000.00", status: "Online UPI", statusClass: "badge-emerald" },
+                    { date: "12 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-bolt", color: "#f43f5e", desc: "Store Commercial Electricity & Municipal Bills", amount: "-₹5,000.00", status: "Utility Bill", statusClass: "badge-secondary" },
+                    { date: "14 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-hand-holding-dollar", color: "#38bdf8", desc: "Festival Advance to Relative (Lene Hai)", amount: "₹4,000.00", status: "Due Nov 2026", statusClass: "badge-cyan" },
+                    { date: "21 Oct 2026", member: "Son", roleClass: "badge-cyan", icon: "fa-laptop-code", color: "#10b981", desc: "Digital Marketing Client Milestone Payout", amount: "+₹15,000.00", status: "Wire Transfer", statusClass: "badge-emerald" }
+                ],
+                heroTransactions: [
+                    { title: "Wholesale store clearance (02 Oct)", member: "Father (Admin) &bull; Shop Cashflow", amount: "+₹30,000.00", color: "#10b981", icon: "fa-arrow-up", bg: "rgba(16, 185, 129, 0.15)" },
+                    { title: "Supplier Patel Traders (04 Oct)", member: "Paid clearance: ₹4,800 auto-cut from Udhar", amount: "-₹4,800.00 (Bal: ₹25.2k)", color: "#f59e0b", icon: "fa-hand-holding-dollar", bg: "rgba(245, 158, 11, 0.15)" },
+                    { title: "Boutique festive orders (09 Oct)", member: "Mother &bull; Online UPI Inflow", amount: "+₹10,000.00", color: "#10b981", icon: "fa-arrow-up", bg: "rgba(16, 185, 129, 0.15)" }
+                ]
+            },
+            rathod: {
+                name: "The Rathod Family",
+                badge: "October 2026 Debt-Clearance & Budget Audit",
+                url: "homeledger://workspace/rathod-family",
+                remaining: 32000,
+                income: 42000,
+                incomeSub: "Father Corporate (₹22k) + Mother (₹7k) + Gig (₹13k)",
+                expenses: 10000,
+                expensesSub: "Education fees, grocery, electricity, health reserve",
+                udharVal: "₹18,600",
+                udharSub: "Medical emergency borrowing &bull; Receivable: ₹4,000 neighbour aid",
+                velocity: "+26.5% vs last month",
+                sparklineD: "M4 36 C 40 34, 65 24, 95 26 C 125 28, 145 16, 175 18 C 205 18, 228 2, 254 4",
+                sparklineDotY: 4,
+                inflowBars: [
+                    { label: "Father (Corporate Staff Salary)", amount: "₹22,000.00", pct: 52.4, color: "#10b981" },
+                    { label: "Son (Part-Time Support Gig)", amount: "₹13,000.00", pct: 30.9, color: "#38bdf8" },
+                    { label: "Mother (Primary School Teacher)", amount: "₹7,000.00", pct: 16.7, color: "#c084fc" }
+                ],
+                expenseBars: [
+                    { label: "Children School Fees & Books", amount: "₹4,000.00", pct: 40.0, color: "#fb7185" },
+                    { label: "Household Groceries & Provisions", amount: "₹3,500.00", pct: 35.0, color: "#f59e0b" },
+                    { label: "Electricity & Municipal Water", amount: "₹1,500.00", pct: 15.0, color: "#38bdf8" },
+                    { label: "Medical Reserves & Emergency", amount: "₹1,000.00", pct: 10.0, color: "#818cf8" }
+                ],
+                udharSteps: [
+                    { title: "Emergency Medical Borrowing", amount: "₹25,000.00", status: "Hospital Debt" },
+                    { title: "Paid Aggressive Installment (03 Oct)", amount: "-₹6,400.00", status: "Auto-Cut &bull; Bal: ₹18,600" },
+                    { title: "Target Debt-Free Date", amount: "Jan 2027", status: "On Track via HomeLedger" }
+                ],
+                wealthBars: [
+                    { label: "Debt Acceleration Fund", amount: "₹15,000.00", pct: 46.9, color: "#10b981" },
+                    { label: "Daughter Higher Education", amount: "₹10,000.00", pct: 31.2, color: "#38bdf8" },
+                    { label: "Emergency Reserve", amount: "₹7,000.00", pct: 21.9, color: "#818cf8" }
+                ],
+                beforeList: [
+                    "Hospital medical loan repayments made in cash without receipts; disputes over exact remaining debt.",
+                    "No structured savings system: father's salary was completely depleted by the 20th of every month.",
+                    "Mother and son had zero visibility into father's debt burden or timeline.",
+                    "Constant monthly anxiety over unexpected medical or vehicle expenses."
+                ],
+                afterList: [
+                    "Paid ₹6,400 in one go, automatically cut down to ₹18,600 with timestamped digital proof.",
+                    "Strict ₹10,000 expense ceiling enforced, saving 76% of net family cashflow.",
+                    "Entire household united around a shared goal to become 100% debt-free by early 2027.",
+                    "Secure offline backup kept safely on laptop and mobile in PDF and Excel."
+                ],
+                passbook: [
+                    { date: "01 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-building", color: "#10b981", desc: "Father Corporate Salary Credited", amount: "+₹22,000.00", status: "Salary Vault", statusClass: "badge-emerald" },
+                    { date: "03 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-calculator", color: "#f59e0b", desc: "Emergency Medical Loan Installment Repayment", amount: "-₹6,400.00", status: "Deducted from ₹25k", statusClass: "badge-amber" },
+                    { date: "07 Oct 2026", member: "Mother", roleClass: "badge-indigo", icon: "fa-school", color: "#10b981", desc: "Mother Primary School Salary Credited", amount: "+₹7,000.00", status: "Bank Transfer", statusClass: "badge-emerald" },
+                    { date: "11 Oct 2026", member: "Mother", roleClass: "badge-indigo", icon: "fa-graduation-cap", color: "#f43f5e", desc: "Children School Fees & Books Paid", amount: "-₹4,000.00", status: "Education Bill", statusClass: "badge-secondary" },
+                    { date: "15 Oct 2026", member: "Father (Admin)", roleClass: "badge-emerald", icon: "fa-hand-holding-dollar", color: "#38bdf8", desc: "Neighbour Emergency Support (Lene Hai)", amount: "₹4,000.00", status: "Neighbour Aid", statusClass: "badge-cyan" },
+                    { date: "24 Oct 2026", member: "Son", roleClass: "badge-cyan", icon: "fa-headset", color: "#10b981", desc: "Son Remote Support Gig Milestone", amount: "+₹13,000.00", status: "Freelance Direct", statusClass: "badge-emerald" }
+                ],
+                heroTransactions: [
+                    { title: "Corporate salary credited (01 Oct)", member: "Father (Admin) &bull; Salary Vault", amount: "+₹22,000.00", color: "#10b981", icon: "fa-arrow-up", bg: "rgba(16, 185, 129, 0.15)" },
+                    { title: "Medical loan repayment (03 Oct)", member: "Paid installment: ₹6,400 auto-cut from debt", amount: "-₹6,400.00 (Bal: ₹18.6k)", color: "#f59e0b", icon: "fa-hand-holding-dollar", bg: "rgba(245, 158, 11, 0.15)" },
+                    { title: "School teacher salary (07 Oct)", member: "Mother &bull; Bank Transfer", amount: "+₹7,000.00", color: "#10b981", icon: "fa-arrow-up", bg: "rgba(16, 185, 129, 0.15)" }
+                ]
             }
+        };
+
+        // Switch Hero Mockup Profile
+        function switchMockupFamily(key, btn) {
+            const data = householdCaseStudies[key];
+            if (!data) return;
+
+            // Update chip active states
+            document.querySelectorAll('.mockup-chip-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
+
+            // Update top bar URL & badge
+            const urlEl = document.getElementById('mockupUrlText');
+            if (urlEl) urlEl.textContent = data.url;
+
+            // Update Counters with smooth tick
+            const remEl = document.getElementById('mockupRemainingVal');
+            const incEl = document.getElementById('mockupIncomeVal');
+            const incSub = document.getElementById('mockupIncomeSub');
+            const expEl = document.getElementById('mockupExpensesVal');
+            const expSub = document.getElementById('mockupExpensesSub');
+            const udhEl = document.getElementById('mockupUdharVal');
+            const udhSub = document.getElementById('mockupUdharSub');
+
+            if (remEl) {
+                remEl.setAttribute('data-hero-counter', data.remaining);
+                remEl.textContent = '₹' + data.remaining.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            }
+            if (incEl) {
+                incEl.setAttribute('data-hero-counter', data.income);
+                incEl.textContent = '₹' + data.income.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            }
+            if (incSub) incSub.innerHTML = '<i class="fa-solid fa-arrow-up"></i> ' + data.incomeSub;
+            if (expEl) {
+                expEl.setAttribute('data-hero-counter', data.expenses);
+                expEl.textContent = '₹' + data.expenses.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            }
+            if (expSub) expSub.textContent = data.expensesSub;
+            if (udhEl) {
+                const num = parseInt(data.udharVal.replace(/[^0-9]/g, '')) || 0;
+                udhEl.setAttribute('data-hero-counter', num);
+                udhEl.textContent = data.udharVal + '.00';
+            }
+            if (udhSub) udhSub.innerHTML = data.udharSub;
+
+            // Update Transactions
+            const txContainer = document.getElementById('mockupTxContainer');
+            if (txContainer && data.heroTransactions) {
+                txContainer.innerHTML = data.heroTransactions.map((tx, idx) => `
+                    <div class="mockup-tx-row" style="animation: txSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.08}s forwards; opacity: 0;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 28px; height: 28px; border-radius: 6px; background: ${tx.bg}; color: ${tx.color}; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid ${tx.icon}"></i></div>
+                            <div>
+                                <span style="font-size: 13.5px; font-weight: 600; display: block;">${tx.title}</span>
+                                <small style="font-size: 11px; color: var(--text-dim);">${tx.member}</small>
+                            </div>
+                        </div>
+                        <span style="font-family: var(--font-mono); font-weight: 700; color: ${tx.color};">${tx.amount}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Update Velocity & Sparkline
+            const velText = document.getElementById('mockupVelocityText');
+            if (velText) velText.textContent = data.velocity;
+
+            const sparkPath = document.getElementById('mockupSparklinePath');
+            const sparkDot = document.getElementById('mockupSparklineDot');
+            if (sparkPath) sparkPath.setAttribute('d', data.sparklineD);
+            if (sparkDot) sparkDot.setAttribute('cy', data.sparklineDotY);
         }
+
+        // Master Audit Lab Selector
+        function selectFamilyAudit(key, cardEl) {
+            const data = householdCaseStudies[key];
+            if (!data) return;
+
+            // 1. Update Persona Cards
+            document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('active'));
+            const targetCard = cardEl || document.getElementById('personaCard-' + key);
+            if (targetCard) targetCard.classList.add('active');
+
+            // 2. Synchronize Header
+            const titleEl = document.getElementById('auditFamilyTitle');
+            if (titleEl) titleEl.textContent = data.name + ' — Financial OS Audit';
+
+            const badgeEl = document.getElementById('auditFamilyBadge');
+            if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${data.badge}`;
+
+            // 3. Stage 1: Inflow
+            const inVal = document.getElementById('auditInflowVal');
+            const inSub = document.getElementById('auditInflowSub');
+            const inBars = document.getElementById('auditInflowBars');
+            if (inVal) inVal.textContent = '₹' + data.income.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            if (inSub) inSub.textContent = data.incomeSub;
+            if (inBars) {
+                inBars.innerHTML = data.inflowBars.map(b => `
+                    <div class="audit-bar-row">
+                        <div class="audit-bar-header">
+                            <span>${b.label}</span>
+                            <strong style="font-family: var(--font-mono); color: ${b.color};">${b.amount} (${b.pct}%)</strong>
+                        </div>
+                        <div class="audit-bar-track">
+                            <div class="audit-bar-fill" style="width: ${b.pct}%; background: ${b.color};"></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 4. Stage 2: Expenses
+            const expVal = document.getElementById('auditExpensesVal');
+            const expSub = document.getElementById('auditExpensesSub');
+            const expBars = document.getElementById('auditExpenseBars');
+            if (expVal) expVal.textContent = '₹' + data.expenses.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            if (expSub) expSub.textContent = data.expensesSub;
+            if (expBars) {
+                expBars.innerHTML = data.expenseBars.map(b => `
+                    <div class="audit-bar-row">
+                        <div class="audit-bar-header">
+                            <span>${b.label}</span>
+                            <strong style="font-family: var(--font-mono); color: ${b.color};">${b.amount} (${b.pct}%)</strong>
+                        </div>
+                        <div class="audit-bar-track">
+                            <div class="audit-bar-fill" style="width: ${b.pct}%; background: ${b.color};"></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 5. Stage 3: Udhar Repayment Engine
+            const udhVal = document.getElementById('auditUdharVal');
+            const udhSub = document.getElementById('auditUdharSub');
+            const udhSteps = document.getElementById('auditUdharSteps');
+            if (udhVal) udhVal.innerHTML = `${data.udharVal} <span style="font-size: 13px; font-weight: 500; color: var(--text-dim);">dene baki</span>`;
+            if (udhSub) udhSub.innerHTML = data.udharSub;
+            if (udhSteps) {
+                udhSteps.innerHTML = data.udharSteps.map(s => `
+                    <div class="udhar-step-item">
+                        <span>${s.title}</span>
+                        <div style="text-align: right;">
+                            <strong style="font-family: var(--font-mono);">${s.amount}</strong>
+                            <small style="display: block; font-size: 10px; color: var(--text-dim);">${s.status}</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 6. Stage 4: Net Surplus & Wealth Allocation
+            const surVal = document.getElementById('auditSurplusVal');
+            const surBars = document.getElementById('auditWealthBars');
+            if (surVal) surVal.textContent = '₹' + data.remaining.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            if (surBars) {
+                surBars.innerHTML = data.wealthBars.map(b => `
+                    <div class="audit-bar-row">
+                        <div class="audit-bar-header">
+                            <span>${b.label}</span>
+                            <strong style="font-family: var(--font-mono); color: ${b.color};">${b.amount} (${b.pct}%)</strong>
+                        </div>
+                        <div class="audit-bar-track">
+                            <div class="audit-bar-fill" style="width: ${b.pct}%; background: ${b.color};"></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 7. Before vs After
+            const beforeList = document.getElementById('auditBeforeList');
+            const afterList = document.getElementById('auditAfterList');
+            if (beforeList) {
+                beforeList.innerHTML = data.beforeList.map(txt => `
+                    <li><i class="fa-solid fa-xmark" style="color: #fb7185; margin-top: 3px;"></i><span>${txt}</span></li>
+                `).join('');
+            }
+            if (afterList) {
+                afterList.innerHTML = data.afterList.map(txt => `
+                    <li><i class="fa-solid fa-check" style="color: var(--emerald-400); margin-top: 3px;"></i><span>${txt}</span></li>
+                `).join('');
+            }
+
+            // 8. Passbook Activity Feed
+            const passbookRows = document.getElementById('auditPassbookRows');
+            if (passbookRows) {
+                passbookRows.innerHTML = data.passbook.map(row => `
+                    <tr>
+                        <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);">${row.date}</td>
+                        <td>
+                            <span class="passbook-member-badge">
+                                <i class="fa-solid fa-user" style="font-size: 10px;"></i>
+                                <span>${row.member}</span>
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid ${row.icon}" style="color: ${row.color}; font-size: 12px;"></i>
+                                <span style="font-weight: 500;">${row.desc}</span>
+                            </div>
+                        </td>
+                        <td style="font-family: var(--font-mono); font-weight: 700; color: ${row.color};">${row.amount}</td>
+                        <td>
+                            <span class="badge ${row.statusClass}" style="font-size: 10.5px;">${row.status}</span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // 9. Sync Hero Mockup chip as well
+            const correspondingChip = Array.from(document.querySelectorAll('.mockup-chip-btn'))
+                .find(btn => btn.textContent.toLowerCase().includes(key));
+            if (correspondingChip) {
+                switchMockupFamily(key, correspondingChip);
+            }
+        }
+
+        // 7. Interactive Family Simulator Engine
+        function updateFamilySimulator() {
+            const incomeSlider = document.getElementById('simIncomeSlider');
+            const expenseSlider = document.getElementById('simExpenseSlider');
+            if (!incomeSlider || !expenseSlider) return;
+
+            let income = parseInt(incomeSlider.value) || 50000;
+            let expense = parseInt(expenseSlider.value) || 20000;
+
+            // Ensure expense does not exceed 95% of income
+            if (expense > income * 0.95) {
+                expense = Math.round(income * 0.95);
+                expenseSlider.value = expense;
+            }
+
+            const incLabel = document.getElementById('simIncomeLabel');
+            const expLabel = document.getElementById('simExpenseLabel');
+            if (incLabel) incLabel.textContent = '₹' + income.toLocaleString('en-IN');
+            if (expLabel) expLabel.textContent = '₹' + expense.toLocaleString('en-IN');
+
+            const surplus = Math.max(0, income - expense);
+            const safeUdhar = Math.round(surplus * 0.30);
+            const emergencyBuffer = expense * 3;
+            const annualWealth = surplus * 12;
+
+            const surVal = document.getElementById('simSurplusVal');
+            const udhVal = document.getElementById('simUdharLimitVal');
+            const emgVal = document.getElementById('simEmergencyVal');
+            const wltVal = document.getElementById('simWealthVal');
+
+            if (surVal) surVal.textContent = '₹' + surplus.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            if (udhVal) udhVal.textContent = '₹' + safeUdhar.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            if (emgVal) emgVal.textContent = '₹' + emergencyBuffer.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            if (wltVal) wltVal.textContent = '₹' + annualWealth.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        }
+
+        // Initialize on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            selectFamilyAudit('patel');
+            updateFamilySimulator();
+        });
 
         // 7. Live 60fps Interactive Financial Constellation Canvas
         (function () {
