@@ -556,130 +556,42 @@
         }
 
         /* ========================================================
-           EXECUTIVE HOUSEHOLD CASE STUDIES (CLEAN, LIMITED & PRO)
+           CONFIDENTIAL PRIVACY SHIELD FOR HERO MOCKUP
            ======================================================== */
-        .scenarios-clean-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
-        }
-
-        @@media (max-width: 980px) {
-            .scenarios-clean-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .scenario-card {
-            background: var(--bg-card);
+        .mockup-privacy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 11px;
+            border-radius: var(--radius-full);
             border: 1px solid var(--border-card);
-            border-radius: var(--radius-lg);
-            padding: 26px 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-            position: relative;
-        }
-
-        .scenario-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.45);
-        }
-
-        .scenario-card-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 20px;
-        }
-
-        .scenario-icon-box {
-            width: 46px;
-            height: 46px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .scenario-family-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0 0 2px 0;
-        }
-
-        .scenario-family-meta {
-            font-size: 12px;
+            background: var(--bg-surface-elevated);
             color: var(--text-muted);
-            display: block;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .scenario-stats-pill {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr auto 1fr;
-            align-items: center;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            padding: 12px 14px;
-            margin-bottom: 16px;
+        .mockup-privacy-btn:hover {
+            color: var(--emerald-400);
+            border-color: var(--emerald-400);
+            background: rgba(16, 185, 129, 0.12);
         }
 
-        .scenario-stat-col {
-            text-align: center;
+        .confidential-num {
+            transition: filter 0.28s ease, opacity 0.28s ease;
         }
 
-        .scenario-stat-lbl {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: var(--text-dim);
-            display: block;
-            margin-bottom: 3px;
+        .privacy-masked .confidential-num {
+            filter: blur(6px);
+            user-select: none;
+            opacity: 0.6;
         }
 
-        .scenario-stat-num {
-            font-size: 13.5px;
-            font-family: var(--font-mono);
-            font-weight: 700;
-        }
-
-        .scenario-stat-divider {
-            width: 1px;
-            height: 24px;
-            background: var(--border-subtle);
-        }
-
-        .scenario-surplus-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(16, 185, 129, 0.08);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            border-radius: var(--radius-sm);
-            padding: 10px 14px;
-            margin-bottom: 16px;
-        }
-
-        .scenario-card-desc {
-            font-size: 13.5px;
-            color: var(--text-secondary);
-            line-height: 1.55;
-            margin-bottom: 20px;
-            flex-grow: 1;
-        }
-
-        .scenario-card-footer {
-            padding-top: 14px;
-            border-top: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .mockup-card.privacy-masked:hover .confidential-num {
+            filter: blur(0);
+            opacity: 1;
         }
 
         .comparison-table {
@@ -890,9 +802,8 @@
         <ul class="landing-nav-links d-none d-lg-flex" id="landingNavLinks">
             <li><a href="#features" data-section="features">Pillars</a></li>
             <li><a href="#udhar" data-section="udhar">Udhar Ledger</a></li>
-            <li><a href="#scenarios" data-section="scenarios">Scenarios</a></li>
             <li><a href="#comparison" data-section="comparison">Comparison</a></li>
-            <li><a href="#security" data-section="security">Privacy</a></li>
+            <li><a href="#security" data-section="security">Privacy &amp; Security</a></li>
         </ul>
 
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -933,8 +844,8 @@
     <nav class="mobile-nav-drawer d-lg-none" id="mobileNavDrawer">
         <a href="#features" onclick="closeMobileNav()">Core Pillars</a>
         <a href="#udhar" onclick="closeMobileNav()">Udhar Ledger</a>
-        <a href="#scenarios" onclick="closeMobileNav()">Family Scenarios</a>
         <a href="#comparison" onclick="closeMobileNav()">Why HomeLedger?</a>
+        <a href="#security" onclick="closeMobileNav()">Privacy &amp; Security</a>
         <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; display: flex; gap: 8px;">
             @if (isLoggedIn)
             {
@@ -1012,7 +923,7 @@
         <!-- Interactive 3D Glass Dashboard Mockup -->
         <div class="mockup-wrapper" id="mockupWrapper">
             <div class="mockup-beam-shell" id="mockupCard">
-            <div class="mockup-card">
+            <div class="mockup-card privacy-masked" id="mockupCardInner">
                 <div class="mockup-header-bar">
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <div class="browser-dots">
@@ -1020,11 +931,17 @@
                             <span class="browser-dot" style="background: #f59e0b;"></span>
                             <span class="browser-dot" style="background: #10b981;"></span>
                         </div>
-                        <span style="font-size: 12px; color: var(--text-dim); font-family: var(--font-mono);">homeledger.app/workspace/patel-family</span>
+                        <span style="font-size: 12px; color: var(--text-dim); font-family: var(--font-mono);"><i class="fa-solid fa-lock" style="color: var(--emerald-400); margin-right: 4px;"></i>homeledger.app/vault/confidential-workspace</span>
                     </div>
-                    <div class="badge badge-emerald">
-                        <span class="live-pulse-dot"></span>
-                        <span>Live Ledger Active</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="button" class="mockup-privacy-btn" id="privacyMaskBtn" onclick="toggleMockupPrivacy()" title="Toggle Confidential Privacy Shield">
+                            <i class="fa-solid fa-eye-slash" id="privacyMaskIcon"></i>
+                            <span id="privacyMaskText">Privacy Shield Active</span>
+                        </button>
+                        <div class="badge badge-emerald">
+                            <span class="live-pulse-dot"></span>
+                            <span>Encrypted Vault</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1033,62 +950,62 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 22px;">
                         <div style="background: rgba(16, 185, 129, 0.09); border: 1px solid rgba(16, 185, 129, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Remaining Balance</span>
-                            <h2 style="font-size: 26px; font-weight: 800; color: var(--emerald-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="34500" data-prefix="₹">₹34,500.00</h2>
-                            <small style="color: var(--text-dim); font-size: 11px;">Surplus ready for savings</small>
+                            <h2 class="confidential-num" style="font-size: 26px; font-weight: 800; color: var(--emerald-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="32600" data-prefix="₹">₹32,600.00</h2>
+                            <small style="color: var(--text-dim); font-size: 11px;">Protected household surplus</small>
                         </div>
                         <div style="background: rgba(99, 102, 241, 0.09); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Total Income</span>
-                            <h2 style="font-size: 26px; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); margin: 0;" data-hero-counter="49500" data-prefix="₹">₹49,500.00</h2>
-                            <small style="color: var(--emerald-400); font-size: 11px;"><i class="fa-solid fa-arrow-up"></i> Salary + Freelance</small>
+                            <h2 class="confidential-num" style="font-size: 26px; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); margin: 0;" data-hero-counter="45000" data-prefix="₹">₹45,000.00</h2>
+                            <small style="color: var(--emerald-400); font-size: 11px;"><i class="fa-solid fa-arrow-up"></i> Verified Primary Earnings</small>
                         </div>
                         <div style="background: rgba(244, 63, 94, 0.09); border: 1px solid rgba(244, 63, 94, 0.28); border-radius: var(--radius-md); padding: 18px;">
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Household Expenses</span>
-                            <h2 style="font-size: 26px; font-weight: 800; color: #fb7185; font-family: var(--font-mono); margin: 0;" data-hero-counter="15000" data-prefix="₹">₹15,000.00</h2>
-                            <small style="color: var(--text-dim); font-size: 11px;">Groceries, Electricity, School</small>
+                            <h2 class="confidential-num" style="font-size: 26px; font-weight: 800; color: #fb7185; font-family: var(--font-mono); margin: 0;" data-hero-counter="12400" data-prefix="₹">₹12,400.00</h2>
+                            <small style="color: var(--text-dim); font-size: 11px;">Living, Utilities &amp; Supplies</small>
                         </div>
                         <div style="background: rgba(245, 158, 11, 0.09); border: 1px solid rgba(245, 158, 11, 0.28); border-radius: var(--radius-md); padding: 18px;">
-                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Udhar (Dene Hai)</span>
-                            <h2 style="font-size: 26px; font-weight: 800; color: var(--amber-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="17500" data-prefix="₹">₹17,500.00</h2>
-                            <small style="color: var(--amber-400); font-size: 11px;">To Receive: ₹2,000.00</small>
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px;">Udhar (Settled Status)</span>
+                            <h2 class="confidential-num" style="font-size: 26px; font-weight: 800; color: var(--amber-400); font-family: var(--font-mono); margin: 0;" data-hero-counter="0" data-prefix="₹">₹0.00</h2>
+                            <small style="color: var(--emerald-400); font-size: 11px;"><i class="fa-solid fa-check-double"></i> 100% Balanced &amp; Reconciled</small>
                         </div>
                     </div>
 
                     <!-- Live Sample Activity Stream Inside Mockup -->
                     <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px 20px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                            <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted);"><i class="fa-solid fa-receipt" style="color: var(--emerald-400); margin-right: 6px;"></i> Recent Household Transactions</span>
-                            <span style="font-size: 11px; color: var(--emerald-400);"><i class="fa-solid fa-lock"></i> Admin Vault Encrypted</span>
+                            <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted);"><i class="fa-solid fa-receipt" style="color: var(--emerald-400); margin-right: 6px;"></i> Reconciled Ledger Stream</span>
+                            <span style="font-size: 11px; color: var(--emerald-400);"><i class="fa-solid fa-lock"></i> Bank-Grade BCrypt Privacy</span>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <div class="mockup-tx-row mockup-tx-1">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-arrow-up"></i></div>
                                     <div>
-                                        <span style="font-size: 13.5px; font-weight: 600; display: block;">Father's salary deposit (01 Oct)</span>
-                                        <small style="font-size: 11px; color: var(--text-dim);"><i class="fa-solid fa-user-shield"></i> Father (Admin)</small>
+                                        <span style="font-size: 13.5px; font-weight: 600; display: block;">Primary Inflow Vault Deposit</span>
+                                        <small style="font-size: 11px; color: var(--text-dim);"><i class="fa-solid fa-shield-check"></i> Direct Credit • Auto-Logged</small>
                                     </div>
                                 </div>
-                                <span style="font-family: var(--font-mono); font-weight: 700; color: #10b981;">+₹25,000.00</span>
+                                <span class="confidential-num" style="font-family: var(--font-mono); font-weight: 700; color: #10b981;">+₹45,000.00</span>
                             </div>
                             <div class="mockup-tx-row mockup-tx-2">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(244, 63, 94, 0.15); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-arrow-down"></i></div>
                                     <div>
-                                        <span style="font-size: 13.5px; font-weight: 600; display: block;">Grocery shopping (02 Oct)</span>
-                                        <small style="font-size: 11px; color: var(--text-dim);"><i class="fa-solid fa-user"></i> Mother</small>
+                                        <span style="font-size: 13.5px; font-weight: 600; display: block;">Essential Living &amp; Utility Expenses</span>
+                                        <small style="font-size: 11px; color: var(--text-dim);"><i class="fa-solid fa-basket-shopping"></i> Reconciled Household Category</small>
                                     </div>
                                 </div>
-                                <span style="font-family: var(--font-mono); font-weight: 700; color: #f43f5e;">-₹2,500.00</span>
+                                <span class="confidential-num" style="font-family: var(--font-mono); font-weight: 700; color: #f43f5e;">-₹12,400.00</span>
                             </div>
                             <div class="mockup-tx-row mockup-tx-3">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 12px;"><i class="fa-solid fa-hand-holding-dollar"></i></div>
                                     <div>
-                                        <span style="font-size: 13.5px; font-weight: 600; display: block;">Kirana Udhar repayment (05 Oct)</span>
-                                        <small style="font-size: 11px; color: var(--amber-400);"><i class="fa-solid fa-check"></i> Installment Paid</small>
+                                        <span style="font-size: 13.5px; font-weight: 600; display: block;">Credit &amp; Udhar Settlement</span>
+                                        <small style="font-size: 11px; color: var(--amber-400);"><i class="fa-solid fa-check"></i> Installment Cleared • Balance Zero</small>
                                     </div>
                                 </div>
-                                <span style="font-family: var(--font-mono); font-weight: 700; color: #f59e0b;">-₹2,500.00</span>
+                                <span class="confidential-num" style="font-family: var(--font-mono); font-weight: 700; color: #f59e0b;">-₹3,500.00</span>
                             </div>
                         </div>
                     </div>
@@ -1097,7 +1014,7 @@
                     <div style="margin-top: 14px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
                         <div>
                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-dim); display: block;">Monthly Surplus Velocity</span>
-                            <strong style="font-size: 15px; color: var(--emerald-400); font-family: var(--font-mono);">+18.4% vs last month</strong>
+                            <strong style="font-size: 15px; color: var(--emerald-400); font-family: var(--font-mono);">+22.5% Month-over-Month</strong>
                         </div>
                         <svg width="260" height="44" viewBox="0 0 260 44" fill="none" style="max-width: 100%; overflow: visible;">
                             <defs>
@@ -1109,16 +1026,6 @@
                             </defs>
                             <path class="sparkline-draw" d="M4 34 C 36 32, 52 20, 82 24 C 110 28, 128 12, 160 15 C 192 18, 218 6, 254 8" stroke="url(#sparkGrad)" stroke-width="2.6" stroke-linecap="round" />
                             <circle cx="254" cy="8" r="4" fill="#10b981" />
-                        </svg>
-                    </div>
-                </div>
-                                    <stop offset="0%" stop-color="#6366f1" />
-                                    <stop offset="50%" stop-color="#38bdf8" />
-                                    <stop offset="100%" stop-color="#10b981" />
-                                </linearGradient>
-                            </defs>
-                            <path id="mockupSparklinePath" class="sparkline-draw" d="M4 34 C 36 32, 52 20, 82 24 C 110 28, 128 12, 160 15 C 192 18, 218 6, 254 8" stroke="url(#sparkGrad)" stroke-width="2.6" stroke-linecap="round" />
-                            <circle id="mockupSparklineDot" cx="254" cy="8" r="4" fill="#10b981" />
                         </svg>
                     </div>
                 </div>
@@ -1178,147 +1085,7 @@
         </div>
     </section>
 
-    <!-- Section 2: Real Household Case Studies (Clean, Limited & Professional) -->
-    <section class="section-container reveal-on-scroll" id="scenarios">
-        <div class="section-header">
-            <span class="section-tag">Tested Scenarios</span>
-            <h2 class="section-title">Built For Real Household Finances</h2>
-            <p class="section-desc">See how real families manage multi-member income, daily expenses, and date-wise Udhar settlements on HomeLedger.</p>
-        </div>
-
-        <div class="scenarios-clean-grid">
-            <!-- Card 1: Patel Family -->
-            <div class="scenario-card">
-                <div class="scenario-card-header">
-                    <div class="scenario-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
-                        <i class="fa-solid fa-house-chimney-user"></i>
-                    </div>
-                    <div>
-                        <h3 class="scenario-family-name">The Patel Family</h3>
-                        <span class="scenario-family-meta">Joint Household &bull; 4 Members</span>
-                    </div>
-                </div>
-
-                <div class="scenario-stats-pill">
-                    <div class="scenario-stat-col">
-                        <span class="scenario-stat-lbl">Inflow</span>
-                        <strong class="scenario-stat-num" style="color: var(--text-primary);">₹49,500</strong>
-                    </div>
-                    <div class="scenario-stat-divider"></div>
-                    <div class="scenario-stat-col">
-                        <span class="scenario-stat-lbl">Expenses</span>
-                        <strong class="scenario-stat-num" style="color: #fb7185;">₹15,000</strong>
-                    </div>
-                    <div class="scenario-stat-divider"></div>
-                    <div class="scenario-stat-col">
-                        <span class="scenario-stat-lbl">Udhar (Dene)</span>
-                        <strong class="scenario-stat-num" style="color: var(--amber-400);">₹17,500</strong>
-                    </div>
-                </div>
-
-                <div class="scenario-surplus-row">
-                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Net Monthly Surplus:</span>
-                    <strong style="font-size: 17px; color: var(--emerald-400); font-family: var(--font-mono);">₹34,500.00</strong>
-                </div>
-
-                <p class="scenario-card-desc">
-                    Father administers the overall budget while Mother and Son log their own contributions with private PINs. Kirana store credit was settled in 2 date-wise installments with automatic balance reconciliation.
-                </p>
-
-                <div class="scenario-card-footer">
-                    <span class="badge badge-emerald"><i class="fa-solid fa-shield-halved"></i> Role-Based Isolation</span>
-                </div>
-            </div>
-
-            <!-- Card 2: Rana Family -->
-            <div class="scenario-card">
-                <div class="scenario-card-header">
-                    <div class="scenario-icon-box" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
-                        <i class="fa-solid fa-store"></i>
-                    </div>
-                    <div>
-                        <h3 class="scenario-family-name">The Rana Family</h3>
-                        <span class="scenario-family-meta">Trade &amp; Gigs &bull; 3 Members</span>
-                    </div>
-                </div>
-
-                <div class="scenario-stats-pill">
-                    <div class="scenario-stat-col">
-                        <span class="scenario-stat-lbl">Inflow</span>
-                        <strong class="scenario-stat-num" style="color: var(--text-primary);">₹55,000</strong>
-                    </div>
-                    <div class="scenario-stat-divider"></div>
-                    <div class="scenario-stat-col">
-                        <span class="scenario-stat-lbl">Expenses</span>
-                        <strong class="scenario-stat-num" style="color: #fb7185;">₹13,500</strong>
-                    </div>
-                    <div class="scenario-stat-divider"></div>
-                    <div class="scenario-stat-col">
-                        <span class="scenario-stat-lbl">Udhar (Dene)</span>
-                        <strong class="scenario-stat-num" style="color: var(--amber-400);">₹25,200</strong>
-                    </div>
-                </div>
-
-                <div class="scenario-surplus-row">
-                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Net Monthly Surplus:</span>
-                    <strong style="font-size: 17px; color: var(--emerald-400); font-family: var(--font-mono);">₹41,500.00</strong>
-                </div>
-
-                <p class="scenario-card-desc">
-                    Strict separation between wholesale business supplier credit and domestic groceries. Tracks ₹4,000 festival loans given to relatives under dedicated "Lene Hai" bahi-khata.
-                </p>
-
-                <div class="scenario-card-footer">
-                    <span class="badge badge-cyan"><i class="fa-solid fa-hand-holding-dollar"></i> Smart Udhar Bahi-Khata</span>
-                </div>
-            </div>
-
-            <!-- Card 3: Rathod Family -->
-            <div class="scenario-card">
-                <div class="scenario-card-header">
-                    <div class="scenario-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">
-                        <i class="fa-solid fa-bullseye"></i>
-                    </div>
-                    <div>
-                        <h3 class="scenario-family-name">The Rathod Family</h3>
-                        <span class="scenario-family-meta">Budget Discipline &bull; 3 Members</span>
-                    </div>
-                </div>
-
-                <div class="scenario-stats-pill">
-                    <div class="scenario-stat-col">
-                        <span class="scenario-stat-lbl">Inflow</span>
-                        <strong class="scenario-stat-num" style="color: var(--text-primary);">₹42,000</strong>
-                    </div>
-                    <div class="scenario-stat-divider"></div>
-                    <div class="scenario-stat-col">
-                        <span class="scenario-stat-lbl">Expenses</span>
-                        <strong class="scenario-stat-num" style="color: #fb7185;">₹10,000</strong>
-                    </div>
-                    <div class="scenario-stat-divider"></div>
-                    <div class="scenario-stat-col">
-                        <span class="scenario-stat-lbl">Udhar (Dene)</span>
-                        <strong class="scenario-stat-num" style="color: var(--amber-400);">₹18,600</strong>
-                    </div>
-                </div>
-
-                <div class="scenario-surplus-row">
-                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Net Monthly Surplus:</span>
-                    <strong style="font-size: 17px; color: var(--emerald-400); font-family: var(--font-mono);">₹32,000.00</strong>
-                </div>
-
-                <p class="scenario-card-desc">
-                    Disciplined monthly expenditure cap that enabled paying off ₹6,400 in emergency medical borrowing while preserving 76% of household surplus for child higher education.
-                </p>
-
-                <div class="scenario-card-footer">
-                    <span class="badge badge-purple"><i class="fa-solid fa-file-export"></i> Lossless Backups (PDF/Excel)</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section 3: Feature Comparison -->
+    <!-- Section 2: Feature Comparison -->
     <section class="section-container reveal-on-scroll" id="comparison">
         <div class="section-header">
             <span class="section-tag">Transparent Comparison</span>
@@ -1417,8 +1184,8 @@
                 <ul>
                     <li><a href="#features">Core Pillars</a></li>
                     <li><a href="#udhar">Udhar Bahi-Khata</a></li>
-                    <li><a href="#scenarios">Household Scenarios</a></li>
                     <li><a href="#comparison">Platform Comparison</a></li>
+                    <li><a href="#security">Privacy &amp; Security</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1492,6 +1259,21 @@
             void document.body.offsetWidth; // Force CSS reflow
             document.body.classList.remove('replay-reset');
             setTimeout(runHeroCounters, 1420);
+        }
+
+        // Toggle Confidential Privacy Shield on Hero Mockup
+        function toggleMockupPrivacy() {
+            const card = document.getElementById('mockupCardInner');
+            const icon = document.getElementById('privacyMaskIcon');
+            const text = document.getElementById('privacyMaskText');
+            if (!card) return;
+            const isMasked = card.classList.toggle('privacy-masked');
+            if (icon) {
+                icon.className = isMasked ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            }
+            if (text) {
+                text.textContent = isMasked ? 'Privacy Shield Active' : 'Privacy Shield Off';
+            }
         }
 
         // 3. Scroll Progress Bar, Header Elevation & Active Section Indicator
